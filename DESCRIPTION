@@ -1,11 +1,39 @@
 Package: mdb
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Movie Rating Model and Predictor
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@: person("John", "James", email = "jjames@datasciencesalon.org",
+                  role = c("aut", "cre"))
+Maintainer: John James <jjames@datasciencesalon.org>
+Description: Model to predict moving ratings and to identify the top five features that most 
+    influence a movie's popularity. 
+License: MIT
 Encoding: UTF-8
-LazyData: true
+LazyData: TRUE
+Depends:
+    R (>= 3.4.2),
+    data.table,
+    dplyr,
+    extrafont
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Imports:
+    car,
+    corrplot,
+    e1071,
+    formatR,
+    ggplot2,
+    ggpubr,
+    ggthemes,
+    gridExtra,
+    kableExtra,
+    kfigr,
+    lindia,
+    openxlsx,
+    psych, 
+    qqplotr,
+    RColorBrewer,
+    stargazer,
+    statsr
+RoxygenNote: 6.0.1

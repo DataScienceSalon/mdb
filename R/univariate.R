@@ -5,13 +5,14 @@
 #'
 #' \code{univariate} Performs univariate analysis of variables
 #'
-#' @param mdb1 Data frame containing the preprocessed movie data set
-#' @param mdb2 Data frame containing 100 samples from the mdb data frame with box office revenue added
+#' @param dataSets List containing the two movie data bases
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-univariate <- function(mdb1, mdb2) {
+univariate <- function(dataSets) {
+  mdb1 <- dataSets$mdb1
+  mdb2 <- dataSets$mdb2
 
   # Conduct Qualitative Analysis
   type <- univariateQual(as.data.frame(mdb1$title_type), xLab = "Title Type")
@@ -81,8 +82,6 @@ univariate <- function(mdb1, mdb2) {
                                  yLab = "Box Office", units = "dollars")
   boxOfficeLog <- univariateQuant(data.frame(mdb2$title, mdb2$box_office_log),
                                yLab = "Log Box Office", units = "log(dollars)")
-
-
   # Return analysis
   analysis <- list(
     type = type,

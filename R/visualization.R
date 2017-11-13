@@ -149,7 +149,7 @@ plotQQ <- function(data, xLab = NULL, yLab, title = NULL) {
 
 
   # Render QQ Plot
-  qq <- ggplot2::ggplot(data = data, mapping = aes(sample = data[[1]])) +
+  qq <- ggplot2::ggplot(data = data, mapping = ggplot2::aes(sample = data[[1]])) +
     qqplotr::stat_qq_band() +
     qqplotr::stat_qq_line() +
     qqplotr::stat_qq_point() +
@@ -287,7 +287,7 @@ plotScatter <- function(data, xLab, yLab, title = NULL) {
 plotResQQ <- function(mod, yLab) {
 
   # Obtain diagnostics and render plot
-  resQQ <- gg_diagnose(mod, theme = theme_minimal(), plot.all = FALSE)
+  resQQ <- lindia::gg_diagnose(mod, theme = ggplot2::theme_minimal(), plot.all = FALSE)
   resQQ <- resQQ$qqplot +
     ggplot2::theme_minimal(base_size = 24) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
@@ -313,7 +313,7 @@ plotResQQ <- function(mod, yLab) {
 plotResFit <- function(mod, yLab) {
 
   # Obtain diagnostics and render plot
-  resFit <- gg_diagnose(mod, theme = theme_minimal(), plot.all = FALSE)
+  resFit <- lindia::gg_diagnose(mod, theme = ggplot2::theme_minimal(), plot.all = FALSE)
   resFit <- resFit$res_fitted +
     ggplot2::theme_minimal(base_size = 24) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
@@ -339,7 +339,7 @@ plotResFit <- function(mod, yLab) {
 plotResLeverage <- function(mod, yLab) {
 
   # Obtain diagnostics and render plot
-  resLeverage <- gg_diagnose(mod, theme = theme_minimal(), plot.all = FALSE)
+  resLeverage <- lindia::gg_diagnose(mod, theme = ggplot2::theme_minimal(), plot.all = FALSE)
   resLeverage <- resLeverage$resleverage +
     ggplot2::theme_minimal(base_size = 24) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
@@ -365,7 +365,7 @@ plotResLeverage <- function(mod, yLab) {
 plotCooks <- function(mod, yLab) {
 
   # Obtain diagnostics and render plot
-  cooks <- gg_diagnose(mod, theme = theme_minimal(), plot.all = FALSE)
+  cooks <- lindia::gg_diagnose(mod, theme = ggplot2::theme_minimal(), plot.all = FALSE)
   cooks <- cooks$cooksd +
     ggplot2::theme_minimal(base_size = 24) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
@@ -390,7 +390,7 @@ plotCooks <- function(mod, yLab) {
 plotResAll <- function(mod) {
 
   # Obtain diagnostics and render plot
-  p <- gg_resX(mod, plot.all = FALSE)
+  p <- lindia::gg_resX(mod, plot.all = FALSE)
 
   resAll <- lapply(p, function(x) {
     df <- data.frame(x = p[[1]][[1]][[2]],

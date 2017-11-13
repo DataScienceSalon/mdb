@@ -18,13 +18,13 @@ bivariate <- function(data) {
   #                         Categorical Predictors                            #
   #---------------------------------------------------------------------------#
   # Title Type
-  data <- data$mdbBox %>% select(title_type, box_office_log)
-  mod <- lm(box_office_log ~ title_type, data = data)
+  df <- data$mdb2 %>% select(title_type, box_office_log)
+  mod <- lm(box_office_log ~ title_type, data = df)
   type <- regressionAnalysis(mod = mod, xLab = "Type", yLab = "Log Box Office")
 
   # Genre
-  data <- data$mdbBox %>% select(genre, box_office_log)
-  mod <- lm(box_office_log ~ genre, data = data)
+  df <- data$mdb2 %>% select(genre, box_office_log)
+  mod <- lm(box_office_log ~ genre, data = df)
   genre <- regressionAnalysis(mod = mod, xLab = "Genre", yLab = "Log Box Office")
 
 
