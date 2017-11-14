@@ -13,18 +13,18 @@
 #' @param data Data frame or vector containing a single categorical factor variable
 #' @param yLab Capital case character string describing the y variable
 #' @param xLab Capital case character string containing the name of the variable x variable
-#' @param title Capital case character string for the title of the plot
+#' @param plotTitle Capital case character string for the title of the plot
 #' @param order Character c('a', 'd') indicating whether to order by frequency ascending (a), or descending (d)
 #'
 #' @return List containing a contingency table and a stacked bar plot.
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family visualization functions
 #' @export
-plotFreqProp <- function(data, yLab = "Movies", xLab, title = NULL, order = NULL) {
+plotFreqProp <- function(data, yLab = "Movies", xLab, plotTitle = NULL, order = NULL) {
 
   # Format title
-  if (is.null(title)) {
-    title <- paste(yLab, "by", xLab)
+  if (is.null(plotTitle)) {
+    plotTitle <- paste(yLab, "by", xLab)
   }
 
   # Format Data
@@ -68,7 +68,7 @@ plotFreqProp <- function(data, yLab = "Movies", xLab, title = NULL, order = NULL
                    axis.text.x = ggplot2::element_blank(),
                    legend.position = "right") +
     ggplot2::scale_fill_manual(values = myPal(length(df[[1]]))) +
-    ggplot2::ggtitle(title) +
+    ggplot2::ggtitle(plotTitle) +
     ggplot2::ylab(yLab) +
     ggplot2::labs(fill = xLab)
 
@@ -91,19 +91,19 @@ plotFreqProp <- function(data, yLab = "Movies", xLab, title = NULL, order = NULL
 #' @param data Data frame containing a single numeric variable
 #' @param xLab Capital case character string the group or subset of data being printed (optional)
 #' @param yLab Capital case character string describing y is being printed
-#' @param title Capital case character string for the title of the plot
+#' @param plotTitle Capital case character string for the plotTitle of the plot
 #'
 #' @return List containing a summary statistics and a histogram
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family visualization functions
 #' @export
-plotHist <- function(data, xLab = NULL, yLab, title = NULL) {
+plotHist <- function(data, xLab = NULL, yLab, plotTitle = NULL) {
 
-  if (is.null(title)) {
+  if (is.null(plotTitle)) {
     if (is.null(xLab)) {
-      title <- yLab
+      plotTitle <- yLab
     } else {
-      title <- paste(yLab, "by", xLab)
+      plotTitle <- paste(yLab, "by", xLab)
     }
   }
 
@@ -114,7 +114,7 @@ plotHist <- function(data, xLab = NULL, yLab, title = NULL) {
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans"),
                    axis.title.x = ggplot2::element_blank(),
                    axis.ticks.x = ggplot2::element_blank()) +
-    ggplot2::ggtitle(title) +
+    ggplot2::ggtitle(plotTitle) +
     ggplot2::ylab(yLab)
 
   return(hist)
@@ -131,19 +131,19 @@ plotHist <- function(data, xLab = NULL, yLab, title = NULL) {
 #' @param data Data frame or vector containing a single numeric variable
 #' @param xLab Capital case character string containing the name of the grouping or subset variable (optional)
 #' @param yLab Capital case character string containing the name of the y variable
-#' @param title Capital case character string for the title of the plot
+#' @param plotTitle Capital case character string for the title of the plot
 #'
 #' @return List containing a summary statistics and QQ plot
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family visualization functions
 #' @export
-plotQQ <- function(data, xLab = NULL, yLab, title = NULL) {
+plotQQ <- function(data, xLab = NULL, yLab, plotTitle = NULL) {
 
-  if (is.null(title)) {
+  if (is.null(plotTitle)) {
     if (is.null(xLab)) {
-      title <- paste("Normal Q-Q Plot:", yLab)
+      plotTitle <- paste("Normal Q-Q Plot:", yLab)
     } else {
-      title <- paste("Normal Q-Q Plot:", yLab, "by", xLab)
+      plotTitle <- paste("Normal Q-Q Plot:", yLab, "by", xLab)
     }
   }
 
@@ -156,7 +156,7 @@ plotQQ <- function(data, xLab = NULL, yLab, title = NULL) {
     ggplot2::theme_minimal(base_size = 24) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
     ggplot2::labs(x = "Theoretical Quantiles", y = "Sample Quantiles") +
-    ggplot2::ggtitle(title)
+    ggplot2::ggtitle(plotTitle)
 
   return(qq)
 }
@@ -173,30 +173,30 @@ plotQQ <- function(data, xLab = NULL, yLab, title = NULL) {
 #'          2: Numeric response variable (y)
 #' @param xLab Capital case character string containing the name of the x variable (optional)
 #' @param yLab Capital case character string containing the name of the y variable
-#' @param title Character case character string containing the title for the plot
+#' @param plotTitle Character case character string containing the title for the plot
 #'
 #' @return List containing a contingency table and a stacked bar plot.
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family visualization functions
 #' @export
-plotBox <- function(data, xLab = NULL, yLab, title = NULL) {
+plotBox <- function(data, xLab = NULL, yLab, plotTitle = NULL) {
 
   if (length(data) > 2) stop(paste("Error in plotBox: Dimension of data frame must be 1 or 2, not", length(data)))
   if (length(data) == 1) {
     data <- data.frame(x = rep("x", nrow(data)),
                        y = data[[1]], row.names = NULL)
   } else {
-    data <- data.frame(x = data[[1]],
-                       y = data[[2]],
+    data <- data.frame(y = data[[1]],
+                       x = data[[2]],
                        row.names = NULL)
   }
 
   # Format title
-  if (is.null(title)) {
+  if (is.null(plotTitle)) {
    if (is.null(xLab)) {
-     title <- yLab
+     plotTitle <- yLab
    } else {
-     title <- paste(yLab, "by", xLab)
+     plotTitle <- paste(yLab, "by", xLab)
    }
   }
 
@@ -214,7 +214,7 @@ plotBox <- function(data, xLab = NULL, yLab, title = NULL) {
                    axis.ticks.x = ggplot2::element_blank(),
                    axis.text.x = ggplot2::element_blank(),
                    legend.position = "right") +
-    ggplot2::ggtitle(title) +
+    ggplot2::ggtitle(plotTitle) +
     ggplot2::scale_fill_manual(values = myPal(length(unique(data$x))))
 
   if (is.null(xLab)) {
@@ -240,23 +240,23 @@ plotBox <- function(data, xLab = NULL, yLab, title = NULL) {
 #' @param data Data frame containing the quantitative variables
 #' @param xLab Capital case character string containing the name of the grouping or subset variable
 #' @param yLab Capital case character string containing the name of the y variable
-#' @param title Capital case character string for title of plot
+#' @param plotTitle Capital case character string for title of plot
 #'
 #' @return Scatterplot object
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family visualization functions
 #' @export
-plotScatter <- function(data, xLab, yLab, title = NULL) {
+plotScatter <- function(data, xLab, yLab, plotTitle = NULL) {
 
-  if (is.null(title)) {
-    title <- paste(yLab, "by", xLab)
+  if (is.null(plotTitle)) {
+    plotTitle <- paste(yLab, "by", xLab)
   }
 
   myPal <- colorRampPalette(RColorBrewer::brewer.pal(11, "PiYG"))
 
   scatter <- ggplot2::ggplot(data = data,
-                             ggplot2::aes(x = as.numeric(unlist(data[,1])),
-                                          y = as.numeric(unlist(data[,2])))) +
+                             ggplot2::aes(y = as.numeric(unlist(data[,1])),
+                                          x = as.numeric(unlist(data[,2])))) +
     ggplot2::geom_point() +
     ggplot2::geom_smooth() +
     ggplot2::theme_minimal(base_size = 24) +
@@ -264,7 +264,7 @@ plotScatter <- function(data, xLab, yLab, title = NULL) {
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans"),
                    legend.position = "right") +
     ggplot2::labs(x = xLab, y = yLab) +
-    ggplot2::ggtitle(title)
+    ggplot2::ggtitle(plotTitle)
 
   return(scatter)
 
@@ -393,12 +393,16 @@ plotResAll <- function(mod) {
   p <- lindia::gg_resX(mod, plot.all = FALSE)
 
   resAll <- lapply(p, function(x) {
-    df <- data.frame(x = p[[1]][[1]][[2]],
-                     y = p[[1]][[1]][[1]])
+    df <- data.frame(x = p[[1]][[1]][[1]],
+                     y = p[[1]][[1]][[2]])
     title <- p[[1]][[9]][[1]]
     xLab <- p[[1]][[9]][[3]]
     yLab <- p[[1]][[9]][[4]]
-    plotBox(data = df, xLab = xLab, yLab = yLab, title = title)
+    if (class(df$x) %in% c("character", "factor")) {
+      plotBox(data = df, xLab = xLab, yLab = yLab)
+    } else {
+      plotScatter(data = df, xLab = xLab, yLab = yLab)
+    }
   })
 
   return(resAll)

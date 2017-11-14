@@ -1,57 +1,75 @@
 #==============================================================================#
-#                                     forward                                  #
+#                           forward Selection                                  #
 #==============================================================================#
-#' forward
+
+#------------------------------------------------------------------------------#
+#                          Evaluate Models Univariate                          #
+#------------------------------------------------------------------------------#
+#' evaluate
 #'
-#' \code{forward} Creates prediction model using forward selection
+#' \code{evaluate} Evaluates linear models for all remaining predictors, one
+#' at a time, then returns the variable and adjusted R2 score for the best
+#' model.
+#'
+#' @param data Data frame containing the full model
+#' @param model, Data frame containing the variables and adjusted R2 values for the best model as of..
+#' @param y Character string containing the name of the response variable
+#' @param remaining Vector containing column names for the remaining predictors
+#'
+#' @return Single row data frame containing the variable and adjusted R2 for the best model evaluated
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-forward <- function(movies) {
+evalModel <- function(data, model, y, remaining) {
 
+  models <- rbindlist(lapply(remaining, function(x) {
+    newPredictors <- c(model$Selected, x)
+    lrFormula <- formula(paste(y, " ~ ",  paste(colnames(data[newPredictors]), collapse=" + ")))
+    mod <- summary(lm(lrFormula, data))
+    data.frame(Selected = x,
+               Adjusted.R2 = mod$adj.r.squared,
+               stringsAsFactors = FALSE)
+  }))
+  best <- models %>% filter(Adjusted.R2 == max(Adjusted.R2))
+  return(best)
+}
+#------------------------------------------------------------------------------#
+#                          Forward Select Main Function                        #
+#------------------------------------------------------------------------------#
+#' forward
+#'
+#' \code{forward} Creates prediction model using forward selection
+#'
+#' @param data Data frame containing the full model
+#' @param y Character string containing the name of the response variable
+#'
+#' @author John James, \email{jjames@@datasciencesalon.org}
+#' @family movies functions
+#' @export
+forward <- function(data, y) {
 
-  evalModel <- function(data, selected, predictors) {
+  # Initialize key variables
+  bestAdjR2 <- newAdjR2 <- 0
+  predictors <- colnames(data)
+  predictors <- predictors[!(predictors == y)]
+  model <- data.frame()
+  remaining <- predictors
 
-    model <- rbindlist(lapply(predictors, function(x) {
-      newPredictors <- c(selected, x)
-      lrFormula <- formula(paste("audience_score ~ ",  paste(colnames(data)[newPredictors], collapse=" + ")))
-      eval <- summary(lm(lrFormula, data))
-      data.frame(Selected = x,
-                 Adjusted.R2 = eval$adj.r.squared,
-                 stringsAsFactors = FALSE)
-    }))
-    model <- model %>% filter(Adjusted.R2 == max(Adjusted.R2))
-    score <- list(
-      selected = model$Selected,
-      AR2 = model$Adjusted.R2[1]
-    )
-    return(score)
-  }
-
-
-  data <- movies %>% select(title_type, genre, runtime,
-                            mpaa_rating, thtr_rel_month, dvd_rel_month,
-                            imdb_rating, imdb_num_votes, critics_score,
-                            best_pic_nom, best_pic_win, best_actor_win,
-                            best_actress_win, best_dir_win, top200_box,
-                            audience_score)
-
-  bestAR2 <- newAR2 <- 0
-  predictors <- c(1:15)
-  selected <- c()
-  for (i in 1:length(predictors)) {
-    score <- evalModel(data, selected, predictors)
-    if (score$AR2 > bestAR2) {
-      selected <- c(selected, score$selected)
-      bestAR2 <- score$AR2
+  # Iterate until all predictors are evaluated and return the variables for the best model
+  while (length(remaining) > 0) {
+    best <- evalModel(data, model, y, remaining)
+    remaining <- remaining[!(remaining == best$Selected)]
+    if (best$Adjusted.R2 > bestAdjR2) {
+      model <- rbind(model, best)
+      bestAdjR2 <- best$Adjusted.R2
     }
   }
-  lrFormula <- formula(paste("audience_score ~ ",
-                             paste(colnames(data)[unique(selected)], collapse=" + ")))
+
+  # Return final model
+  lrFormula <- formula(paste(y, " ~ ",
+                             paste(colnames(data)[model$Selected], collapse=" + ")))
   finalModel <- lm(lrFormula, data)
 
-
   return(finalModel)
-
 }

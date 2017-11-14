@@ -28,10 +28,7 @@ regressionAnalysis <- function(mod, xLab, yLab) {
   #                                  Plots                                    #
   #---------------------------------------------------------------------------#
   plots <- list()
-  # Box plot
-  plots[["boxplot"]] <- plotBox(data = mod$model, xLab = xLab, yLab = yLab)
-
-    # Linear Regression Plot
+  # Linear Regression Plot
   plots[["regression"]] <- plotScatter(data = mod$model, xLab = xLab, yLab = yLab, title = "Linear Regression")
 
   # Residuals vs Fitted
@@ -77,13 +74,14 @@ regressionAnalysis <- function(mod, xLab, yLab) {
   tests[["normal_res"]] <- shapiro.test(res)
 
   # Equal Variance Test (Levene's assumes Normality)
-  p <- lindia::gg_resX(mod, plot.all = FALSE)
-
-  eqVar <- lapply(p, function(x) {
-    df <- data.frame(x = p[[1]][[1]][[2]],
-                     y = p[[1]][[1]][[1]])
-    car::leveneTest(y ~ x, data = df)
-  })
+  if (class(mod$model[[2]]) %in% c("character", "factor")) {
+    p <- lindia::gg_resX(mod, plot.all = FALSE)
+    eqVar <- lapply(p, function(x) {
+      df <- data.frame(x = p[[1]][[1]][[2]],
+                       y = p[[1]][[1]][[1]])
+      car::leveneTest(y ~ x, data = df)
+    })
+  }
 
   # Multi-collinearity if greater than 1 variable
   if (length(mod$model) > 2) {

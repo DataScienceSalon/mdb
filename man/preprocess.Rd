@@ -18,7 +18,7 @@ preprocess(movies, mdb2)
 Other movies functions: \code{\link{back}},
   \code{\link{bivariate}}, \code{\link{forward}},
   \code{\link{multivariateQuant}}, \code{\link{process}},
-  \code{\link{regressionAnalysis}},
+  \code{\link{regressionAnalysis}}, \code{\link{response}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }
