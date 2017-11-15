@@ -4,10 +4,14 @@
 \alias{plotResAll}
 \title{plotResAll}
 \usage{
-plotResAll(mod)
+plotResAll(mod, mName = NULL, yLab = NULL)
 }
 \arguments{
 \item{mod}{Linear model object}
+
+\item{mName}{Character string for model name}
+
+\item{yLab}{Character string for the y-label}
 }
 \value{
 list containing ressidual v predictor plots

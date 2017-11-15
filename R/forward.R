@@ -23,13 +23,21 @@
 #' @export
 evalForwardModel <- function(data, model, y, remaining) {
 
-  models <- rbindlist(lapply(seq_along(remaining), function(x) {
+  models <- data.table::rbindlist(lapply(seq_along(remaining), function(x) {
     newPredictors <- c(model$Selected, remaining[x])
     lrFormula <- formula(paste(y, " ~ ",  paste(colnames(data[newPredictors]), collapse=" + ")))
-    mod <- lm(lrFormula, data)
+    m <- lm(lrFormula, data)
+    a <- anova(m)
+    s <- summary(m)
     data.frame(Selected = remaining[x],
-               Adjusted.R2 = summary(mod)$adj.r.squared,
-               stringsAsFactors = FALSE)
+               `Model Size` = length(newPredictors),
+               DF = s$df[2],
+               `F-statistic` = round(s$fstatistic[1], 2),
+               `R-Squared` = round(s$r.squared, 3),
+               Adjusted.R2 = round(s$adj.r.squared, 3),
+               `p-value` = a$`Pr(>F)`[1],
+               stringsAsFactors = FALSE,
+               row.names = NULL)
   }))
   best <- models %>% filter(Adjusted.R2 == max(Adjusted.R2))
   return(head(best, 1))
@@ -70,7 +78,7 @@ forward <- function(data, y) {
 
   # Format report
   Step <- c(1:nrow(model))
-  model <- cbind(Step, model)
+  model <- cbind(Step, model, row.names = NULL)
   v <- c(0)
   for (i in 2:nrow(model)) {
     delta <- (model$Adjusted.R2[i] - model$Adjusted.R2[i-1]) / model$Adjusted.R2[i-1] * 100
@@ -83,6 +91,7 @@ forward <- function(data, y) {
   lrFormula <- formula(paste(y, " ~ ",
                              paste(model$Selected, collapse=" + ")))
   final[["model"]] <- lm(lrFormula, data)
+  final[["summary"]] <- summary(final$model)
 
   return(final)
 }

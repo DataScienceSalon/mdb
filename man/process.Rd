@@ -4,23 +4,31 @@
 \alias{process}
 \title{process}
 \usage{
-process(mdb)
+process(data, y)
 }
 \arguments{
-\item{mdb}{Data frame containing movie rating data}
+\item{data}{Data frame containing movie rating data}
+
+\item{y}{Character string containing the name of the response variable}
 }
 \value{
-df Data frame of clean movie data
+List with two data frames, independent variables and the dependent
+variable.
 }
 \description{
-\code{process} Prepares the data for the bivariate analysis stage
+\code{process} Prepares the data for the bivariate analysis stage. Filters
+out non-essential data, outliers and splits the data set into a set of
+dependent variables and set with the response variable.
 }
 \seealso{
-Other movies functions: \code{\link{back}},
-  \code{\link{bivariate}}, \code{\link{forward}},
+Other movies functions: \code{\link{associate}},
+  \code{\link{back}}, \code{\link{correlate}},
+  \code{\link{evalBackwardModel}},
+  \code{\link{evalForwardModel}}, \code{\link{evaluate}},
+  \code{\link{forward}}, \code{\link{fullModel}},
   \code{\link{multivariateQuant}},
   \code{\link{preprocess}},
-  \code{\link{regressionAnalysis}}, \code{\link{response}},
+  \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }

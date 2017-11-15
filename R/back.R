@@ -25,11 +25,12 @@ evalBackwardModel <- function(data, y, predictors) {
     p
   })
   models <- rbindlist(lapply(seq_along(predictorSet), function(x) {
-    newPredictors <- predictorSet[[x]][predictorSet[[x]] != predictorSet[[x]]$omit]
-    lrFormula <- formula(paste(y, " ~ ",  nwePredictors, collapse=" + "))
-    mod <- lm(lrFormula, data)
+    newPredictors <- predictorSet[[x]][predictorSet[[x]] != predictorSet[[x]]$omit]$predictors
+    lrFormula <- formula(paste(y, " ~ ",  paste(newPredictors, collapse=" + ")))
+    s <- summary(lm(lrFormula, data))
     data.frame(Removed = predictorSet[[x]]$omit,
-               Adjusted.R2 = summary(mod)$adj.r.squared,
+               Predictors = length(newPredictors),
+               Adjusted.R2 = s$adj.r.squared,
                stringsAsFactors = FALSE)
   }))
   best <- models %>% filter(Adjusted.R2 == max(Adjusted.R2))
@@ -63,7 +64,7 @@ back <- function(data, y, alpha = 0.05) {
   t <- anova(lm(lrFormula, data = data))
   t$Predictor <- rownames(t)
   remove <- head(t %>% filter(t$`Pr(>F)` < alpha) %>% arrange(desc(`Pr(>F)`)) %>% select(Predictor), 1)
-  while()
+
   baseModel <- summary(lm(lrFormula, data))
   newAdjR2 <- baseModel$adj.r.squared
 

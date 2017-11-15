@@ -13,11 +13,14 @@ univariate(mdb)
 \code{univariate} Performs univariate analysis of variables
 }
 \seealso{
-Other movies functions: \code{\link{back}},
-  \code{\link{bivariate}}, \code{\link{forward}},
+Other movies functions: \code{\link{associate}},
+  \code{\link{back}}, \code{\link{correlate}},
+  \code{\link{evalBackwardModel}},
+  \code{\link{evalForwardModel}}, \code{\link{evaluate}},
+  \code{\link{forward}}, \code{\link{fullModel}},
   \code{\link{multivariateQuant}},
   \code{\link{preprocess}}, \code{\link{process}},
-  \code{\link{regressionAnalysis}}, \code{\link{response}},
+  \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}
 }

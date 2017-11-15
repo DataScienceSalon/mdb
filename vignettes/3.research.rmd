@@ -1,0 +1,8 @@
+# Part 3: Research question
+The underlying intent of this analysis was to determine the factors that most influence box office success for a film. Since box office revenue was not among the variables included in the raw data set, the first task was to determine which of the selected (or derived) variables would stand as a proxy for box office success. As such the first research question is concretely stated as follows:
+> Which of the selected or derived variables is most highly associated / correlated with total lifetime box office revenue
+
+Once this proxy response variable was determined, the features that are most highly associated / correlated with this response variable were examined via the following research question.
+> Which features are most highly associated / correlated with the proxy response for box office success
+
+* * *

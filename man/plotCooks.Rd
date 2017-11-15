@@ -4,12 +4,12 @@
 \alias{plotCooks}
 \title{plotCooks}
 \usage{
-plotCooks(mod, yLab)
+plotCooks(mod, mName)
 }
 \arguments{
 \item{mod}{Linear model object}
 
-\item{yLab}{Capital case character string for response variable}
+\item{mName}{Capital case character string for the model name}
 }
 \value{
 cooks Cooks distance plot for residuals

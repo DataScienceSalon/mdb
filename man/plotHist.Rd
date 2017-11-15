@@ -4,7 +4,7 @@
 \alias{plotHist}
 \title{plotHist}
 \usage{
-plotHist(data, xLab = NULL, yLab, title = NULL)
+plotHist(data, xLab = NULL, yLab, plotTitle = NULL)
 }
 \arguments{
 \item{data}{Data frame containing a single numeric variable}
@@ -13,7 +13,7 @@ plotHist(data, xLab = NULL, yLab, title = NULL)
 
 \item{yLab}{Capital case character string describing y is being printed}
 
-\item{title}{Capital case character string for the title of the plot}
+\item{plotTitle}{Capital case character string for the plotTitle of the plot}
 }
 \value{
 List containing a summary statistics and a histogram

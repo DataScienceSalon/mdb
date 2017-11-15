@@ -1,0 +1,7 @@
+# Part 6: Prediction
+
+NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk"
+button above. Make sure that your code is visible in the project you submit.
+Delete this note when before you submit your work.
+
+* * *

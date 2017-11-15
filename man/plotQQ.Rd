@@ -4,7 +4,7 @@
 \alias{plotQQ}
 \title{plotQQ}
 \usage{
-plotQQ(data, xLab = NULL, yLab, title = NULL)
+plotQQ(data, xLab = NULL, yLab, plotTitle = NULL)
 }
 \arguments{
 \item{data}{Data frame or vector containing a single numeric variable}
@@ -13,7 +13,7 @@ plotQQ(data, xLab = NULL, yLab, title = NULL)
 
 \item{yLab}{Capital case character string containing the name of the y variable}
 
-\item{title}{Capital case character string for the title of the plot}
+\item{plotTitle}{Capital case character string for the title of the plot}
 }
 \value{
 List containing a summary statistics and QQ plot

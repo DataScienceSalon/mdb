@@ -2,18 +2,26 @@
 % Please edit documentation in R/back.R
 \name{back}
 \alias{back}
-\title{back}
+\title{backward}
 \usage{
-back(movies)
+back(data, y, alpha = 0.05)
+}
+\arguments{
+\item{data}{Data frame containing the full model#'}
+
+\item{y}{Character string containing the name of the response variable}
 }
 \description{
-\code{back} Creates prediction model using backward elimination
+\code{backward} Creates prediction model using backward elimination
 }
 \seealso{
-Other movies functions: \code{\link{bivariate}},
-  \code{\link{forward}}, \code{\link{multivariateQuant}},
+Other movies functions: \code{\link{associate}},
+  \code{\link{correlate}}, \code{\link{evalBackwardModel}},
+  \code{\link{evalForwardModel}}, \code{\link{evaluate}},
+  \code{\link{forward}}, \code{\link{fullModel}},
+  \code{\link{multivariateQuant}},
   \code{\link{preprocess}}, \code{\link{process}},
-  \code{\link{regressionAnalysis}}, \code{\link{response}},
+  \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }

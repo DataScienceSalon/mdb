@@ -4,16 +4,24 @@
 \alias{forward}
 \title{forward}
 \usage{
-forward(movies)
+forward(data, y)
+}
+\arguments{
+\item{data}{Data frame containing the full model}
+
+\item{y}{Character string containing the name of the response variable}
 }
 \description{
 \code{forward} Creates prediction model using forward selection
 }
 \seealso{
-Other movies functions: \code{\link{back}},
-  \code{\link{bivariate}}, \code{\link{multivariateQuant}},
+Other movies functions: \code{\link{associate}},
+  \code{\link{back}}, \code{\link{correlate}},
+  \code{\link{evalBackwardModel}},
+  \code{\link{evalForwardModel}}, \code{\link{evaluate}},
+  \code{\link{fullModel}}, \code{\link{multivariateQuant}},
   \code{\link{preprocess}}, \code{\link{process}},
-  \code{\link{regressionAnalysis}}, \code{\link{response}},
+  \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }

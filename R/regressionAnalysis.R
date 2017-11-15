@@ -65,11 +65,11 @@ regressionAnalysis <- function(mod, mName, yVar, yLab) {
   tests[["normal_res"]] <- shapiro.test(res)
 
   # Equal Variance Test (Levene's assumes Normality)
-  tests[["equal_variance"]] <- ncvTest(mod)
+  tests[["equal_variance"]] <- car::ncvTest(mod)
 
   # Multi-collinearity if greater than 1 variable
   if (length(mod$model) > 2) {
-    tests[["collinearity"]] <- vif(mod)
+    tests[["collinearity"]] <- car::vif(mod)
   }
 
   # Correlation Test (ct) if more than 1 factor and all numeric

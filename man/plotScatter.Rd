@@ -4,7 +4,7 @@
 \alias{plotScatter}
 \title{plotScatter}
 \usage{
-plotScatter(data, xLab, yLab, title = NULL)
+plotScatter(data, xLab, yLab, plotTitle = NULL)
 }
 \arguments{
 \item{data}{Data frame containing the quantitative variables}
@@ -13,7 +13,7 @@ plotScatter(data, xLab, yLab, title = NULL)
 
 \item{yLab}{Capital case character string containing the name of the y variable}
 
-\item{title}{Capital case character string for title of plot}
+\item{plotTitle}{Capital case character string for title of plot}
 }
 \value{
 Scatterplot object

@@ -4,14 +4,16 @@
 \alias{regressionAnalysis}
 \title{regressionAnalysis}
 \usage{
-regressionAnalysis(mod, xLab, yLab)
+regressionAnalysis(mod, mName, yVar, yLab)
 }
 \arguments{
 \item{mod}{Linear model}
 
-\item{xLab}{Capitalized character string for the categorical variable}
+\item{mName}{Capitalized character string for the name of the linear model}
 
-\item{yLab}{Capitalized character string for the quantitative variable}
+\item{yVar}{Character string containing the name of the dependent variable}
+
+\item{yLab}{Capitalized character string for the dependent variable}
 }
 \value{
 analysis plots, summary statistics, test results and interpretive text
@@ -20,11 +22,14 @@ analysis plots, summary statistics, test results and interpretive text
 \code{regressionAnalysis} Performs regression analysis
 }
 \seealso{
-Other movies functions: \code{\link{back}},
-  \code{\link{bivariate}}, \code{\link{forward}},
+Other movies functions: \code{\link{associate}},
+  \code{\link{back}}, \code{\link{correlate}},
+  \code{\link{evalBackwardModel}},
+  \code{\link{evalForwardModel}}, \code{\link{evaluate}},
+  \code{\link{forward}}, \code{\link{fullModel}},
   \code{\link{multivariateQuant}},
   \code{\link{preprocess}}, \code{\link{process}},
-  \code{\link{response}}, \code{\link{univariateQual}},
+  \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }
 \author{

@@ -109,7 +109,7 @@ plotHist <- function(data, xLab = NULL, yLab, plotTitle = NULL) {
 
   hist <- ggplot2::ggplot(data = data,
                         ggplot2::aes(x = data[[1]])) +
-    ggplot2::geom_histogram(position ='identity', color = "white", fill = "palegreen4") +
+    ggplot2::geom_histogram(position ='identity', color = "white", fill = "palegreen4", bins = 30) +
     ggplot2::theme_minimal(base_size = 24) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans"),
                    axis.title.x = ggplot2::element_blank(),

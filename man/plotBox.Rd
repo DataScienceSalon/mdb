@@ -4,18 +4,18 @@
 \alias{plotBox}
 \title{plotBox}
 \usage{
-plotBox(data, xLab = NULL, yLab, title = NULL)
+plotBox(data, xLab = NULL, yLab, plotTitle = NULL)
 }
 \arguments{
 \item{data}{Data frame or vector containing two columns:
-1: Categorical independent variable (x)
-2: Numeric response variable (y)}
+1: Numeric response variable (y)
+2: Categorical independent variable (x)}
 
 \item{xLab}{Capital case character string containing the name of the x variable (optional)}
 
 \item{yLab}{Capital case character string containing the name of the y variable}
 
-\item{title}{Character case character string containing the title for the plot}
+\item{plotTitle}{Character case character string containing the title for the plot}
 }
 \value{
 List containing a contingency table and a stacked bar plot.

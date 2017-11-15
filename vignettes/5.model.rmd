@@ -1,0 +1,57 @@
+# Part 5: Modeling
+Developing a linear model that can be used to effectively predict box office performance is the focus of this section. As such, full model feature selection, model selection, model diagnostics, and model interpretation are covered here in detail.
+
+## Full Model Feature Selection.
+In the prior section, association and correlation tests were conducted with a 95% confidence level. All categorical variables would remain in the model. The following quantitative variables were removed because they were redundant with other variables with higher correlation with dependent variable:
+* cast_experience - redundant with the log of caset experience
+* cast_votes - redundant with cast_votes_log, which has a higher correlation
+* director_experience - redundant with the log transformation of director experience
+* imdb_num_votes - redundant with the dependent variable, its log transformation
+* imdb_rating - redundant aspect of movie performance.
+* runtime - redundant with runtime log variable
+* scores_log - redundant with the scores variable
+* thtr_days - redundant with the log transformation of the thtr_days variable
+* scores - redundant with IMDB rating
+* audience score - redundant with IMDB rating
+
+Thus, the full model is presented.
+
+`r kfigr::figr(label = "fullModel", prefix = TRUE, link = TRUE, type="Table")`: Full Model
+```{r fullModel}
+mData <- process(mdb, "imdb_num_votes_log")
+fm <- fullModel(mData, aData$tests, cData$tests)
+knitr::kable(fm$report, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+## Model Selection
+Starting with the full model described above, both forward selection and backward elimination methods were employed to determine if two different models emerged from the process, then to evaluate the performance of those models.
+
+### Forward Selection
+The forward selection process begins with a null model then all variables are added to the model, one-by-one, and the model that provides the greatest improvement in adjusted R-squared is selected. If the adjusted R-squared for this set was greater than the best R-squared for the model, it was selected.  The process repeats until all predictors were evaluated. `r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")` provides the the forward selection process and the summary statistics for each step.
+
+`r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")`: Forward Selection Prediction Model
+```{r forward, results = "html"}
+fs <- forward(fm$all, y = "imdb_num_votes_log")
+analysis <- regressionAnalysis(fs$model, mName = "Forward Selection Model", yVar  = 'imdb_num_votes_log',
+                               yLab = "Log IMDB Votes")
+knitr::kable(fs$steps, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+`r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")` Forward Selection Process
+
+#### Model Overview
+The model is summarized as follows:
+$$y_i = (\beta$$
+
+
+
+
+
+`r kfigr::figr(label = "back", prefix = TRUE, link = TRUE, type="Table")`: Backward Elimination Prediction Model
+```{r back, results = "html"}
+#backStep <- movies::back(movies)
+#summary(backStep)
+```
+
+* * *

@@ -4,12 +4,12 @@
 \alias{plotResLeverage}
 \title{plotResLeverage}
 \usage{
-plotResLeverage(mod, yLab)
+plotResLeverage(mod, mName)
 }
 \arguments{
 \item{mod}{Linear model object}
 
-\item{yLab}{Capital case character string for response variable}
+\item{mName}{Capital case character string for the model name}
 }
 \value{
 resLeverage Residual vs. Leverage Plot
