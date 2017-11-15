@@ -35,10 +35,11 @@ preprocess <- function(movies, mdb2) {
   mdb1 <- mdb1 %>% mutate(thtr_days = as.numeric(dvd_rel_date - thtr_rel_date))
 
   mdb1 <- mdb1[(mdb1$thtr_days > 0),]
+  mdb1 <- mdb1 %>% mutate(thtr_days_log = log2(thtr_days))
 
 
   #---------------------------------------------------------------------------#
-  #                        Create Season and Month                            #
+  #                        Create Various Mutations                           #
   #---------------------------------------------------------------------------#
 
   mdb1 <- mdb1 %>% mutate(
@@ -61,7 +62,8 @@ preprocess <- function(movies, mdb2) {
                                                                             ifelse(thtr_rel_month == 11, "Nov",
                                                                                    "Dec"))))))))))),
     scores = 10 * imdb_rating + critics_score + audience_score,
-    scores_log = log2(10 * imdb_rating + critics_score + audience_score))
+    scores_log = log2(10 * imdb_rating + critics_score + audience_score),
+    runtime_log = log2(runtime))
 
   mdb1$thtr_rel_month <- factor(mdb1$thtr_rel_month, levels = c("Jan", "Feb", "Mar", "Apr",
                                                               "May", "Jun", "Jul", "Aug",

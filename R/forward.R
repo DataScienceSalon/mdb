@@ -5,9 +5,9 @@
 #------------------------------------------------------------------------------#
 #                          Evaluate Models Univariate                          #
 #------------------------------------------------------------------------------#
-#' evaluate
+#' evalForwardModel
 #'
-#' \code{evaluate} Evaluates linear models for all remaining predictors, one
+#' \code{evalForwardModel} Evaluates linear models for all remaining predictors, one
 #' at a time, then returns the variable and adjusted R2 score for the best
 #' model.
 #'
@@ -21,18 +21,18 @@
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-evalModel <- function(data, model, y, remaining) {
+evalForwardModel <- function(data, model, y, remaining) {
 
-  models <- rbindlist(lapply(remaining, function(x) {
-    newPredictors <- c(model$Selected, x)
+  models <- rbindlist(lapply(seq_along(remaining), function(x) {
+    newPredictors <- c(model$Selected, remaining[x])
     lrFormula <- formula(paste(y, " ~ ",  paste(colnames(data[newPredictors]), collapse=" + ")))
-    mod <- summary(lm(lrFormula, data))
-    data.frame(Selected = x,
-               Adjusted.R2 = mod$adj.r.squared,
+    mod <- lm(lrFormula, data)
+    data.frame(Selected = remaining[x],
+               Adjusted.R2 = summary(mod)$adj.r.squared,
                stringsAsFactors = FALSE)
   }))
   best <- models %>% filter(Adjusted.R2 == max(Adjusted.R2))
-  return(best)
+  return(head(best, 1))
 }
 #------------------------------------------------------------------------------#
 #                          Forward Select Main Function                        #
@@ -49,6 +49,8 @@ evalModel <- function(data, model, y, remaining) {
 #' @export
 forward <- function(data, y) {
 
+  final <- list()
+
   # Initialize key variables
   bestAdjR2 <- newAdjR2 <- 0
   predictors <- colnames(data)
@@ -58,18 +60,29 @@ forward <- function(data, y) {
 
   # Iterate until all predictors are evaluated and return the variables for the best model
   while (length(remaining) > 0) {
-    best <- evalModel(data, model, y, remaining)
-    remaining <- remaining[!(remaining == best$Selected)]
-    if (best$Adjusted.R2 > bestAdjR2) {
+    best <- evalForwardModel(data, model, y, remaining)
+    remaining <- remaining[remaining != best$Selected]
+    if (best$Adjusted.R2[1] > bestAdjR2) {
       model <- rbind(model, best)
       bestAdjR2 <- best$Adjusted.R2
     }
   }
 
+  # Format report
+  Step <- c(1:nrow(model))
+  model <- cbind(Step, model)
+  v <- c(0)
+  for (i in 2:nrow(model)) {
+    delta <- (model$Adjusted.R2[i] - model$Adjusted.R2[i-1]) / model$Adjusted.R2[i-1] * 100
+    v <- c(v, delta)
+  }
+  model$`Pct Chg` <- round(v, 2)
+  final[["steps"]] <- model
+
   # Return final model
   lrFormula <- formula(paste(y, " ~ ",
-                             paste(colnames(data)[model$Selected], collapse=" + ")))
-  finalModel <- lm(lrFormula, data)
+                             paste(model$Selected, collapse=" + ")))
+  final[["model"]] <- lm(lrFormula, data)
 
-  return(finalModel)
+  return(final)
 }

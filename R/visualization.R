@@ -169,8 +169,8 @@ plotQQ <- function(data, xLab = NULL, yLab, plotTitle = NULL) {
 #' \code{plotBox} Renders a single or grouped box plot.
 #'
 #' @param data Data frame or vector containing two columns:
-#'          1: Categorical independent variable (x)
-#'          2: Numeric response variable (y)
+#'          1: Numeric response variable (y)
+#'          2: Categorical independent variable (x)
 #' @param xLab Capital case character string containing the name of the x variable (optional)
 #' @param yLab Capital case character string containing the name of the y variable
 #' @param plotTitle Character case character string containing the title for the plot
@@ -278,20 +278,21 @@ plotScatter <- function(data, xLab, yLab, plotTitle = NULL) {
 #' \code{plotResQQ} Plots regression diagnostics
 #'
 #' @param mod Linear model object
-#' @param yLab Capital case character string for response variable
+#' @param mName Capital case character string for the model name
+#' @param xLab Capital case character string for the independent variable
 #'
 #' @return resQQ Residual Normal QQ Plot
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family visualization functions
 #' @export
-plotResQQ <- function(mod, yLab) {
+plotResQQ <- function(mod, mName, xLab) {
 
   # Obtain diagnostics and render plot
   resQQ <- lindia::gg_diagnose(mod, theme = ggplot2::theme_minimal(), plot.all = FALSE)
   resQQ <- resQQ$qqplot +
     ggplot2::theme_minimal(base_size = 24) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
-    ggplot2::ggtitle(paste("Normal-QQ Plot:", yLab))
+    ggplot2::ggtitle(paste0(mName, ": Normal-QQ Plot"))
 
   return(resQQ)
 }
@@ -330,20 +331,20 @@ plotResFit <- function(mod, yLab) {
 #' \code{plotResLeverage} Plots regression diagnostics
 #'
 #' @param mod Linear model object
-#' @param yLab Capital case character string for response variable
+#' @param mName Capital case character string for the model name
 #'
 #' @return resLeverage Residual vs. Leverage Plot
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family visualization functions
 #' @export
-plotResLeverage <- function(mod, yLab) {
+plotResLeverage <- function(mod, mName) {
 
   # Obtain diagnostics and render plot
   resLeverage <- lindia::gg_diagnose(mod, theme = ggplot2::theme_minimal(), plot.all = FALSE)
   resLeverage <- resLeverage$resleverage +
     ggplot2::theme_minimal(base_size = 24) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
-    ggplot2::ggtitle(paste("Residuals vs. Leverage:", yLab))
+    ggplot2::ggtitle(paste0(mName, ": Residuals vs. Leverage"))
 
   return(resLeverage)
 }
@@ -356,20 +357,20 @@ plotResLeverage <- function(mod, yLab) {
 #' \code{plotCooks} Plots cooks distance
 #'
 #' @param mod Linear model object
-#' @param yLab Capital case character string for response variable
+#' @param mName Capital case character string for the model name
 #'
 #' @return cooks Cooks distance plot for residuals
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family visualization functions
 #' @export
-plotCooks <- function(mod, yLab) {
+plotCooks <- function(mod, mName) {
 
   # Obtain diagnostics and render plot
   cooks <- lindia::gg_diagnose(mod, theme = ggplot2::theme_minimal(), plot.all = FALSE)
   cooks <- cooks$cooksd +
     ggplot2::theme_minimal(base_size = 24) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
-    ggplot2::ggtitle(paste("Cooks Distance:", yLab))
+    ggplot2::ggtitle(paste0(mName, ": Cooks Distance"))
 
   return(cooks)
 }
@@ -382,26 +383,41 @@ plotCooks <- function(mod, yLab) {
 #' \code{plotResAll} Plots cooks distance
 #'
 #' @param mod Linear model object
+#' @param mName Character string for model name
+#' @param yLab Character string for the y-label
 #'
 #' @return list containing ressidual v predictor plots
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family visualization functions
 #' @export
-plotResAll <- function(mod) {
+plotResAll <- function(mod, mName = NULL, yLab = NULL) {
 
   # Obtain diagnostics and render plot
-  p <- lindia::gg_resX(mod, plot.all = FALSE)
+  plots <- lindia::gg_resX(mod, plot.all = FALSE)
 
-  resAll <- lapply(p, function(x) {
-    df <- data.frame(x = p[[1]][[1]][[1]],
-                     y = p[[1]][[1]][[2]])
-    title <- p[[1]][[9]][[1]]
-    xLab <- p[[1]][[9]][[3]]
-    yLab <- p[[1]][[9]][[4]]
-    if (class(df$x) %in% c("character", "factor")) {
-      plotBox(data = df, xLab = xLab, yLab = yLab)
+  resAll <- lapply(plots, function(p) {
+
+    b <- ggplot_build(p)
+    if (is.null(b$data[[1]]$y)) {
+
+      # Render box plot
+      xVar <- p$labels$x
+      xData <- p$data[colnames(p$data) == xVar]
+      df <- data.frame(y = mod$residuals,
+                       x = xData)
+      plotBox(data = df, xLab = xVar, yLab = "Residuals",
+              plotTitle = paste0(mName, ": Residuals vs. ", xVar))
+
     } else {
-      plotScatter(data = df, xLab = xLab, yLab = yLab)
+
+      # Render scatterplot
+      p + ggplot2::geom_point() +
+        ggplot2::geom_smooth() +
+        ggplot2::theme_minimal(base_size = 24) +
+        ggplot2::geom_smooth(method = lm, se = FALSE) +
+        ggplot2::theme(text = ggplot2::element_text(family="Open Sans"),
+                       legend.position = "right") +
+        ggplot2::labs(y = "Residuals")
     }
   })
 

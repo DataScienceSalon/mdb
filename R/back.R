@@ -1,62 +1,80 @@
 #==============================================================================#
-#                                     back                                     #
+#                       Backward Elmination Regression                         #
 #==============================================================================#
-#' back
+
+#------------------------------------------------------------------------------#
+#                 Univariate Backward Elmination Regression                    #
+#------------------------------------------------------------------------------#
+#' evalBackwardModel
 #'
-#' \code{back} Creates prediction model using backward elimination
+#' \code{evalBackwardModel} Performs step-wise backward elimination of univariate
+#' linear regression models.  From the full model, each variable is removed
+#' from the model, one-at-a-time, and the model is re-evaluated. The model
+#' with the highest adjusted r-squared is retained.
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-back <- function(movies) {
+evalBackwardModel <- function(data, y, predictors) {
 
-
-  evalModel <- function(data, predictors) {
-
-    predictorSet <- lapply(predictors, function(x) {
-      p <- list(
-        omit = x,
-        predictors = predictors[(!(predictors %in% x))]
-      )
-      p
-    })
-    model <- rbindlist(lapply(seq_along(predictorSet), function(x) {
-      lrFormula <- formula(paste("audience_score ~ ",  paste(colnames(data)[predictorSet[[x]]$predictors], collapse=" + ")))
-      eval <- summary(lm(lrFormula, data))
-      data.frame(iOmit = predictorSet[[x]]$omit,
-                 Adjusted.R2 = eval$adj.r.squared,
-                 stringsAsFactors = FALSE)
-    }))
-    model <- model %>% filter(Adjusted.R2 == max(Adjusted.R2))
-    score <- list(
-      omit = model$iOmit,
-      AR2 = model$Adjusted.R2[1]
+  predictorSet <- lapply(predictors, function(x) {
+    p <- list(
+      omit = x,
+      predictors = predictors[(!(predictors %in% x))]
     )
-    return(score)
-  }
+    p
+  })
+  models <- rbindlist(lapply(seq_along(predictorSet), function(x) {
+    newPredictors <- predictorSet[[x]][predictorSet[[x]] != predictorSet[[x]]$omit]
+    lrFormula <- formula(paste(y, " ~ ",  nwePredictors, collapse=" + "))
+    mod <- lm(lrFormula, data)
+    data.frame(Removed = predictorSet[[x]]$omit,
+               Adjusted.R2 = summary(mod)$adj.r.squared,
+               stringsAsFactors = FALSE)
+  }))
+  best <- models %>% filter(Adjusted.R2 == max(Adjusted.R2))
+  return(head(best, 1))
+}
 
 
-  data <- movies %>% select(title_type, genre, runtime,
-                            mpaa_rating, thtr_rel_month, dvd_rel_month,
-                            imdb_rating, imdb_num_votes, critics_score,
-                            best_pic_nom, best_pic_win, best_actor_win,
-                            best_actress_win, best_dir_win, top200_box,
-                            audience_score)
 
-  bestAR2 <- 0
-  omits <- list()
-  predictors <- c(1:15)
-  lrFormula <- formula(paste("audience_score ~ ",  paste(colnames(data)[predictors], collapse=" + ")))
+#------------------------------------------------------------------------------#
+#                       Backward Elmination Regression                         #
+#------------------------------------------------------------------------------#
+#' backward
+#'
+#' \code{backward} Creates prediction model using backward elimination
+#'
+#' @param data Data frame containing the full model#'
+#' @param y Character string containing the name of the response variable
+#'
+#' @author John James, \email{jjames@@datasciencesalon.org}
+#' @family movies functions
+#' @export
+back <- function(data, y, alpha = 0.05) {
+
+  final <- list()
+
+  # Initialize key variables
+  predictors <- colnames(data)
+  predictors <- predictors[!(predictors == y)]
+  lrFormula <- formula(paste(y, " ~ ",
+                             paste(predictors, collapse=" + ")))
+  t <- anova(lm(lrFormula, data = data))
+  t$Predictor <- rownames(t)
+  remove <- head(t %>% filter(t$`Pr(>F)` < alpha) %>% arrange(desc(`Pr(>F)`)) %>% select(Predictor), 1)
+  while()
   baseModel <- summary(lm(lrFormula, data))
-  newAR2 <- baseModel$adj.r.squared
-  while(bestAR2 < newAR2) {
-    bestAR2 <- newAR2
-    score <- evalModel(data, predictors)
-    omits <- c(omits, score$omit)
-    newAR2 <- score$AR2
-    predictors <- predictors[(!(predictors %in% omits))]
+  newAdjR2 <- baseModel$adj.r.squared
+
+  while(length(removed) < length(predictors)) {
+    bestAdjR2 <- newAdjR2
+    best <- evalBackwardModel(data, y, predictors)
+    removed <- c(removed, best$Removed)
   }
-  lrFormula <- formula(paste("audience_score ~ ",  paste(colnames(data)[predictors], collapse=" + ")))
+
+  finalPredictors <- predictors[!(predictors %in% removed)]
+  lrFormula <- formula(paste(y, " ~ ",  finalPredictors, collapse=" + "))
   finalModel <- lm(lrFormula, data)
 
 

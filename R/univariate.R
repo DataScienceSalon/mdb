@@ -36,7 +36,11 @@ univariate <- function(mdb) {
                                     yLab = "Cast Experience", units = "log(films)")
   runtime <- univariateQuant(data.frame(mdb$title, mdb$runtime),
                              yLab = "Runtime", units = "minutes")
+  runtimeLog <- univariateQuant(data.frame(mdb$title, mdb$runtime_log),
+                             yLab = "Log Runtime", units = "minutes")
   thtrDays <- univariateQuant(data.frame(mdb$title, mdb$thtr_days),
+                              yLab = "Days in Theatre", units = "days")
+  thtrDaysLog <- univariateQuant(data.frame(mdb$title, mdb$thtr_days_log),
                               yLab = "Days in Theatre", units = "days")
   imdbVotes <- univariateQuant(data.frame(mdb$title, mdb$imdb_num_votes),
                                yLab = "IMDB Votes", units = "votes")
@@ -78,7 +82,9 @@ univariate <- function(mdb) {
     castExperience = castExperience,
     castExperienceLog = castExperienceLog,
     runtime = runtime,
+    runtimeLog = runtimeLog,
     thtrDays = thtrDays,
+    thtrDaysLog = thtrDaysLog,
     imdbVotes = imdbVotes,
     imdbVotesLog = imdbVotesLog,
     imdbRating = imdbRating,

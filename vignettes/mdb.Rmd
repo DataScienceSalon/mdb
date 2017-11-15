@@ -162,21 +162,22 @@ edaUni$genre$plot
 `r kfigr::figr(label = "genre", prefix = TRUE, link = TRUE, type="Figure")`: Films by genre
 
 #### MPAA Rating
-Rated R films accounted for over `r round(edaUni$mpaa$stats$Proportion[5] * 100, -1)`% of the releases, followed by PG and PG-13. Collectively, R, PG, and PG-13 rated films represent `r round(sum(head(edaUni$mpaa$stats %>% arrange(desc(Proportion)) %>% select(Proportion), 3)) * 100, -1)`% of the films in the sample. NC-17 films were excluded from this analysis.
+Rated R films accounted for over `r round(edaUni$mpaa$stats$Proportion[1] * 100, -1)`% of the releases, followed by PG and PG-13. Collectively, R, PG, and PG-13 rated films represent `r round(sum(head(edaUni$mpaa$stats %>% arrange(desc(Proportion)) %>% select(Proportion), 3)) * 100, -1)`% of the films in the sample. NC-17 films were excluded from this analysis.
 ```{r mpaa}
 edaUni$mpaa$plot
 ```
 `r kfigr::figr(label = "mpaa", prefix = TRUE, link = TRUE, type="Figure")`: Films by MPAA Rating
 
 #### Best Picture 
-The best picture nomination variable proved to be among the top five most influential categorical variables.
-```{r a_best_picture}
+The best picture nomination variable proved to be among the top five most influential categorical variables. Typically, variables which such inbalance would be under consideration for exclusion as it might bias the linear regression slopes. The decision in this case was to assume that with random sampling, these ratios reflected the true population proportions, and to keep the variables for further analysis during the modeling stage.
+
+```{r best_picture}
 gridExtra::grid.arrange(edaUni$bestPicNom$plot, edaUni$bestPicWin$plot, ncol = 2)
 ```
-`r kfigr::figr(label = "a_best_picture", prefix = TRUE, link = TRUE, type="Figure")`: Best picture nominations and wins
+`r kfigr::figr(label = "best_picture", prefix = TRUE, link = TRUE, type="Figure")`: Best picture nominations and wins
 
 #### Month of Theatrical Release
-The plurality of features in the sample (`r sum(edaUni$month$stats$Proportion[c(1,6,10,12)])*100`%) were released during the months of January, June, October and December.  
+Though the plurality of features in the sample (`r sum(edaUni$month$stats$Proportion[c(1,6,10,12)])*100`%) were released during the months of January, June, October and December, the distribution of theatrical release months appeared fairly balanced within the sample.
 ```{r month}
 edaUni$month$plot
 ```
@@ -629,7 +630,6 @@ Association tests were conducted between the categorical variables and the log n
 ```{r association}
 mData <- process(mdb, y = "imdb_num_votes_log")
 aData <- associate(x = mData$categorical, y = mData$dependent, yLab = "Log IMDB Votes")
-aDataOneWay <- aData %>% filter()
 knitr::kable(head(aData$tests, 10), digits = 2) %>%  
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
@@ -643,7 +643,7 @@ The correlations between the quantitative variables and the log number of IMDB v
 `r kfigr::figr(label = "correlation2", prefix = TRUE, link = TRUE, type="Table")` Top quantitative variables most highly correlated  with the log number of IMDB votes.
 ```{r correlation2}
 mData <- process(mdb, "imdb_num_votes_log")
-cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log IMDB Votes", plot = FALSE)
+cData <- correlate(x = mData, y = mData$dependent, yLab = "Log IMDB Votes", plot = FALSE)
 knitr::kable(head(cData$tests, 10), digits = 2) %>%  
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
@@ -657,45 +657,50 @@ Developing a linear model that can be used to effectively predict box office per
 
 ## Full Model Feature Selection.
 In the prior section, association and correlation tests were conducted with a 95% confidence level. All categorical variables would remain in the model. The following quantitative variables were removed because they were redundant with other variables with higher correlation with dependent variable:  
-* imdb_num_votes - redundant with the dependent variable, its log transformation
-* cast_votes - redundant with cast_votes_log, which has a higher correlation
+* cast_experience - redundant with the log of caset experience  
+* cast_votes - redundant with cast_votes_log, which has a higher correlation  
+* director_experience - redundant with the log transformation of director experience  
+* imdb_num_votes - redundant with the dependent variable, its log transformation  
+* runtime - redundant with runtime log variable  
+* scores_log - redundant with the scores variable  
+* thtr_days - redundant with the log transformation of the thtr_days variable  
 
+A plot of the correlations among the remaining variables was rendered in `r kfigr::figr(label = "cplot", prefix = TRUE, link = TRUE, type="Figure")`. 
+
+```{r cplot}
+cData <- correlate(x = fm$quantitative, y = fm$dependent, yLab = "Log IMDB Votes", plot = TRUE)
+```
+`r kfigr::figr(label = "cplot", prefix = TRUE, link = TRUE, type="Figure")`: The correlations between the quantitative independent variables
+
+Thus, a few more highly correlated variables were revealed and the following were to avoid multicollinearity in the linear model.  
+* scores - too highly correlated with IMDB rating
+* audience score - too highly correlated with IMDB rating
+
+Thus, the full model is presented. 
 
 `r kfigr::figr(label = "fullModel", prefix = TRUE, link = TRUE, type="Table")`: Full Model
 ```{r fullModel}
-fm <- fullModel(aData$tests, cData$tests)
-knitr::kable(fm, digits = 2) %>%  
+mData <- process(mdb, "imdb_num_votes_log")
+fm <- fullModel(mData, aData$tests, cData$tests)
+knitr::kable(fm$report, digits = 2) %>%  
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-
-The correlations between the quantitative variables are rendered to support the model selection process.
-
-```{r cplot}
-mData <- process(mdb, "imdb_num_votes_log")
-cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log IMDB Votes", plot = TRUE)
-```
-`r kfigr::figr(label = "cplot", prefix = TRUE, link = TRUE, type="Figure")` The correlations between the quantitative independent variables
-
-**Rationale**: For the purposes of model selection, all variables with an association or correlation p.value > 0.5 were included in the model. There was no effort made to eliminate variables with minor associations/correlations at this stage.  Including a variable, regardless of its degree of association/correlation allowed the model selection process to consider interactions between two or more variables that may not have been uncovered heretofore. 
 
 ## Model Selection
-Starting with the full model described above, both forward selection and backward elimination methods to determine if two different models emerged from the process, then to evaluate the performance of those models. 
-The correlation plot 
+Starting with the full model described above, both forward selection and backward elimination methods were employed to determine if two different models emerged from the process, then to evaluate the performance of those models. 
 
-`r kfigr::figr(label = "corrPlot", prefix = TRUE, link = TRUE, type="Table")` Top quantitative variables most highly correlated  with the log number of IMDB votes.
-```{r corrPlot}
-mData <- process(mdb, "imdb_num_votes_log")
-cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log IMDB Votes", plot = FALSE)
-knitr::kable(head(cData$tests, 10), digits = 2) %>%  
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
+### Forward Selection
+The forward selection process begins with a null model then all variables are added to the model, one-by-one, and the model that provides the greatest improvement in adjusted R-squared is selected. If the adjusted R-squared for this set is greater than the best R-squared for the model, it is selected.  The process repeats until all predictors have been evaluated.
 
 `r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")`: Forward Selection Prediction Model
 ```{r forward, results = "html"}
-#forwardSelection <- movies::forward(movies)
-#summary(forwardSelection)
+fs <- forward(fm$all, y = "imdb_num_votes_log")
+analysis <- regressionAnalysis(fs$model, mName = "Forward Selection Model", yVar  = 'imdb_num_votes_log',
+                               yLab = "Log IMDB Votes")
+knitr::kable(fs$steps, digits = 2) %>%  
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-
+`r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")` Forward Selection Process
 `r kfigr::figr(label = "back", prefix = TRUE, link = TRUE, type="Table")`: Backward Elimination Prediction Model
 ```{r back, results = "html"}
 #backStep <- movies::back(movies)
@@ -732,7 +737,7 @@ knitr::kable(codebook, align = 'l') %>%
 
 ## Appendix B: Univariate Analysis
 ### Best Director / Actor / Actress 
-As indicated in `r kfigr::figr(label = "a_best_actor", prefix = TRUE, link = TRUE, type="Figure")`, the percentages of films with best director, actor and actress oscars were `r edaUni$bestDirWin$stats$Proportion[2] * 100`%, `r edaUni$bestActorWin$stats$Proportion[2] * 100`%,  and `r edaUni$bestActressWin$stats$Proportion[2] * 100`%, respectively.  Again, these proportions indicate that oscar awards would not be a good predictor of movie popularity. The bivariate analysis will explore this further.
+As indicated in `r kfigr::figr(label = "a_best_actor", prefix = TRUE, link = TRUE, type="Figure")`, the percentages of films with best director, actor and actress oscars were `r edaUni$bestDirWin$stats$Proportion[2] * 100`%, `r edaUni$bestActorWin$stats$Proportion[2] * 100`%,  and `r edaUni$bestActressWin$stats$Proportion[2] * 100`%, respectively.  Again, the decision in this case was to assume that with random sampling, these ratios reflected the true population proportions, and to keep the variables for further analysis during the modeling stage.
 
 
 ```{r a_best_actor}
@@ -763,7 +768,7 @@ edaUni$mpaa$plot
 `r kfigr::figr(label = "a_mpaa", prefix = TRUE, link = TRUE, type="Figure")`: Films by MPAA Rating
 
 ### Month of Theatrical Release
-The plurality of features in the sample (`r sum(edaUni$month$stats$Proportion[c(1,6,10,12)])*100`%) were released during the months of January, June, October and December.  
+Though the plurality of features in the sample (`r sum(edaUni$month$stats$Proportion[c(1,6,10,12)])*100`%) were released during the months of January, June, October and December, the distribution of theatrical release months appeared fairly balanced within the sample.
 ```{r a_month}
 edaUni$month$plot
 ```

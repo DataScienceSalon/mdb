@@ -6,15 +6,16 @@
 #' \code{regressionAnalysis} Performs regression analysis
 #'
 #' @param mod Linear model
-#' @param xLab Capitalized character string for the categorical variable
-#' @param yLab Capitalized character string for the quantitative variable
+#' @param mName Capitalized character string for the name of the linear model
+#' @param yVar Character string containing the name of the dependent variable
+#' @param yLab Capitalized character string for the dependent variable
 #'
 #' @return analysis plots, summary statistics, test results and interpretive text
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-regressionAnalysis <- function(mod, xLab, yLab) {
+regressionAnalysis <- function(mod, mName, yVar, yLab) {
 
   #---------------------------------------------------------------------------#
   #                             Format Data                                   #
@@ -25,46 +26,36 @@ regressionAnalysis <- function(mod, xLab, yLab) {
   res <- mod$residuals
 
   #---------------------------------------------------------------------------#
+  #                                 Summary                                   #
+  #---------------------------------------------------------------------------#
+  overview <- summary(mod)
+
+  #---------------------------------------------------------------------------#
   #                                  Plots                                    #
   #---------------------------------------------------------------------------#
   plots <- list()
   # Linear Regression Plot
-  plots[["regression"]] <- plotScatter(data = mod$model, xLab = xLab, yLab = yLab, title = "Linear Regression")
+  plots[["regression"]] <- plotScatter(data = mod$model, xLab = mName, yLab = yLab,
+                                       plotTitle = paste0(mName, ": Linear Regression"))
 
   # Residuals vs Fitted
-  plots[["res_fitted"]] <- plotScatter(data = rvf, xLab = xLab, yLab = paste("Residuals:", yLab),
-                                    title = paste("Residuals vs. Fitted:", yLab, "by", xLab))
+  plots[["res_fitted"]] <- plotScatter(data = rvf, xLab = mName, yLab = "Residuals",
+                                       plotTitle = paste0(mName, ": Residuals vs. Fitted"))
   # Residuals vs Predictor
-  plots[["res_predictors"]] <- plotResAll(mod = mod)
+  plots[["res_predictors"]] <- plotResAll(mod = mod, mName, xLab)
 
   # Residuals Histogram
   plots[["res_hist"]] <- plotHist(data = as.data.frame(res), yLab = paste("Residuals:", yLab),
-                      title = paste("Distribution of Residuals:", yLab))
+                      plotTitle = paste("Distribution of Residuals:", yLab))
 
   # Residuals Normal QQ Plot
-  plots[["res_qq"]] <- plotResQQ(mod = mod, yLab = yLab)
+  plots[["res_qq"]] <- plotResQQ(mod = mod, mName, xLab = mName)
 
   # Residuals vs Leverage Plot
-  plots[["res_leverage"]] <- plotResLeverage(mod = mod, yLab = yLab)
+  plots[["res_leverage"]] <- plotResLeverage(mod = mod, mName = mName)
 
   # Cooks Distance
-  plots[["cooks"]] <- plotCooks(mod = mod, yLab = yLab)
-
-  # Correlation Plot
-  classes <- lapply(mod$model, class)
-  if ((isTRUE(grepl("numeric", classes))) & length(mod$model) > 1) {
-    mtx <- cor(mod$model)
-    col <- colorRampPalette(RColorBrewer::brewer.pal(11, "PiYG"))
-    plots[["correlation"]] <- corrplot::corrplot(mtx, method="color", col=col(200),
-             type="upper", order="hclust",
-             addCoef.col = "black", # Add coefficient of correlation
-             tl.col="black", tl.srt=45, #Text label color and rotation
-             # Combine with significance
-             #p.mat = p.mat, sig.level = 0.01, insig = "blank",
-             # hide correlation coefficient on the principal diagonal
-             diag=FALSE
-    )
-  }
+  plots[["cooks"]] <- plotCooks(mod = mod, mName = mName)
 
   #---------------------------------------------------------------------------#
   #                           Assumptions Tests                               #
@@ -74,14 +65,7 @@ regressionAnalysis <- function(mod, xLab, yLab) {
   tests[["normal_res"]] <- shapiro.test(res)
 
   # Equal Variance Test (Levene's assumes Normality)
-  if (class(mod$model[[2]]) %in% c("character", "factor")) {
-    p <- lindia::gg_resX(mod, plot.all = FALSE)
-    eqVar <- lapply(p, function(x) {
-      df <- data.frame(x = p[[1]][[1]][[2]],
-                       y = p[[1]][[1]][[1]])
-      car::leveneTest(y ~ x, data = df)
-    })
-  }
+  tests[["equal_variance"]] <- ncvTest(mod)
 
   # Multi-collinearity if greater than 1 variable
   if (length(mod$model) > 2) {
@@ -96,6 +80,7 @@ regressionAnalysis <- function(mod, xLab, yLab) {
 
   analysis <- list(
     mod = mod,
+    overview = overview,
     plots = plots,
     tests = tests
   )
