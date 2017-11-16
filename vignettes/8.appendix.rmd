@@ -550,29 +550,29 @@ edaUni$thtrDays$box
 ### Theatre Days
 This variable captured the number of days between theatrical and dvd release
 
-`r kfigr::figr(label = "a_thtr_days_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log number of theatre days summary statistics
-```{r a_thtr_days_log_stats}
-knitr::kable(edaUni$thtrDaysLog$stats, digits = 2) %>%
+`r kfigr::figr(label = "a_thtr_days_sqrt_stats", prefix = TRUE, link = TRUE, type="Table")`: Log number of theatre days summary statistics
+```{r a_thtr_days_sqrt_stats}
+knitr::kable(edaUni$thtrDaysSqrt$stats, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-```{r a_thtr_days_log_dist}
-gridExtra::grid.arrange(edaUni$thtrDaysLog$hist, edaUni$thtrDaysLog$qq, ncol = 2)
+```{r a_thtr_days_sqrt_dist}
+gridExtra::grid.arrange(edaUni$thtrDaysSqrt$hist, edaUni$thtrDaysSqrt$qq, ncol = 2)
 ```
-`r kfigr::figr(label = "a_thtr_days_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log number of theatre days histogram and QQ Plot
+`r kfigr::figr(label = "a_thtr_days_sqrt_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log number of theatre days histogram and QQ Plot
 
-```{r a_thtr_days_log_box, fig.height=4}
-edaUni$thtrDaysLog$box
+```{r a_thtr_days_sqrt_box, fig.height=4}
+edaUni$thtrDaysSqrt$box
 ```
-`r kfigr::figr(label = "a_thtr_days_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log number of theatre days boxplot
+`r kfigr::figr(label = "a_thtr_days_sqrt_box", prefix = TRUE, link = TRUE, type="Figure")`: Log number of theatre days boxplot
 
-**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_thtr_days_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$thtrDaysLog$central`
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_thtr_days_sqrt_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$thtrDaysSqrt$central`
 
-**Dispersion**: `r edaUni$thtrDaysLog$disp`
+**Dispersion**: `r edaUni$thtrDaysSqrt$disp`
 
-**Shape of Distribution**:  `r edaUni$thtrDaysLog$skew` `r edaUni$thtrDaysLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_thtr_days_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs significantly from normality.
+**Shape of Distribution**:  `r edaUni$thtrDaysSqrt$skew` `r edaUni$thtrDaysSqrt$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_thtr_days_sqrt_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs significantly from normality.
 
-**Outliers**: The boxplot in `r kfigr::figr(label = "a_thtr_days_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$thtrDaysLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$thtrDaysLog$out`
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_thtr_days_sqrt_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$thtrDaysSqrt$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$thtrDaysSqrt$out`
 
 
 

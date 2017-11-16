@@ -380,7 +380,7 @@ plotCooks <- function(mod, mName) {
 #------------------------------------------------------------------------------#
 #' plotResAll
 #'
-#' \code{plotResAll} Plots cooks distance
+#' \code{plotResAll} Plots residuals for each predictor
 #'
 #' @param mod Linear model object
 #' @param mName Character string for model name
@@ -397,7 +397,7 @@ plotResAll <- function(mod, mName = NULL, yLab = NULL) {
 
   resAll <- lapply(plots, function(p) {
 
-    b <- ggplot_build(p)
+    b <- ggplot2::ggplot_build(p)
     if (is.null(b$data[[1]]$y)) {
 
       # Render box plot
@@ -422,4 +422,70 @@ plotResAll <- function(mod, mName = NULL, yLab = NULL) {
   })
 
   return(resAll)
+}
+
+#------------------------------------------------------------------------------#
+#                     Plot Regression for all Predictors                       #
+#------------------------------------------------------------------------------#
+#' plotLinear
+#'
+#' \code{plotLinear} Plots linear regression lines for each predictor
+#'
+#' @param mod Linear model object
+#' @param yVar Character string for the dependent variable
+#' @param yLab Character string for the y-label
+#'
+#' @return list containing ressidual v predictor plots
+#' @author John James, \email{jjames@@datasciencesalon.org}
+#' @family visualization functions
+#' @export
+plotLinear <- function(mod, yVar, yLab = NULL) {
+
+  xVars <- names(mod$model)[!(names(mod$model) == yVar)]
+
+  plots <- lapply(xVars, function(v) {
+    df <- data.frame(y = mod$model[yVar],
+                     x = mod$model[v])
+    plotScatter(data = df, xLab = v, yLab = yLab,
+                plotTitle = paste(yLab, "by", v))
+  })
+
+  return(plots)
+}
+
+#------------------------------------------------------------------------------#
+#                            Plot Correlation                                  #
+#------------------------------------------------------------------------------#
+#' plotCorr
+#'
+#' \code{plotCorr} Creates correlation plot
+#'
+#' @param mod Linear model object
+#' @param yVar Character string for the dependent variable
+#'
+#' @return list containing ressidual v predictor plots
+#' @author John James, \email{jjames@@datasciencesalon.org}
+#' @family visualization functions
+#' @export
+plotCorr <- function(mod, yVar) {
+
+  plotList <- function(r) {
+
+    plot <- function() {
+      corrplot::corrplot(r, diag = FALSE,
+                         order = "hclust", number.cex = .7,
+                         addCoef.col = "black", tl.col = "black",
+                         tl.srt = 90, tl.pos = "td", tl.cex = 0.5,
+                         method = "color", type = "upper",
+                         col = RColorBrewer::brewer.pal(n = 11,
+                                                        name = "PiYG"))
+    }
+    list(plot = plot)
+  }
+
+  x <- mod$model[names(mod$model)[!(names(mod$model) == yVar)]]
+  nums <- sapply(x, is.numeric)
+  x <- x[ , nums]
+  p <- plotList(r = cor(x))
+  return(p)
 }

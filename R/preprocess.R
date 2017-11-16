@@ -35,7 +35,7 @@ preprocess <- function(movies, mdb2) {
   mdb1 <- mdb1 %>% mutate(thtr_days = as.numeric(dvd_rel_date - thtr_rel_date))
 
   mdb1 <- mdb1[(mdb1$thtr_days > 0),]
-  mdb1 <- mdb1 %>% mutate(thtr_days_log = log2(thtr_days))
+  mdb1 <- mdb1 %>% mutate(thtr_days_sqrt = sqrt(thtr_days))
 
 
   #---------------------------------------------------------------------------#
@@ -68,6 +68,10 @@ preprocess <- function(movies, mdb2) {
   mdb1$thtr_rel_month <- factor(mdb1$thtr_rel_month, levels = c("Jan", "Feb", "Mar", "Apr",
                                                               "May", "Jun", "Jul", "Aug",
                                                               "Sep", "Oct", "Nov", "Dec"))
+  mdb1$thtr_rel_season <- factor(mdb1$thtr_rel_season, levels = c("Spring", "Summer", "Fall",
+                                                                  "Holidays", "Winter"))
+
+
 
   #---------------------------------------------------------------------------#
   #                           Create Cast Vote                                #

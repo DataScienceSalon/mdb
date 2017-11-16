@@ -1,38 +1,36 @@
 # Part 5: Modeling
-Developing a linear model that can be used to effectively predict box office performance is the focus of this section. As such, full model feature selection, model selection, model diagnostics, and model interpretation are covered here in detail.
+At this stage, several linear regression models, based upon forward selection and backward elimination methods, were developed and evaluated for predictive accuracy in the prediction section. 
 
-## Full Model Feature Selection.
-In the prior section, association and correlation tests were conducted with a 95% confidence level. All categorical variables would remain in the model. The following quantitative variables were removed because they were redundant with other variables with higher correlation with dependent variable:
-* cast_experience - redundant with the log of caset experience
-* cast_votes - redundant with cast_votes_log, which has a higher correlation
-* director_experience - redundant with the log transformation of director experience
-* imdb_num_votes - redundant with the dependent variable, its log transformation
-* imdb_rating - redundant aspect of movie performance.
-* runtime - redundant with runtime log variable
-* scores_log - redundant with the scores variable
-* thtr_days - redundant with the log transformation of the thtr_days variable
-* scores - redundant with IMDB rating
-* audience score - redundant with IMDB rating
+## Full Model Feature Selection
+In the prior section, association and correlation tests were conducted with a 95% confidence level. All categorical variables were significant (`r kfigr::figr(label = "association", prefix = TRUE, link = TRUE, type="Table")`) and were included in the full model. Quantitative variables were evaluated based upon their correlation with the log total of IMDB votes. The following variables were redundant with other more significant predictors and were therefore, removed from the full model:    
 
-Thus, the full model is presented.
+* cast_experience - redundant with the log of cast experience  
+* cast_votes - redundant with cast_votes_log, which has a higher correlation  
+* director_experience - redundant with the log transformation of director experience  
+* imdb_num_votes - redundant with the dependent variable, its log transformation  
+* runtime - redundant with runtime log variable  
+* scores_log - redundant with the scores variable  
+* thtr_days - redundant with the log transformation of the thtr_days variable   
+* scores - redundant with IMDB rating  
+* audience score - redundant with IMDB rating   
+
+Thus, the full model is presented in `r kfigr::figr(label = "fullModel", prefix = TRUE, link = TRUE, type="Table")`.
 
 `r kfigr::figr(label = "fullModel", prefix = TRUE, link = TRUE, type="Table")`: Full Model
 ```{r fullModel}
 mData <- process(mdb, "imdb_num_votes_log")
-fm <- fullModel(mData, aData$tests, cData$tests)
+fm <- fullModel(mData)
 knitr::kable(fm$report, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-## Model Selection
-Starting with the full model described above, both forward selection and backward elimination methods were employed to determine if two different models emerged from the process, then to evaluate the performance of those models.
-
-### Forward Selection
+## Forward Selection Model
+### Feature Selection
 The forward selection process begins with a null model then all variables are added to the model, one-by-one, and the model that provides the greatest improvement in adjusted R-squared is selected. If the adjusted R-squared for this set was greater than the best R-squared for the model, it was selected.  The process repeats until all predictors were evaluated. `r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")` provides the the forward selection process and the summary statistics for each step.
 
 `r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")`: Forward Selection Prediction Model
 ```{r forward, results = "html"}
-fs <- forward(fm$all, y = "imdb_num_votes_log")
+fs <- forward(fm$all, y = "imdb_num_votes_log", mName = "Forward Selection Model")
 analysis <- regressionAnalysis(fs$model, mName = "Forward Selection Model", yVar  = 'imdb_num_votes_log',
                                yLab = "Log IMDB Votes")
 knitr::kable(fs$steps, digits = 2) %>%
@@ -40,18 +38,74 @@ knitr::kable(fs$steps, digits = 2) %>%
 ```
 `r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")` Forward Selection Process
 
-#### Model Overview
+### Model Overview
 The model is summarized as follows:
-$$y_i = (\beta$$
+$$y_i = (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_{i4} + \beta_5 x_{i5} + \beta_6 x_{i6} + \beta_7 x_{i7} + \beta_8 x_{i8} + \beta_9 x_{i9}) + \epsilon_i$$
 
+where:  
+$y_i$ is the log number of votes for movie $i$
+$x_{i1}$ is the log of the total number of votes for the cast of movie $i$
+$x_{i2}$ is the log of the total number of movies in which the cast members for movie $i$ appeared
+$x_{i3}$ is the IMDB rating for movie $i$
+$x_{i4}$ is the genre for movie $i$
+$x_{i5}$ is the log of the number of days between the dvd and theatrical releases for movie $i$
+$x_{i6}$ indicates whether movie $i$ received a best picture nomination
+$x_{i7}$ is the season in which  movie $i$ was released
+$x_{i8}$ is log of the total films directed by the director of movie $i$
+$x_{i9}$ indicates whether movie $i$ received a best picture oscar
+$\epsilon_i$ is the total residual for the model for movie$i$
 
+```{r fs_regression}
+analysis$plots$regression
+```
+`r kfigr::figr(label = "fs_regression", prefix = TRUE, link = TRUE, type="Figure")` Forward Selection Model Regression
 
+`r kfigr::figr(label = "fs_summary", prefix = TRUE, link = TRUE, type="Table")` Forward Selection Model Summary
+```{r fs_summary}
+knitr::kable(fs$summary, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
 
+### Model Diagnostics
+#### Linearity
+```{r fs_linearity, fig.height=20}
+gridExtra::grid.arrange(gridExtra::arrangeGrob(analysis$plots$linearity[[1]], 
+                                               analysis$plots$linearity[[2]], 
+                                               analysis$plots$linearity[[3]], ncol = 3),
+                        gridExtra::arrangeGrob(analysis$plots$linearity[[4]], 
+                                               analysis$plots$linearity[[5]], 
+                                               analysis$plots$linearity[[6]], ncol = 3),
+                        gridExtra::arrangeGrob(analysis$plots$linearity[[7]], 
+                                               analysis$plots$linearity[[8]], 
+                                               analysis$plots$linearity[[9]], ncol = 3),
+                        nrow = 3)
+                        
 
-`r kfigr::figr(label = "back", prefix = TRUE, link = TRUE, type="Table")`: Backward Elimination Prediction Model
-```{r back, results = "html"}
-#backStep <- movies::back(movies)
-#summary(backStep)
+```
+`r kfigr::figr(label = "fs_linearity", prefix = TRUE, link = TRUE, type="Figure")` Forward selection model linearity plots
+
+#### Homoscedasticity
+```{r fs_homoscedasticity}
+analysis$plots$res_fitted
+```
+`r kfigr::figr(label = "fs_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")` Forward selection model homoscedasticity plot
+
+#### Residuals
+```{r fs_residuals}
+gridExtra::grid.arrange(analysis$plots$res_hist, analysis$plots$res_qq, ncol = 2)
+                        
+
+```
+
+#### Multicollinearity
+```{r fs_multicollinearity}
+analysis$plots$multicollinearity$plot()
+```
+`r kfigr::figr(label = "fs_multicollinearity", prefix = TRUE, link = TRUE, type="Figure")`: Correlations among quantitative predictors 
+
+#### Outliers
+```{r fs_outliers}
+gridExtra::grid.arrange(analysis$plots$res_leverage, analysis$plots$cooks, ncol = 2)
 ```
 
 * * *

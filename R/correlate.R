@@ -25,9 +25,8 @@ correlate <- function(x, y, yLab = NULL, plot = FALSE) {
 
   # Create correlation plot
   if (plot == TRUE) {
-    df <- cbind(x, y)
-    analysis[["cMatrix"]] <- cor(df)
-    analysis[["cPlot"]] <- corrplot::corrplot(cor(df), diag = FALSE,
+    analysis[["cMatrix"]] <- cor(x)
+    analysis[["cPlot"]] <- corrplot::corrplot(cor(x), diag = FALSE,
                                               order = "hclust", number.cex = .7,
                                               addCoef.col = "black", tl.col = "black",
                                               tl.srt = 90, tl.pos = "td", tl.cex = 0.5,

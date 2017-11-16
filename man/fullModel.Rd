@@ -4,14 +4,10 @@
 \alias{fullModel}
 \title{fullModel}
 \usage{
-fullModel(data, associations, correlations)
+fullModel(data)
 }
 \arguments{
 \item{data}{Data set containing the unfiltered full model}
-
-\item{associations}{Data frame containing associations between the categorical variables and the dependent variable.}
-
-\item{correlations}{Data frame containing correlations between the quantitative variables and the dependent variable.}
 }
 \value{
 Data frame listing variables selected for the full model.

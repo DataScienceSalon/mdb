@@ -474,7 +474,7 @@ As mentioned above, the first objective was to identify an available variable th
 
 `r kfigr::figr(label = "correlation1", prefix = TRUE, link = TRUE, type="Table")` Top 5 variables most highly correlated with box office revenue
 ```{r correlation1}
-mData <- process(mdb2, y = "box_office_log")
+mData <- process(mdb2, y = "box_office")
 cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log Box Office", plot = FALSE)
 knitr::kable(head(cData$tests, 10), digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
@@ -488,9 +488,9 @@ gridExtra::grid.arrange(grobs = cData$sPlots, ncol = 2)
 The scatter plots  in `r kfigr::figr(label = "correlationPlots1", prefix = TRUE, link = TRUE, type="Figure")`, confirmed it.  The log of the number of IMDB votes would proxy for box office revenue and correlation with this dependent variable was the focus of the bivariate analysis that follows.
 
 ### Categorical Variable Analysis
-Association tests were conducted between the categorical variables and the log number of IMDB votes and `r kfigr::figr(label = "association", prefix = TRUE, link = TRUE, type="Table")` summarizes the most highly associated variables.
+Association tests were conducted between the categorical variables and the log number of IMDB votes.  `r kfigr::figr(label = "association", prefix = TRUE, link = TRUE, type="Table")` summarizes the associations in terms of r-squared.
 
-`r kfigr::figr(label = "association", prefix = TRUE, link = TRUE, type="Table")` Categorical variables most highly associated with the log number of IMDB votes.
+`r kfigr::figr(label = "association", prefix = TRUE, link = TRUE, type="Table")` Association between categorical variables and the log number of IMDB votes.
 ```{r association}
 mData <- process(mdb, y = "imdb_num_votes_log")
 aData <- associate(x = mData$categorical, y = mData$dependent, yLab = "Log IMDB Votes")
@@ -498,20 +498,25 @@ knitr::kable(head(aData$tests, 10), digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-
-As expected, director and studio were highly associated with film popularity.
+The associations were significant at a 95% confidence level for for all categorical variables.
 
 ### Quantitative Variable Analysis
-The correlations between the quantitative variables and the log number of IMDB votes are listed in `r kfigr::figr(label = "correlation2", prefix = TRUE, link = TRUE, type="Table")` in order of highest to lowest correlation.
+The correlations between the quantitative variables and the log number of IMDB votes are listed in `r kfigr::figr(label = "correlate", prefix = TRUE, link = TRUE, type="Table")` in order of highest to lowest correlation.
 
-`r kfigr::figr(label = "correlation2", prefix = TRUE, link = TRUE, type="Table")` Top quantitative variables most highly correlated  with the log number of IMDB votes.
-```{r correlation2}
+`r kfigr::figr(label = "correlate", prefix = TRUE, link = TRUE, type="Table")`: Correlation of quantitative variables and the log number of IMDB votes.
+```{r correlate}
 mData <- process(mdb, "imdb_num_votes_log")
-cData <- correlate(x = mData, y = mData$dependent, yLab = "Log IMDB Votes", plot = FALSE)
-knitr::kable(head(cData$tests, 10), digits = 2) %>%
+cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log IMDB Votes", plot = FALSE)
+knitr::kable(cData$tests, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
+The correlations were significant at a 95% confidence level for each of the quantitative predictors of the log number of IMDB votes. 
 
-The log of cast votes was highly correlated with the log number of IMDB votes; whereas cast experience was significantly less correlated. Surprisingly, the number of days between the dvd release and the theatrical release was negatively correlated with IMDB votes, causing one to consider the proportion of IMDB votes cast by DVD viewers.
+```{r correlatePlot}
+cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log IMDB Votes", plot = TRUE)
+```
+`r kfigr::figr(label = "correlatePlot", prefix = TRUE, link = TRUE, type="Figure")`: Correlations among quantitative predictors 
+
+`r kfigr::figr(label = "correlatePlot", prefix = TRUE, link = TRUE, type="Figure")` illuminates the correlations among the quantitative predictors.  
 
 * * *

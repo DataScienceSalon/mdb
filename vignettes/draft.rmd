@@ -1,0 +1,27 @@
+---
+title: "Draft"
+author: "John James"
+date: "November 15, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$$y_i = (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_{i4} + \beta_5 x_{i5} + \beta_6 x_{i6} + \beta_7 x_{i7} + \beta_8 x_{i8} + \beta_9 x_{i9} + \beta_{10} x_{i10}) + \epsilon_i$$
+
+where:  
+$y_i$ is the log number of votes for movie $i$
+$x_{i1}$ is the log of the total number of votes for the cast of movie $i$
+$x_{i2}$ is the log of the total number of movies in which the cast members for movie $i$ appeared
+$x_{i3}$ is the log of the number of days between dvd and theatrical release for movie $i$
+$x_{i4}$ is the genre for movie $i$
+$x_{i5}$ is the critics score for movie $i$
+$x_{i6}$ indicates whether movie $i$ received a best picture nomination
+$x_{i7}$ is the log of the total number of films in which the director of movie $i$ was associated
+$x_{i8}$ is the season in which  movie $i$ was released
+$x_{i9}$ is the log of total runtime for movie $i$
+$x_{i10}$ indicates whether movie $i$ had won a best picture oscar
+$\epsilon_i$ is the total residual for the model for movie$i$
+

@@ -21,7 +21,7 @@ regressionAnalysis <- function(mod, mName, yVar, yLab) {
   #                             Format Data                                   #
   #---------------------------------------------------------------------------#
   # Residuals vs Fit
-  rvf <- data.frame(Fitted = mod$fitted.values, Residuals = mod$residuals)
+  rvf <- data.frame(Residuals = mod$residuals, Fitted = mod$fitted.values)
   # Residuals vs Predictor
   res <- mod$residuals
 
@@ -37,6 +37,11 @@ regressionAnalysis <- function(mod, mName, yVar, yLab) {
   # Linear Regression Plot
   plots[["regression"]] <- plotScatter(data = mod$model, xLab = mName, yLab = yLab,
                                        plotTitle = paste0(mName, ": Linear Regression"))
+
+  plots[["linearity"]] <- plotLinear(mod = mod, yVar = "imdb_num_votes_log",
+                                     yLab = "Log IMDB Votes")
+
+  plots[["multicollinearity"]] <- plotCorr(mod = mod, yVar = "imdb_num_votes_log")
 
   # Residuals vs Fitted
   plots[["res_fitted"]] <- plotScatter(data = rvf, xLab = mName, yLab = "Residuals",

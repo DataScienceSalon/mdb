@@ -4,12 +4,14 @@
 \alias{forward}
 \title{forward}
 \usage{
-forward(data, y)
+forward(data, y, mName)
 }
 \arguments{
 \item{data}{Data frame containing the full model}
 
 \item{y}{Character string containing the name of the response variable}
+
+\item{mName}{Character string containing the name of model}
 }
 \description{
 \code{forward} Creates prediction model using forward selection

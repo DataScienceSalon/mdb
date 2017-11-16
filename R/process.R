@@ -23,6 +23,13 @@ process <- function(data, y) {
   d <- data %>% filter(title_type != "TV Movie" & mpaa_rating != "NC-17")
   d$mpaa_rating <- factor(d$mpaa_rating)
 
+  # Remove outliers
+  stats <- getSummaryStats(as.data.frame(data$imdb_rating))
+  lower <- max(0, stats$Q1 - (1.5 * stats$IQR))
+  upper <- stats$Q3 + (1.5 * stats$IQR)
+  d <- subset(d, imdb_rating > lower & imdb_rating < upper)
+
+
   # Split Data
   qual <- c('best_actor_win',	'best_actress_win',	'best_dir_win',
             'best_pic_nom',	'best_pic_win',	'genre',	'mpaa_rating',
@@ -32,7 +39,7 @@ process <- function(data, y) {
              'cast_votes',	'cast_votes_log',	'critics_score',
              'director_experience',	'director_experience_log',	'imdb_num_votes',
              'imdb_num_votes_log',	'imdb_rating',	'runtime',	'runtime_log',
-             'scores',	'scores_log',	'thtr_days',	'thtr_days_log')
+             'scores',	'scores_log',	'thtr_days',	'thtr_days_sqrt')
   quant <- quant[!(quant %in% y)]
 
   pack <- list()

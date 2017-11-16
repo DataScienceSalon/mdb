@@ -51,11 +51,12 @@ evalForwardModel <- function(data, model, y, remaining) {
 #'
 #' @param data Data frame containing the full model
 #' @param y Character string containing the name of the response variable
+#' @param mName Character string containing the name of model
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-forward <- function(data, y) {
+forward <- function(data, y, mName) {
 
   final <- list()
 
@@ -90,8 +91,21 @@ forward <- function(data, y) {
   # Return final model
   lrFormula <- formula(paste(y, " ~ ",
                              paste(model$Selected, collapse=" + ")))
-  final[["model"]] <- lm(lrFormula, data)
-  final[["summary"]] <- summary(final$model)
+  m <- lm(lrFormula, data)
+  a <- anova(m)
+  s <- summary(m)
+
+  final[["model"]] <- m
+  final[["coefficients"]] <- broom::tidy(m)
+  final[["summary"]] <- data.frame(Model = mName,
+                                   `Model Size` = length(model$Selected),
+                                   DF = s$df[2],
+                                   `F-statistic` = round(s$fstatistic[1], 2),
+                                   `R-Squared` = round(s$r.squared, 3),
+                                   Adjusted.R2 = round(s$adj.r.squared, 3),
+                                   `p-value` = a$`Pr(>F)`[1],
+                                   stringsAsFactors = FALSE,
+                                   row.names = NULL)
 
   return(final)
 }

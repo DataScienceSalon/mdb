@@ -16,7 +16,7 @@
 #' @export
 associate <- function(x, y, yLab = NULL) {
 
-  analysis <- list()
+  associations <- list()
 
   # Get variable names
   xNames <- colnames(x)
@@ -36,7 +36,7 @@ associate <- function(x, y, yLab = NULL) {
                                   round(t$`Pr(>F)`[1], 3))
                )
   }))
-  analysis[["tests"]] <- aTests %>% arrange(desc(`R.squared`))
+  associations[["tests"]] <- aTests %>% arrange(desc(`R.squared`))
 
-  return(analysis)
+  return(associations)
 }
