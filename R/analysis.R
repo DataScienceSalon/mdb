@@ -33,6 +33,10 @@ getSummaryStats <- function(data, xLab = NULL) {
                    Skewness = e1071::skewness(data[[1]], type = 1),
                    row.names = NULL)
 
+  lower <- df$Q1 - (1.5 * df$IQR)
+  upper <- df$Q3 + (1.5 * df$IQR)
+  df$Outliers <- nrow(subset(data, data[[1]] < lower | data[[1]] > upper))
+
   # If x is present, add to data frame as first column
   if (!is.null(xLab)) {
     g <- data.frame(Group = xLab)

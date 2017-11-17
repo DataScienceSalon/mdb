@@ -53,7 +53,7 @@ plotFreqProp <- function(data, yLab = "Movies", xLab, plotTitle = NULL, order = 
                                           y = df[[2]],
                                           fill = df[[1]]))  +
     ggplot2::geom_bar(stat='identity') +
-    ggplot2::theme_minimal(base_size = 24) +
+    ggplot2::theme_minimal(base_size = 16) +
     ggplot2::geom_text(
       data = df,
       ggplot2::aes(x = df[[1]],
@@ -110,7 +110,7 @@ plotHist <- function(data, xLab = NULL, yLab, plotTitle = NULL) {
   hist <- ggplot2::ggplot(data = data,
                         ggplot2::aes(x = data[[1]])) +
     ggplot2::geom_histogram(position ='identity', color = "white", fill = "palegreen4", bins = 30) +
-    ggplot2::theme_minimal(base_size = 24) +
+    ggplot2::theme_minimal(base_size = 16) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans"),
                    axis.title.x = ggplot2::element_blank(),
                    axis.ticks.x = ggplot2::element_blank()) +
@@ -153,7 +153,7 @@ plotQQ <- function(data, xLab = NULL, yLab, plotTitle = NULL) {
     qqplotr::stat_qq_band() +
     qqplotr::stat_qq_line() +
     qqplotr::stat_qq_point() +
-    ggplot2::theme_minimal(base_size = 24) +
+    ggplot2::theme_minimal(base_size = 16) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
     ggplot2::labs(x = "Theoretical Quantiles", y = "Sample Quantiles") +
     ggplot2::ggtitle(plotTitle)
@@ -208,7 +208,7 @@ plotBox <- function(data, xLab = NULL, yLab, plotTitle = NULL) {
                                           y = data$y,
                                           fill = data$x))  +
     ggplot2::geom_boxplot(outlier.colour = "black") +
-    ggplot2::theme_minimal(base_size = 24) +
+    ggplot2::theme_minimal(base_size = 16) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans"),
                    axis.title.x = ggplot2::element_blank(),
                    axis.ticks.x = ggplot2::element_blank(),
@@ -259,7 +259,7 @@ plotScatter <- function(data, xLab, yLab, plotTitle = NULL) {
                                           x = as.numeric(unlist(data[,2])))) +
     ggplot2::geom_point() +
     ggplot2::geom_smooth() +
-    ggplot2::theme_minimal(base_size = 24) +
+    ggplot2::theme_minimal(base_size = 16) +
     ggplot2::geom_smooth(method = lm, se = FALSE) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans"),
                    legend.position = "right") +
@@ -290,7 +290,7 @@ plotResQQ <- function(mod, mName, xLab) {
   # Obtain diagnostics and render plot
   resQQ <- lindia::gg_diagnose(mod, theme = ggplot2::theme_minimal(), plot.all = FALSE)
   resQQ <- resQQ$qqplot +
-    ggplot2::theme_minimal(base_size = 24) +
+    ggplot2::theme_minimal(base_size = 16) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
     ggplot2::ggtitle(paste0(mName, ": Normal-QQ Plot"))
 
@@ -316,7 +316,7 @@ plotResFit <- function(mod, yLab) {
   # Obtain diagnostics and render plot
   resFit <- lindia::gg_diagnose(mod, theme = ggplot2::theme_minimal(), plot.all = FALSE)
   resFit <- resFit$res_fitted +
-    ggplot2::theme_minimal(base_size = 24) +
+    ggplot2::theme_minimal(base_size = 16) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
     ggplot2::ggtitle(paste("Residuals vs. Fit:", yLab))
 
@@ -342,7 +342,7 @@ plotResLeverage <- function(mod, mName) {
   # Obtain diagnostics and render plot
   resLeverage <- lindia::gg_diagnose(mod, theme = ggplot2::theme_minimal(), plot.all = FALSE)
   resLeverage <- resLeverage$resleverage +
-    ggplot2::theme_minimal(base_size = 24) +
+    ggplot2::theme_minimal(base_size = 16) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
     ggplot2::ggtitle(paste0(mName, ": Residuals vs. Leverage"))
 
@@ -368,7 +368,7 @@ plotCooks <- function(mod, mName) {
   # Obtain diagnostics and render plot
   cooks <- lindia::gg_diagnose(mod, theme = ggplot2::theme_minimal(), plot.all = FALSE)
   cooks <- cooks$cooksd +
-    ggplot2::theme_minimal(base_size = 24) +
+    ggplot2::theme_minimal(base_size = 16) +
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans")) +
     ggplot2::ggtitle(paste0(mName, ": Cooks Distance"))
 
@@ -413,7 +413,7 @@ plotResAll <- function(mod, mName = NULL, yLab = NULL) {
       # Render scatterplot
       p + ggplot2::geom_point() +
         ggplot2::geom_smooth() +
-        ggplot2::theme_minimal(base_size = 24) +
+        ggplot2::theme_minimal(base_size = 16) +
         ggplot2::geom_smooth(method = lm, se = FALSE) +
         ggplot2::theme(text = ggplot2::element_text(family="Open Sans"),
                        legend.position = "right") +

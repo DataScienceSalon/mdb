@@ -12,55 +12,10 @@ knitr::kable(codebook, align = 'l') %>%
   kableExtra::group_rows("Experience", 22,23) %>%
   kableExtra::group_rows("Performance", 24,38) %>%
   kableExtra::group_rows("Interaction", 39,40) %>%
-  kableExtra::group_rows("Box Office", 41,42)
+  kableExtra::group_rows("Daily Box Office", 41,42)
 ```
 
 ## Appendix B: Univariate Analysis
-### Best Director / Actor / Actress
-As indicated in `r kfigr::figr(label = "a_best_actor", prefix = TRUE, link = TRUE, type="Figure")`, the percentages of films with best director, actor and actress oscars were `r edaUni$bestDirWin$stats$Proportion[2] * 100`%, `r edaUni$bestActorWin$stats$Proportion[2] * 100`%,  and `r edaUni$bestActressWin$stats$Proportion[2] * 100`%, respectively.  Again, the decision in this case was to assume that with random sampling, these ratios reflected the true population proportions, and to keep the variables for further analysis during the modeling stage.
-
-
-```{r a_best_actor}
-gridExtra::grid.arrange(edaUni$bestDirWin$plot, edaUni$bestActorWin$plot, edaUni$bestActressWin$plot, ncol = 3)
-```
-`r kfigr::figr(label = "a_best_actor", prefix = TRUE, link = TRUE, type="Figure")`: Best director/actor/actress
-
-### Best Picture
-Since the proportion of films nominated for and winning best picture were so small, this variable was not likely to be a good predictor of movie popularity. The bivariate analysis below will illuminate this further.
-
-```{r a_best_picture}
-gridExtra::grid.arrange(edaUni$bestPicNom$plot, edaUni$bestPicWin$plot, ncol = 2)
-```
-`r kfigr::figr(label = "a_best_picture", prefix = TRUE, link = TRUE, type="Figure")`: Best picture nominations and wins
-
-### Genre
-The drama genre represented a plurality of the releases in the sample, followed by comedy action & adventure then mystery & suspense. The top four genres account for nearly `r round(sum(head(edaUni$genre$stats %>% arrange(desc(Proportion)) %>% select(Proportion), 4)) * 100, -1)`% of the films in the sample.
-```{r a_genre}
-edaUni$genre$plot
-```
-`r kfigr::figr(label = "a_genre", prefix = TRUE, link = TRUE, type="Figure")`: Films by genre
-
-### MPAA Rating
-Rated R films accounted for over `r round(edaUni$mpaa$stats$Proportion[5] * 100, -1)`% of the releases, followed by PG and PG-13. Collectively, R, PG, and PG-13 rated films represent `r round(sum(head(edaUni$mpaa$stats %>% arrange(desc(Proportion)) %>% select(Proportion), 3)) * 100, -1)`% of the films in the sample. NC-17 films were excluded from this analysis.
-```{r a_mpaa}
-edaUni$mpaa$plot
-```
-`r kfigr::figr(label = "a_mpaa", prefix = TRUE, link = TRUE, type="Figure")`: Films by MPAA Rating
-
-### Month of Theatrical Release
-Though the plurality of features in the sample (`r sum(edaUni$month$stats$Proportion[c(1,6,10,12)])*100`%) were released during the months of January, June, October and December, the distribution of theatrical release months appeared fairly balanced within the sample.
-```{r a_month}
-edaUni$month$plot
-```
-`r kfigr::figr(label = "a_month", prefix = TRUE, link = TRUE, type="Figure")`: Theatrical releases by month
-
-### Season of Theatrical Release
-The plurality of features in the sample were released during the fall and summer months with over `r round(edaUni$season$stats$Proportion[3] *100, -1)`% opening in the month of December alone.
-```{r a_season}
-edaUni$season$plot
-```
-`r kfigr::figr(label = "a_season", prefix = TRUE, link = TRUE, type="Figure")`: Theatrical releases by season
-
 ### Audience Scores
 This variable captured the audience scores from Rotten Tomatoes for each film
 
@@ -88,59 +43,22 @@ edaUni$audienceScores$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_audience_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$audienceScores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$audienceScores$out`
 
-### Box Office
-Total lifetime box office revenue was obtained for a subset of 100 randomly selected films from the movie data set. This is an analysis of box office revenue for this random sampling.
+### Best Director / Actor / Actress
+As indicated in `r kfigr::figr(label = "a_best_actor", prefix = TRUE, link = TRUE, type="Figure")`, the percentages of films with best director, actor and actress oscars were `r edaUni$bestDirWin$stats$Proportion[2] * 100`%, `r edaUni$bestActorWin$stats$Proportion[2] * 100`%,  and `r edaUni$bestActressWin$stats$Proportion[2] * 100`%, respectively.  Again, the decision in this case was to assume that with random sampling, these ratios reflected the true population proportions, and to keep the variables for further analysis during the modeling stage.
 
-`r kfigr::figr(label = "a_box_office_stats", prefix = TRUE, link = TRUE, type="Table")`: Box office revenue summary statistics
-```{r a_box_office_stats}
-knitr::kable(edaUni$boxOffice$stats, digits = 2) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+
+```{r a_best_actor}
+gridExtra::grid.arrange(edaUni$bestDirWin$plot, edaUni$bestActorWin$plot, edaUni$bestActressWin$plot, ncol = 3)
 ```
+`r kfigr::figr(label = "a_best_actor", prefix = TRUE, link = TRUE, type="Figure")`: Best director/actor/actress
 
-```{r a_box_office_dist}
-gridExtra::grid.arrange(edaUni$boxOffice$hist, edaUni$boxOffice$qq, ncol = 2)
+### Best Picture
+Since the proportion of films nominated for and winning best picture were so small, this variable was not likely to be a good predictor of movie popularity. The bivariate analysis below will illuminate this further.
+
+```{r a_best_picture}
+gridExtra::grid.arrange(edaUni$bestPicNom$plot, edaUni$bestPicWin$plot, ncol = 2)
 ```
-`r kfigr::figr(label = "a_box_office_dist", prefix = TRUE, link = TRUE, type="Figure")`: Box office revenue histogram and QQ Plot
-
-```{r a_box_office_box, fig.height=4}
-edaUni$boxOffice$box
-```
-`r kfigr::figr(label = "a_box_office_box", prefix = TRUE, link = TRUE, type="Figure")`: Box office revenue boxplot
-
-**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_box_office_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$boxOffice$central`
-
-**Dispersion**: `r edaUni$boxOffice$disp`
-
-**Shape of Distribution**:  `r edaUni$boxOffice$skew` `r edaUni$boxOffice$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_box_office_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs significantly from normality.
-
-**Outliers**: The boxplot in `r kfigr::figr(label = "a_box_office_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$boxOffice$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$boxOffice$out`
-
-### Log Box Office
-This is a log transformation of the box office variable.
-
-`r kfigr::figr(label = "a_box_office_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log box office revenue summary statistics
-```{r a_box_office_log_stats}
-knitr::kable(edaUni$boxOfficeLog$stats, digits = 2) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-
-```{r a_box_office_log_dist}
-gridExtra::grid.arrange(edaUni$boxOfficeLog$hist, edaUni$boxOfficeLog$qq, ncol = 2)
-```
-`r kfigr::figr(label = "a_box_office_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log box office revenue histogram and QQ Plot
-
-```{r a_box_office_log_box, fig.height=4}
-edaUni$boxOfficeLog$box
-```
-`r kfigr::figr(label = "a_box_office_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log box office revenue boxplot
-
-**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_box_office_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$boxOfficeLog$central`
-
-**Dispersion**: `r edaUni$boxOfficeLog$disp`
-
-**Shape of Distribution**:  `r edaUni$boxOfficeLog$skew` `r edaUni$boxOfficeLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_box_office_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that approximates normality.
-
-**Outliers**: The boxplot in `r kfigr::figr(label = "a_box_office_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$boxOfficeLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$boxOfficeLog$out`
+`r kfigr::figr(label = "a_best_picture", prefix = TRUE, link = TRUE, type="Figure")`: Best picture nominations and wins
 
 ### Cast Experience
 This derived variable measured the relative experience of a given cast and was defined as the sum of the observations for the cast associated with each film.
@@ -169,7 +87,7 @@ edaUni$castExperience$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_experience_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castExperience$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castExperience$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
 
-### Log Cast Experience
+### Cast Experience (Log)
 This variable is a log transformation of the cast experience variable
 
 `r kfigr::figr(label = "a_cast_experience_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast experience summary statistics
@@ -223,7 +141,7 @@ edaUni$castVotes$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_votes_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castVotes$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castVotes$out`
 
-### Log Cast Votes
+### Cast Votes (Log)
 This is a log transformation of the cast votes variable.
 
 `r kfigr::figr(label = "a_cast_votes_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log cast votes summary statistics
@@ -277,6 +195,60 @@ edaUni$criticsScores$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_critics_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$criticsScores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$criticsScores$out`
 
+### Daily Box Office
+Total lifetime daily box office revenue was obtained for a subset of 100 randomly selected films from the movie data set. This is an analysis of daily box office revenue for this random sampling.
+
+`r kfigr::figr(label = "a_daily_box_office_stats", prefix = TRUE, link = TRUE, type="Table")`: Box office revenue summary statistics
+```{r a_daily_box_office_stats}
+knitr::kable(edaUni$dailyBoxOffice$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_daily_box_office_dist}
+gridExtra::grid.arrange(edaUni$dailyBoxOffice$hist, edaUni$dailyBoxOffice$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_daily_box_office_dist", prefix = TRUE, link = TRUE, type="Figure")`: Box office revenue histogram and QQ Plot
+
+```{r a_daily_box_office_box, fig.height=4}
+edaUni$dailyBoxOffice$box
+```
+`r kfigr::figr(label = "a_daily_box_office_box", prefix = TRUE, link = TRUE, type="Figure")`: Box office revenue boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_daily_box_office_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$dailyBoxOffice$central`
+
+**Dispersion**: `r edaUni$dailyBoxOffice$disp`
+
+**Shape of Distribution**:  `r edaUni$dailyBoxOffice$skew` `r edaUni$dailyBoxOffice$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_daily_box_office_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_daily_box_office_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$dailyBoxOffice$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$dailyBoxOffice$out`
+
+### Daily Box Office (Log)
+This is a log transformation of the daily box office variable.
+
+`r kfigr::figr(label = "a_daily_box_office_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log daily box office revenue summary statistics
+```{r a_daily_box_office_log_stats}
+knitr::kable(edaUni$dailyBoxOfficeLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_daily_box_office_log_dist}
+gridExtra::grid.arrange(edaUni$dailyBoxOfficeLog$hist, edaUni$dailyBoxOfficeLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_daily_box_office_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log daily box office revenue histogram and QQ Plot
+
+```{r a_daily_box_office_log_box, fig.height=4}
+edaUni$dailyBoxOfficeLog$box
+```
+`r kfigr::figr(label = "a_daily_box_office_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log daily box office revenue boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_daily_box_office_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$dailyBoxOfficeLog$central`
+
+**Dispersion**: `r edaUni$dailyBoxOfficeLog$disp`
+
+**Shape of Distribution**:  `r edaUni$dailyBoxOfficeLog$skew` `r edaUni$dailyBoxOfficeLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_daily_box_office_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that approximates normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_daily_box_office_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$dailyBoxOfficeLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$dailyBoxOfficeLog$out`
+
 #### Director Experience
 This derived variable measured the relative experience of a given director and was defined as the sum of the observations for the director associated with each film.
 
@@ -304,7 +276,7 @@ edaUni$directorExperience$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_director_experience_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$directorExperience$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$directorExperience$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
 
-### Log Director Experience
+### Director Experience (Log)
 This variable was a log transformation of the director experience variable.
 
 `r kfigr::figr(label = "a_director_experience_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log director experience summary statistics
@@ -331,7 +303,14 @@ edaUni$directorExperienceLog$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_director_experience_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$directorExperienceLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$directorExperienceLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
 
-### Number of IMDB Votes
+### Genre
+The drama genre represented a plurality of the releases in the sample, followed by comedy action & adventure then mystery & suspense. The top four genres account for nearly `r round(sum(head(edaUni$genre$stats %>% arrange(desc(Proportion)) %>% select(Proportion), 4)) * 100, -1)`% of the films in the sample.
+```{r a_genre}
+edaUni$genre$plot
+```
+`r kfigr::figr(label = "a_genre", prefix = TRUE, link = TRUE, type="Figure")`: Films by genre
+
+### IMDB Number of Votes
 This variable captured the number of IMDB votes cast for each film.
 
 `r kfigr::figr(label = "a_imdb_votes_stats", prefix = TRUE, link = TRUE, type="Table")`: IMDB votes summary statistics
@@ -358,7 +337,7 @@ edaUni$imdbVotes$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_imdb_votes_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$imdbVotes$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$imdbVotes$out`
 
-### Log Number of IMDB Votes
+### IMDB Number of Votes (Log)
 This was a log transformation of the IMDB votes variable.
 
 `r kfigr::figr(label = "a_imdb_votes_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log IMDB votes summary statistics
@@ -412,6 +391,13 @@ edaUni$imdbRating$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_imdb_rating_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$imdbRating$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$imdbRating$out`
 
+### MPAA Rating
+Rated R films accounted for over `r round(edaUni$mpaa$stats$Proportion[5] * 100, -1)`% of the releases, followed by PG and PG-13. Collectively, R, PG, and PG-13 rated films represent `r round(sum(head(edaUni$mpaa$stats %>% arrange(desc(Proportion)) %>% select(Proportion), 3)) * 100, -1)`% of the films in the sample. NC-17 films were excluded from this analysis.
+```{r a_mpaa}
+edaUni$mpaa$plot
+```
+`r kfigr::figr(label = "a_mpaa", prefix = TRUE, link = TRUE, type="Figure")`: Films by MPAA Rating
+
 ### Runtime
 This is an analysis of moving runtimes.
 
@@ -439,7 +425,7 @@ edaUni$runtime$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_runtime_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$runtime$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$runtime$out`
 
-### Log Runtime
+### Runtime (Log)
 This is an analysis of the log of moving runtimes.
 
 `r kfigr::figr(label = "a_runtime_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log runtime summary statistics
@@ -467,7 +453,7 @@ edaUni$runtimeLog$box
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_runtime_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$runtimeLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$runtimeLog$out`
 
 ### Scores
-This variable captured the total score for each film defined as 10 * IMDB Rating + critics score + audience_score.
+This variable captured the total score for each film defined as the average of 10 * IMDB Rating and audience_score.
 
 `r kfigr::figr(label = "a_scores_stats", prefix = TRUE, link = TRUE, type="Table")`: Scores summary statistics
 ```{r a_scores_stats}
@@ -493,7 +479,7 @@ edaUni$scores$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$scores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$scores$out`
 
-### Log Scores
+### Scores (Log)
 This is a log transformation of scores variable.
 
 `r kfigr::figr(label = "a_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log scores summary statistics
@@ -521,7 +507,7 @@ edaUni$scoresLog$box
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$scoresLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$scoresLog$out`
 
 ### Theatre Days
-This variable captured the number of days between theatrical and dvd release
+This variable captured the number of days since January 1, 2016 and theatrical release.
 
 `r kfigr::figr(label = "a_thtr_days_stats", prefix = TRUE, link = TRUE, type="Table")`: Theatre says summary statistics
 ```{r a_thtr_days_stats}
@@ -547,32 +533,158 @@ edaUni$thtrDays$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_thtr_days_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$thtrDays$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$thtrDays$out`
 
-### Theatre Days
-This variable captured the number of days between theatrical and dvd release
+### Theatre Days (Log)
+This variable is the log transformation of the theatre days variable.
 
-`r kfigr::figr(label = "a_thtr_days_sqrt_stats", prefix = TRUE, link = TRUE, type="Table")`: Log number of theatre days summary statistics
-```{r a_thtr_days_sqrt_stats}
-knitr::kable(edaUni$thtrDaysSqrt$stats, digits = 2) %>%
+`r kfigr::figr(label = "a_thtr_days_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log number of theatre days summary statistics
+```{r a_thtr_days_log_stats}
+knitr::kable(edaUni$thtrDaysLog$stats, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-```{r a_thtr_days_sqrt_dist}
-gridExtra::grid.arrange(edaUni$thtrDaysSqrt$hist, edaUni$thtrDaysSqrt$qq, ncol = 2)
+```{r a_thtr_days_log_dist}
+gridExtra::grid.arrange(edaUni$thtrDaysLog$hist, edaUni$thtrDaysLog$qq, ncol = 2)
 ```
-`r kfigr::figr(label = "a_thtr_days_sqrt_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log number of theatre days histogram and QQ Plot
+`r kfigr::figr(label = "a_thtr_days_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log number of theatre days histogram and QQ Plot
 
-```{r a_thtr_days_sqrt_box, fig.height=4}
-edaUni$thtrDaysSqrt$box
+```{r a_thtr_days_log_box, fig.height=4}
+edaUni$thtrDaysLog$box
 ```
-`r kfigr::figr(label = "a_thtr_days_sqrt_box", prefix = TRUE, link = TRUE, type="Figure")`: Log number of theatre days boxplot
+`r kfigr::figr(label = "a_thtr_days_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log number of theatre days boxplot
 
-**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_thtr_days_sqrt_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$thtrDaysSqrt$central`
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_thtr_days_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$thtrDaysLog$central`
 
-**Dispersion**: `r edaUni$thtrDaysSqrt$disp`
+**Dispersion**: `r edaUni$thtrDaysLog$disp`
 
-**Shape of Distribution**:  `r edaUni$thtrDaysSqrt$skew` `r edaUni$thtrDaysSqrt$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_thtr_days_sqrt_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs significantly from normality.
+**Shape of Distribution**:  `r edaUni$thtrDaysLog$skew` `r edaUni$thtrDaysLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_thtr_days_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs significantly from normality.
 
-**Outliers**: The boxplot in `r kfigr::figr(label = "a_thtr_days_sqrt_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$thtrDaysSqrt$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$thtrDaysSqrt$out`
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_thtr_days_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$thtrDaysLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$thtrDaysLog$out`
+
+### Theatrical Release Month
+Though the plurality of features in the sample (`r sum(edaUni$month$stats$Proportion[c(1,6,10,12)])*100`%) were released during the months of January, June, October and December, the distribution of theatrical release months appeared fairly balanced within the sample.
+```{r a_month}
+edaUni$month$plot
+```
+`r kfigr::figr(label = "a_month", prefix = TRUE, link = TRUE, type="Figure")`: Theatrical releases by month
+
+### Theatrical Release Season
+The plurality of features in the sample were released during the fall and summer months with over `r round(edaUni$season$stats$Proportion[3] *100, -1)`% opening in the month of December alone.
+```{r a_season}
+edaUni$season$plot
+```
+`r kfigr::figr(label = "a_season", prefix = TRUE, link = TRUE, type="Figure")`: Theatrical releases by season
+
+### Votes per Day
+This variable captured the total score for each film defined as the average of 10 * IMDB Rating and audience_score.
+
+`r kfigr::figr(label = "a_votes_per_day_stats", prefix = TRUE, link = TRUE, type="Table")`: Votes per Day summary statistics
+```{r a_votes_per_day_stats}
+knitr::kable(edaUni$votesPerDay$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_votes_per_day_dist}
+gridExtra::grid.arrange(edaUni$votesPerDay$hist, edaUni$votesPerDay$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_votes_per_day_dist", prefix = TRUE, link = TRUE, type="Figure")`: Votes per Day histogram and QQ Plot
+
+```{r a_votes_per_day_box, fig.height=4}
+edaUni$votesPerDay$box
+```
+`r kfigr::figr(label = "a_votes_per_day_box", prefix = TRUE, link = TRUE, type="Figure")`: Votes per Day boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_votes_per_day_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$votesPerDay$central`
+
+**Dispersion**: `r edaUni$votesPerDay$disp`
+
+**Shape of Distribution**:  `r edaUni$votesPerDay$skew` `r edaUni$votesPerDay$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_votes_per_day_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that approximates normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_votes_per_day_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$votesPerDay$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$votesPerDay$out`
+
+### Votes per Day (Log)
+This is a log transformation of votes variable.
+
+`r kfigr::figr(label = "a_votes_per_day_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log votes summary statistics
+```{r a_votes_per_day_log_stats}
+knitr::kable(edaUni$votesPerDayLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_votes_per_day_log_dist}
+gridExtra::grid.arrange(edaUni$votesPerDayLog$hist, edaUni$votesPerDayLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_votes_per_day_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log votes histogram and QQ Plot
+
+```{r a_votes_per_day_log_box, fig.height=4}
+edaUni$votesPerDayLog$box
+```
+`r kfigr::figr(label = "a_votes_per_day_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log votes boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_votes_per_day_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$votesPerDayLog$central`
+
+**Dispersion**: `r edaUni$votesPerDayLog$disp`
+
+**Shape of Distribution**:  `r edaUni$votesPerDayLog$skew` `r edaUni$votesPerDayLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_votes_per_day_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs rather significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_votes_per_day_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$votesPerDayLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$votesPerDayLog$out`
+
+### Votes per Day * Scores
+This variable is the product of the number of votes per day and the scores variable.
+
+`r kfigr::figr(label = "a_votes_per_day_scores_stats", prefix = TRUE, link = TRUE, type="Table")`: Scores per Day summary statistics
+```{r a_votes_per_day_scores_stats}
+knitr::kable(edaUni$votesPerDayScores$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_votes_per_day_scores_dist}
+gridExtra::grid.arrange(edaUni$votesPerDayScores$hist, edaUni$votesPerDayScores$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_votes_per_day_scores_dist", prefix = TRUE, link = TRUE, type="Figure")`: Scores per Day histogram and QQ Plot
+
+```{r a_votes_per_day_scores_box, fig.height=4}
+edaUni$votesPerDayScores$box
+```
+`r kfigr::figr(label = "a_votes_per_day_scores_box", prefix = TRUE, link = TRUE, type="Figure")`: Scores per Day boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_votes_per_day_scores_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$votesPerDayScores$central`
+
+**Dispersion**: `r edaUni$votesPerDayScores$disp`
+
+**Shape of Distribution**:  `r edaUni$votesPerDayScores$skew` `r edaUni$votesPerDayScores$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_votes_per_day_scores_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that approximates normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_votes_per_day_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$votesPerDayScores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$votesPerDayScores$out`
+
+### Votes per Day * Scores (Log)
+This is a log transformation of votes per day * scores variable.
+
+`r kfigr::figr(label = "a_votes_per_day_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log scores summary statistics
+```{r a_votes_per_day_scores_log_stats}
+knitr::kable(edaUni$votesPerDayScoresLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_votes_per_day_scores_log_dist}
+gridExtra::grid.arrange(edaUni$votesPerDayScoresLog$hist, edaUni$votesPerDayScoresLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_votes_per_day_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log scores histogram and QQ Plot
+
+```{r a_votes_per_day_scores_log_box, fig.height=4}
+edaUni$votesPerDayScoresLog$box
+```
+`r kfigr::figr(label = "a_votes_per_day_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log scores boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_votes_per_day_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$votesPerDayScoresLog$central`
+
+**Dispersion**: `r edaUni$votesPerDayScoresLog$disp`
+
+**Shape of Distribution**:  `r edaUni$votesPerDayScoresLog$skew` `r edaUni$votesPerDayScoresLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_votes_per_day_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs rather significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_votes_per_day_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$votesPerDayScoresLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$votesPerDayScoresLog$out`
+
+
+
+
 
 
 

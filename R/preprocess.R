@@ -6,7 +6,7 @@
 #' \code{preprocess} Performs preprocessing of data for analysis
 #'
 #' @param movies Data frame containing the movies data set
-#' @param mdb2 Data set of 100 randomly selected observations from the movies data set, in which total box office revenue was added.
+#' @param mdb2 Data set of 100 randomly selected observations from the movies data set, in which total daily box office revenue was added.
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
@@ -21,21 +21,17 @@ preprocess <- function(movies, mdb2) {
   mdb1 <- mdb1[complete.cases(mdb1),]
 
   #---------------------------------------------------------------------------#
-  #                        Create Theatre Only Days                           #
+  #               Create Days Since Theatrical Release                        #
   #---------------------------------------------------------------------------#
   mdb1 <- mdb1 %>% mutate(thtr_rel_date = as.Date(paste(mdb1$thtr_rel_year,
                                                        mdb1$thtr_rel_month,
                                                        mdb1$thtr_rel_day,
-                                                       sep = "-"), "%Y-%m-%d"))
+                                                      sep = "-"), "%Y-%m-%d"))
+  thruDate <- as.Date("2016-01-01", "%Y-%m-%d")
 
-  mdb1 <- mdb1 %>% mutate(dvd_rel_date = as.Date(paste(mdb1$dvd_rel_year,
-                                                   mdb1$dvd_rel_month,
-                                                   mdb1$dvd_rel_day,
-                                                   sep = "-"), "%Y-%m-%d"))
-  mdb1 <- mdb1 %>% mutate(thtr_days = as.numeric(dvd_rel_date - thtr_rel_date))
+  mdb1 <- mdb1 %>% mutate(thtr_days = as.numeric(thruDate - thtr_rel_date))
 
-  mdb1 <- mdb1[(mdb1$thtr_days > 0),]
-  mdb1 <- mdb1 %>% mutate(thtr_days_sqrt = sqrt(thtr_days))
+  mdb1 <- mdb1 %>% mutate(thtr_days_log = log(thtr_days))
 
 
   #---------------------------------------------------------------------------#
@@ -61,9 +57,14 @@ preprocess <- function(movies, mdb2) {
                                                                      ifelse(thtr_rel_month == 10, "Oct",
                                                                             ifelse(thtr_rel_month == 11, "Nov",
                                                                                    "Dec"))))))))))),
-    scores = 10 * imdb_rating + critics_score + audience_score,
-    scores_log = log2(10 * imdb_rating + critics_score + audience_score),
-    runtime_log = log2(runtime))
+    scores = (((10 * imdb_rating) + audience_score) / 2),
+    scores_log = log2(scores),
+    runtime_log = log2(runtime),
+    votes_per_day = (imdb_num_votes / thtr_days),
+    votes_per_day_log = log2(votes_per_day),
+    votes_per_day_scores = (votes_per_day * scores),
+    votes_per_day_scores_log = log2(votes_per_day_scores))
+
 
   mdb1$thtr_rel_month <- factor(mdb1$thtr_rel_month, levels = c("Jan", "Feb", "Mar", "Apr",
                                                               "May", "Jun", "Jul", "Aug",
@@ -77,15 +78,15 @@ preprocess <- function(movies, mdb2) {
   #                           Create Cast Vote                                #
   #---------------------------------------------------------------------------#
   # Create actor score share data frames
-  actor1 <- mdb1 %>% mutate(actor = actor1, votes = .40 * imdb_num_votes) %>%
+  actor1 <- mdb1 %>% mutate(actor = actor1, votes = .40 * votes_per_day) %>%
     select(actor, votes)
-  actor2 <- mdb1 %>% mutate(actor = actor2, votes = .30 * imdb_num_votes) %>%
+  actor2 <- mdb1 %>% mutate(actor = actor2, votes = .30 * votes_per_day) %>%
     select(actor, votes)
-  actor3 <- mdb1 %>% mutate(actor = actor3, votes = .15 * imdb_num_votes) %>%
+  actor3 <- mdb1 %>% mutate(actor = actor3, votes = .15 * votes_per_day) %>%
     select(actor, votes)
-  actor4 <- mdb1 %>% mutate(actor = actor4, votes = .10 * imdb_num_votes) %>%
+  actor4 <- mdb1 %>% mutate(actor = actor4, votes = .10 * votes_per_day) %>%
     select(actor, votes)
-  actor5 <- mdb1 %>% mutate(actor = actor5, votes = .05 * imdb_num_votes) %>%
+  actor5 <- mdb1 %>% mutate(actor = actor5, votes = .05 * votes_per_day) %>%
     select(actor, votes)
   actors <- rbind(actor1, actor2, actor3, actor4, actor5)
   actors <- actors %>% group_by(actor) %>% summarize(votes = sum(votes))
@@ -144,12 +145,13 @@ preprocess <- function(movies, mdb2) {
 
 
   #---------------------------------------------------------------------------#
-  #                     Create Box Office Sample Set                          #
+  #                     Create Daily Box Office Sample Set                    #
   #---------------------------------------------------------------------------#
   keep <- c("title", "box_office")
   mdb2 <- mdb2[, names(mdb2) %in% keep]
   mdb2 <- inner_join(mdb2, mdb1)
-  mdb2 <- mdb2 %>% mutate(box_office_log = log2(box_office))
+  mdb2 <- mdb2 %>% mutate(daily_box_office = box_office / thtr_days)
+  mdb2 <- mdb2 %>% mutate(daily_box_office_log = log2(daily_box_office))
 
   data <- list(
     mdb1 = mdb1,

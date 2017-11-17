@@ -23,9 +23,11 @@ correlate <- function(x, y, yLab = NULL, plot = FALSE) {
   xNames <- colnames(x)
   yName <- ifelse(is.null(yLab), colnames(y), yLab)
 
-  # Create correlation plot
+  # Create correlation plot of all x
   if (plot == TRUE) {
-    analysis[["cMatrix"]] <- cor(x)
+    m <- cor(x)
+    m <- as.data.frame(as.table(m))
+    analysis[["cMatrix"]] <- m %>% filter(Freq < 1)
     analysis[["cPlot"]] <- corrplot::corrplot(cor(x), diag = FALSE,
                                               order = "hclust", number.cex = .7,
                                               addCoef.col = "black", tl.col = "black",
@@ -35,15 +37,17 @@ correlate <- function(x, y, yLab = NULL, plot = FALSE) {
                                                                              name = "PiYG"))
   }
 
-  # Conduct correlation tests
+  # Conduct correlation tests of x with y
   cTests <- data.table::rbindlist(lapply(seq_along(xNames), function(idx) {
     t <- cor.test(x[[idx]], y[[1]])
     data.frame(Variable = xNames[[idx]],
                Correlation = round(t$estimate, 3),
                Statistic = round(t$statistic, 3),
                df = t$parameter,
-               `p-value` = ifelse(round(t$p.value, 3) < 0.05, "< 0.05",
-                                  round(t$p.value, 3)),
+               `p-value` = ifelse(t$p.value < 0.001, "p < .001",
+                                  ifelse(t$p.value < 0.01, "p < .01",
+                                         ifelse(t$p.value < 0.05, "p < .05",
+                                                round(t$p.value, 3)))),
                `95% CI` = paste("[ ", round(t$conf.int[1], 2), ", ",
                                 round(t$conf.int[2], 2), " ]")
                )

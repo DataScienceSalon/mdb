@@ -31,7 +31,7 @@ evalForwardModel <- function(data, model, y, remaining) {
     s <- summary(m)
     data.frame(Selected = remaining[x],
                `Model Size` = length(newPredictors),
-               DF = s$df[2],
+               DF = paste(s$df[1], s$df[2], collapse = ","),
                `F-statistic` = round(s$fstatistic[1], 2),
                `R-Squared` = round(s$r.squared, 3),
                Adjusted.R2 = round(s$adj.r.squared, 3),
@@ -86,7 +86,7 @@ forward <- function(data, y, mName) {
     v <- c(v, delta)
   }
   model$`Pct Chg` <- round(v, 2)
-  final[["steps"]] <- model
+  final[["build"]] <- model
 
   # Return final model
   lrFormula <- formula(paste(y, " ~ ",
@@ -94,18 +94,7 @@ forward <- function(data, y, mName) {
   m <- lm(lrFormula, data)
   a <- anova(m)
   s <- summary(m)
-
   final[["model"]] <- m
-  final[["coefficients"]] <- broom::tidy(m)
-  final[["summary"]] <- data.frame(Model = mName,
-                                   `Model Size` = length(model$Selected),
-                                   DF = s$df[2],
-                                   `F-statistic` = round(s$fstatistic[1], 2),
-                                   `R-Squared` = round(s$r.squared, 3),
-                                   Adjusted.R2 = round(s$adj.r.squared, 3),
-                                   `p-value` = a$`Pr(>F)`[1],
-                                   stringsAsFactors = FALSE,
-                                   row.names = NULL)
 
   return(final)
 }

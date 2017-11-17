@@ -25,16 +25,18 @@ evalBackwardModel <- function(data, y, predictors) {
     p
   })
   models <- rbindlist(lapply(seq_along(predictorSet), function(x) {
-    newPredictors <- predictorSet[[x]][predictorSet[[x]] != predictorSet[[x]]$omit]$predictors
-    lrFormula <- formula(paste(y, " ~ ",  paste(newPredictors, collapse=" + ")))
-    s <- summary(lm(lrFormula, data))
-    data.frame(Removed = predictorSet[[x]]$omit,
-               Predictors = length(newPredictors),
-               Adjusted.R2 = s$adj.r.squared,
+    newPredictors <- predictorSet[[x]]$predictors
+    f <- lrFormula <- formula(paste(y, " ~ ",  paste(newPredictors, collapse=" + ")))
+    m <- lm(f, data = data)
+    a <- anova(m)
+    s <- summary(m)
+    data.frame(removed = predictorSet[[x]]$omit,
+               size = length(predictorSet[[x]]$predictors),
+               p = broom::glance(m)$p.value,
                stringsAsFactors = FALSE)
   }))
-  best <- models %>% filter(Adjusted.R2 == max(Adjusted.R2))
-  return(head(best, 1))
+  remove <- models %>% filter(p ==max(p))
+  return(head(remove, 1))
 }
 
 
@@ -52,27 +54,29 @@ evalBackwardModel <- function(data, y, predictors) {
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-back <- function(data, y, alpha = 0.05) {
+back <- function(data, y, alpha = 0.15) {
 
   final <- list()
 
   # Initialize key variables
   predictors <- colnames(data)
   predictors <- predictors[!(predictors == y)]
-  lrFormula <- formula(paste(y, " ~ ",
-                             paste(predictors, collapse=" + ")))
-  t <- anova(lm(lrFormula, data = data))
-  t$Predictor <- rownames(t)
-  remove <- head(t %>% filter(t$`Pr(>F)` < alpha) %>% arrange(desc(`Pr(>F)`)) %>% select(Predictor), 1)
 
-  baseModel <- summary(lm(lrFormula, data))
-  newAdjR2 <- baseModel$adj.r.squared
+
+  # Iterate through predictor sets
+  p <- 1
+  f <- lrFormula <- formula(paste(y, " ~ ",  paste(newPredictors, collapse=" + ")))
+  m <- lm(f, data = data)
 
   while(length(removed) < length(predictors)) {
-    bestAdjR2 <- newAdjR2
-    best <- evalBackwardModel(data, y, predictors)
-    removed <- c(removed, best$Removed)
+    f <- lrFormula <- formula(paste(y, " ~ ",  paste(newPredictors, collapse=" + ")))
+    m <- lm(f, data = data)
+    a <- as.data.table(broom::tidy(anova(m)))
+    a <- a %>% filter(!is.na(p.value))
+    r <- a %>% filter(p.value == max(p.value)) %>% select(term, p.value)
   }
+
+
 
   finalPredictors <- predictors[!(predictors %in% removed)]
   lrFormula <- formula(paste(y, " ~ ",  finalPredictors, collapse=" + "))

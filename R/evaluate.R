@@ -5,7 +5,7 @@
 #'
 #' \code{evaluate} Performs evaluate analysis of variables
 #'
-#' @param data List containing two data frames, mdb, the main movie data set and mdbBox the sample with box office revenue
+#' @param data List containing two data frames, mdb, the main movie data set and mdbBox the sample with daily box office revenue
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
@@ -13,7 +13,7 @@
 evaluate <- function(data) {
 
   #---------------------------------------------------------------------------#
-  #                       Box Office Revenue Analysis                         #
+  #                       Daily Box Office Revenue Analysis                         #
   #---------------------------------------------------------------------------#
   # Director Experience
   df <- data %>% select(imdb_num_votes_log, director_experience)

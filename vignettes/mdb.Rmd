@@ -51,10 +51,9 @@ library(ggplot2)
 source("../R/analysis.R")
 source("../R/associate.R")
 #source("../R/back.R")
-source("../R/bivariate.R")
+#source("../R/bivariate.R")
 source("../R/correlate.R")
 source("../R/forward.R")
-source("../R/fullModel.R")
 source("../R/preprocess.R")
 source("../R/process.R")
 source("../R/regressionAnalysis.R")
@@ -72,11 +71,7 @@ mdb2 <- dataSets$mdb2
 edaUni <- univariate(mdb)
 ```
 
-
-
-```{r model, child = '4.eda.rmd'}
+```{r model, child = '5.model.rmd'}
 ```
-
-
 
 # References

@@ -12,7 +12,9 @@
 #' @export
 univariate <- function(mdb) {
 
-  # Conduct Qualitative Analysis
+  #---------------------------------------------------------------------------#
+  #                       Conduct Qualitative Analysis                        #
+  #---------------------------------------------------------------------------#
   type <- univariateQual(as.data.frame(mdb$title_type), xLab = "Title Type")
   genre <- univariateQual(as.data.frame(mdb$genre), xLab = "Genre")
   mpaa <- univariateQual(as.data.frame(mdb$mpaa_rating), xLab = "MPAA Rating")
@@ -23,9 +25,11 @@ univariate <- function(mdb) {
   bestDirWin <- univariateQual(as.data.frame(mdb$best_dir_win), xLab = "Best Director Oscar")
   bestActorWin <- univariateQual(as.data.frame(mdb$best_actor_win), xLab = "Best Actor Oscar")
   bestActressWin <- univariateQual(as.data.frame(mdb$best_actress_win), xLab = "Best Actress Oscar")
-  top200Box <- univariateQual(as.data.frame(mdb$top200_box), xLab = "Top 200 Box Office")
+  top200Box <- univariateQual(as.data.frame(mdb$top200_box), xLab = "Top 200 Daily Box Office")
 
-  # Conduct Quantitative Analysis
+  #---------------------------------------------------------------------------#
+  #                        Conduct Quantative Analysis                        #
+  #---------------------------------------------------------------------------#
   directorExperience <- univariateQuant(data.frame(mdb$title, mdb$director_experience),
                                         yLab = "Director Experience", units = "films")
   directorExperienceLog <- univariateQuant(data.frame(mdb$title, mdb$director_experience_log),
@@ -40,7 +44,7 @@ univariate <- function(mdb) {
                              yLab = "Log Runtime", units = "minutes")
   thtrDays <- univariateQuant(data.frame(mdb$title, mdb$thtr_days),
                               yLab = "Days in Theatre", units = "days")
-  thtrDaysSqrt <- univariateQuant(data.frame(mdb$title, mdb$thtr_days_sqrt),
+  thtrDaysLog <- univariateQuant(data.frame(mdb$title, mdb$thtr_days_log),
                               yLab = "Days in Theatre", units = "days")
   imdbVotes <- univariateQuant(data.frame(mdb$title, mdb$imdb_num_votes),
                                yLab = "IMDB Votes", units = "votes")
@@ -60,10 +64,35 @@ univariate <- function(mdb) {
                             yLab = "Total Scores", units = "points")
   scoresLog <- univariateQuant(data.frame(mdb$title, mdb$scores_log),
                             yLab = "Log Total Scores", units = "points")
-  boxOffice <- univariateQuant(data.frame(mdb2$title, mdb2$box_office),
-                                 yLab = "Box Office", units = "dollars")
-  boxOfficeLog <- univariateQuant(data.frame(mdb2$title, mdb2$box_office_log),
-                               yLab = "Log Box Office", units = "log(dollars)")
+  votesPerDay <- univariateQuant(data.frame(mdb$title, mdb$votes_per_day),
+                            yLab = "Votes per Day", units = "votes")
+  votesPerDayLog <- univariateQuant(data.frame(mdb$title, mdb$votes_per_day_log),
+                                 yLab = "Log Votes per Day", units = "votes")
+  votesPerDayScores <- univariateQuant(data.frame(mdb$title, mdb$votes_per_day_scores),
+                                 yLab = "Scores * Votes per Day", units = "scores")
+  votesPerDayScoresLog <- univariateQuant(data.frame(mdb$title, mdb$votes_per_day_scores_log),
+                                    yLab = "Log Scores * Votes per Day", units = "scores")
+
+  dailyBoxOffice <- univariateQuant(data.frame(mdb2$title, mdb2$daily_box_office),
+                                 yLab = "Daily Box Office", units = "dollars")
+  dailyBoxOfficeLog <- univariateQuant(data.frame(mdb2$title, mdb2$daily_box_office_log),
+                               yLab = "Log Daily Box Office", units = "log(dollars)")
+
+  #---------------------------------------------------------------------------#
+  #                            Capture Outliers                               #
+  #---------------------------------------------------------------------------#
+  outliers <- rbind(directorExperience$outliers, directorExperienceLog$outliers,
+                    castExperience$outliers, castExperienceLog$outliers,
+                    runtime$outliers, runtimeLog$outliers,
+                    thtrDays$outliers, thtrDaysLog$outliers,
+                    imdbVotes$outliers, imdbVotesLog$outliers,
+                    imdbRating$outliers, criticsScores$outliers,
+                    audienceScores$outliers, castVotes$outliers,
+                    castVotesLog$outliers, scores$outliers, scoresLog$outliers,
+                    votesPerDay$outliers, votesPerDayLog$outliers,
+                    votesPerDayScores$outliers, votesPerDayScoresLog$outliers,
+                    dailyBoxOffice$outliers, dailyBoxOffice$outliers)
+
   # Return analysis
   analysis <- list(
     type = type,
@@ -84,7 +113,7 @@ univariate <- function(mdb) {
     runtime = runtime,
     runtimeLog = runtimeLog,
     thtrDays = thtrDays,
-    thtrDaysSqrt = thtrDaysSqrt,
+    thtrDaysLog = thtrDaysLog,
     imdbVotes = imdbVotes,
     imdbVotesLog = imdbVotesLog,
     imdbRating = imdbRating,
@@ -94,8 +123,13 @@ univariate <- function(mdb) {
     castVotesLog = castVotesLog,
     scores = scores,
     scoresLog = scoresLog,
-    boxOffice = boxOffice,
-    boxOfficeLog = boxOfficeLog
+    votesPerDay = votesPerDay,
+    votesPerDayLog = votesPerDayLog,
+    votesPerDayScores = votesPerDayScores,
+    votesPerDayScoresLog = votesPerDayScoresLog,
+    dailyBoxOffice = dailyBoxOffice,
+    dailyBoxOfficeLog = dailyBoxOfficeLog,
+    outliers = outliers
   )
   return(analysis)
 }

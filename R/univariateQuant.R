@@ -35,10 +35,17 @@ univariateQuant <- function(data, yLab, units = NULL) {
   k <- ifelse(stats$Kurtosis == 0, "approximately normal",
               ifelse(stats$Kurtosis < 0, "platykurtic or light-tailed",
                      "leptokurtic or heavy-tailed"))
-  lower <- max(0, stats$Q1 - (1.5 * stats$IQR))
+  lower <- stats$Q1 - (1.5 * stats$IQR)
   upper <- stats$Q3 + (1.5 * stats$IQR)
   outliers <- subset(data, data[[2]] < lower | data[[2]] > upper)
-  numOutliers <- ifelse(nrow(outliers) == 0, "no", nrow(outliers))
+  outliers <- outliers %>%
+    mutate(Title = as.character(.[[1]]),
+           Variable = yLab,
+           Value = .[[2]],
+           PctIQR = round(ifelse(.[[2]] < lower, (lower - .[[2]]) / stats$IQR * 100,
+                                 (.[[2]] - upper) / stats$IQR * 100)), 2) %>%
+    select(Title, Variable, Value, PctIQR)
+  numOutliers <- ifelse(stats$Outliers == 0, "no", stats$Outliers)
 
 
   central <- paste("the central tendency for", tolower(yLab), "was",
