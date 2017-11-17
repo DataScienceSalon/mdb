@@ -51,12 +51,11 @@ evalForwardModel <- function(data, model, y, remaining) {
 #'
 #' @param data Data frame containing the full model
 #' @param y Character string containing the name of the response variable
-#' @param mName Character string containing the name of model
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-forward <- function(data, y, mName) {
+forward <- function(data, y) {
 
   final <- list()
 

@@ -24,9 +24,9 @@ process <- function(data, y, outliers = NULL) {
   keep <- c('best_actor_win',	'best_actress_win',	'best_dir_win',
             'best_pic_nom',	'best_pic_win',	'cast_experience_log',
             'cast_votes_log',	'critics_score',	'director_experience_log',
-            'genre',	'imdb_num_votes_log',	'imdb_rating',	'mpaa_rating',
+            'genre',	'imdb_num_votes_log',	'mpaa_rating',
             'runtime_log',	'votes_per_day_scores_log',
-            'thtr_rel_month',	'thtr_rel_season')
+            'thtr_rel_month')
 
 
   # Remove outliers

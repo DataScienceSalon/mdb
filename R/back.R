@@ -17,26 +17,17 @@
 #' @export
 evalBackwardModel <- function(data, y, predictors) {
 
-  predictorSet <- lapply(predictors, function(x) {
-    p <- list(
-      omit = x,
-      predictors = predictors[(!(predictors %in% x))]
-    )
-    p
-  })
-  models <- rbindlist(lapply(seq_along(predictorSet), function(x) {
-    newPredictors <- predictorSet[[x]]$predictors
-    f <- lrFormula <- formula(paste(y, " ~ ",  paste(newPredictors, collapse=" + ")))
-    m <- lm(f, data = data)
-    a <- anova(m)
-    s <- summary(m)
-    data.frame(removed = predictorSet[[x]]$omit,
-               size = length(predictorSet[[x]]$predictors),
-               p = broom::glance(m)$p.value,
-               stringsAsFactors = FALSE)
-  }))
-  remove <- models %>% filter(p ==max(p))
-  return(head(remove, 1))
+  f <- lrFormula <- formula(paste(y, " ~ ",  paste(predictors, collapse=" + ")))
+  m <- lm(f, data = data)
+  s <- summary(m)
+  a <- broom::tidy(anova(m))
+  a <- a %>% filter(!is.na(p.value))
+  p <- a %>% filter(p.value == max(p.value)) %>% select(term, p.value)
+  r <- data.frame(Removed = p$term,
+                  Size = nrow(a),
+                  Adj.R2 = s$adj.r.squared,
+                  p.value = p$p.value)
+  return(r)
 }
 
 
@@ -56,32 +47,32 @@ evalBackwardModel <- function(data, y, predictors) {
 #' @export
 back <- function(data, y, alpha = 0.15) {
 
-  final <- list()
+  finalModel <- list()
 
-  # Initialize key variables
-  predictors <- colnames(data)
-  predictors <- predictors[!(predictors == y)]
-
+  # Initialize with full model
+  predictors <- colnames(data)                  # Initialize predictors
+  predictors <- predictors[!(predictors == y)]  # Remove response from list of predictors
+  r <- evalBackwardModel(data = data, predictors = predictors, y = y)
+  b <- data.frame()                             # Intialize build data frame
 
   # Iterate through predictor sets
-  p <- 1
-  f <- lrFormula <- formula(paste(y, " ~ ",  paste(newPredictors, collapse=" + ")))
-  m <- lm(f, data = data)
-
-  while(length(removed) < length(predictors)) {
-    f <- lrFormula <- formula(paste(y, " ~ ",  paste(newPredictors, collapse=" + ")))
-    m <- lm(f, data = data)
-    a <- as.data.table(broom::tidy(anova(m)))
-    a <- a %>% filter(!is.na(p.value))
-    r <- a %>% filter(p.value == max(p.value)) %>% select(term, p.value)
+  while(r$Size > 1 & r$p > alpha) {
+    b <- rbind(b, r)
+    predictors <- predictors[!(predictors == r$Removed)]
+    r <- evalBackwardModel(data = data, predictors = predictors, y = y)
   }
 
+  finalModel[["selected"]] <- predictors
+
+  # Format Build
+  b$Steps <- c(1:nrow(b))
+  finalModel[["build"]] <- b %>% select(Steps, Removed, p.value)
 
 
-  finalPredictors <- predictors[!(predictors %in% removed)]
-  lrFormula <- formula(paste(y, " ~ ",  finalPredictors, collapse=" + "))
-  finalModel <- lm(lrFormula, data)
-
+  # Return final model
+  f <- formula(paste(y, " ~ ", paste(predictors, collapse=" + ")))
+  m <- lm(f, data)
+  finalModel[["model"]] <- m
 
   return(finalModel)
 

@@ -80,7 +80,7 @@ regressionAnalysis <- function(mod, mName, yVar, yLab) {
   tests <- list()
   # Linearity Tests
   coefs <- names(coef(mod))
-  tests[["linearity"]] <- car::linearHypothesis(mod, coefs)
+  tests[["linearity"]] <- car::linearHypothesis(mod, coefs, singular.ok = TRUE)
 
   # Normality Test (nt)
   tests[["normal_res"]] <- shapiro.test(res)
@@ -121,7 +121,8 @@ regressionAnalysis <- function(mod, mName, yVar, yLab) {
   if (tests$linearity$`Pr(>F)`[2] < 0.05) {
     comments[["linearity"]] <- paste0("A review of the partial scatterplots indicated ",
                                       "that linearity was a reasonable assumption for ",
-                                      "this model.  A linear hypothesis test was conducted to ",
+                                      "this model (despite the presence of several ",
+                                      "influential points).  A linear hypothesis test was conducted to ",
                                       "test the linearity assumption.  The results ",
                                       "were significant (F(", tests$linearity$Df[2],
                                       "), p < ",
@@ -129,7 +130,7 @@ regressionAnalysis <- function(mod, mName, yVar, yLab) {
                                              ifelse(tests$linearity$`Pr(>F)`[2] < .01, ".01",
                                                     ifelse(tests$linearity$`Pr(>F)`[2] < .05,
                                                            ".05", round(tests$linearity$`Pr(>F)`[2], 3)))),
-                                      ".  As such, the linearity assumption was met in this case. ")
+                                      ").  As such, the linearity assumption was met in this case. ")
   } else {
     comments[["linearity"]] <- paste0("A review of the partial scatterplots indicated ",
                                       "that linearity may be a concern for this model. ",
@@ -141,45 +142,49 @@ regressionAnalysis <- function(mod, mName, yVar, yLab) {
                                              ifelse(tests$linearity$`Pr(>F)`[2] < .01, ".01",
                                                     ifelse(tests$linearity$`Pr(>F)`[2] < .05,
                                                            ".05", round(tests$linearity$`Pr(>F)`[2], 3)))),
-                                      ".  As such the linearity assumption was not met in this case.  ")
+                                      ").  As such the linearity assumption was not met in this case.  ")
   }
 
   if (tests$homoscedasticity$p  < 0.05) {
-    comments[["homoscedasticity"]] <- paste0("A Breusch–Pagan test test was conducted to ",
-                                      "test the homoscedasticity assumption.  The results ",
-                                      "were significant (F(", tests$homoscedasticity$Df,
-                                      "), p < ",
-                                      ifelse(tests$homoscedasticity$p < .001, ".001",
-                                             ifelse(tests$homoscedasticity$p < .01, ".01",
-                                                    ifelse(tests$homoscedasticity$p < .05,
-                                                           ".05", round(tests$homoscedasticity$p, 3)))),
-                                      ").  As such, the homoscedasticity assumption was met in this case. ")
+    comments[["homoscedasticity"]] <- paste0("The residuals plot above indicated equal dispersion  ",
+                                             "of residuals about zero mean. ",
+                                             "A Breusch–Pagan test test was conducted to ",
+                                              "test the homoscedasticity assumption.  The results ",
+                                              "were significant (F(", tests$homoscedasticity$Df,
+                                              "), p < ",
+                                              ifelse(tests$homoscedasticity$p < .001, ".001",
+                                                     ifelse(tests$homoscedasticity$p < .01, ".01",
+                                                            ifelse(tests$homoscedasticity$p < .05,
+                                                                   ".05", round(tests$homoscedasticity$p, 3)))),
+                                              ").  As such, the homoscedasticity assumption was met in this case. ")
   } else {
-    comments[["homoscedasticity"]] <- paste0("A Breusch–Pagan test was conducted to ",
-                                      "test the homoscedasticity assumption.  The results ",
-                                      "were not significant (F(", tests$homoscedasticity$Df[2],
-                                      "), p < ",
-                                      ifelse(tests$homoscedasticity$p < .001, ".001",
-                                             ifelse(tests$homoscedasticity$p < .01, ".01",
-                                                    ifelse(tests$homoscedasticity$p < .05,
-                                                           ".05", round(tests$homoscedasticity$p, 3)))),
-                                      ").  As such the homoscedasticity assumption was not met in this case.  ")
+    comments[["homoscedasticity"]] <- paste0("An examination of the residuals plot revealed unequal ",
+                                             "disperson of residuals about the mean. ",
+                                             "A Breusch–Pagan test was conducted to ",
+                                             "test the homoscedasticity assumption.  The results ",
+                                             "were not significant (F(", tests$homoscedasticity$Df[2],
+                                             "), p < ",
+                                             ifelse(tests$homoscedasticity$p < .001, ".001",
+                                                    ifelse(tests$homoscedasticity$p < .01, ".01",
+                                                           ifelse(tests$homoscedasticity$p < .05,
+                                                                  ".05", round(tests$homoscedasticity$p, 3)))),
+                                             ").  As such the homoscedasticity assumption was not met in this case.  ")
   }
 
   if (tests$normal_res$p.value  < 0.05) {
     comments[["normality"]] <- paste0("The histogram and normal Q-Q plot suggested a normal ",
-                                      "distribution of residuals.  A review of the Shapiro–Wilk  ",
+                                      "distribution of residuals.  A review of the Shapiroi-Wilk  ",
                                       "test (SW = ", round(tests$normal_res$statistic, 3), ", p = ",
                                       round(tests$normal_res$p.value,3),
-                                      ") and skewness (",round(moments::skewness(res), 3), ") and ",
+                                      ") and the skewness (",round(moments::skewness(res), 3), ") and ",
                                       "kurtosis (", round(moments::kurtosis(res), 3), ") supported ",
                                       "the assumption of normaility.  ")
   } else {
     comments[["normality"]] <- paste0("The histogram and normal Q-Q plot did not suggest a normal ",
-                                      "distribution of residuals.  A review of the Shapiro–Wilk  ",
+                                      "distribution of residuals.  A review of the Shapiro-Wilk  ",
                                       "test (SW = ", round(tests$normal_res$statistic, 3), ", p = ",
                                       round(tests$normal_res$p.value, 3),
-                                      ") and skewness (", round(moments::skewness(res), 3), ") and ",
+                                      ") and the skewness (", round(moments::skewness(res), 3), ") and ",
                                       "kurtosis (", round(moments::kurtosis(res),3), ") indicated that ",
                                       "normality of residuals was not a reasonable assumption ",
                                       "for this model. ")
@@ -204,9 +209,7 @@ regressionAnalysis <- function(mod, mName, yVar, yLab) {
   if (length(tests$influential) > 0) {
     comments[["outliers"]] <- paste0("Examination of the residuals versus leverage plot and case-wise ",
                                      "diagnostics such as Cook's distance revealed ", length(tests$influential),
-                                     " cases exerting undue influence on the model. To discern the ",
-                                     "influence of these observations, a new model was created ",
-                                     "without the influence points and the impact was reported.  ")
+                                     " cases exerting undue influence on the model.  ")
   } else {
     comments[["outliers"]] <- paste0("Examination of the residuals versus leverage plot and case-wise ",
                                      "diagnostics such as Cook's distance revealed no ",

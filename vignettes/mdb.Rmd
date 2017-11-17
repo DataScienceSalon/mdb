@@ -50,7 +50,7 @@ library(ggplot2)
 ```{r source-functions}
 source("../R/analysis.R")
 source("../R/associate.R")
-#source("../R/back.R")
+source("../R/back.R")
 #source("../R/bivariate.R")
 source("../R/correlate.R")
 source("../R/forward.R")

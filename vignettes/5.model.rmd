@@ -14,7 +14,7 @@ Both forward selection and backward elimination with p-values model selection te
 The forward selection process began with a null model then all variables were added to the model, one-by-one, and the model which provided the greatest improvement over the current best adjusted R-squared was selected. The process repeated with each variable that was not already in the model until all variables were analyzed. Only the models that improved adjusted r-squared were retained at each step. 
 
 ### Backward Elimination
-The backward elimination approach began with the full model. A regression analysis was performed and the least significant predictor (that with the highest p-value) was removed from the model.  This process repeated, removing only the most least significant predictor at each step, until all predictors had p-values below the present threshold.   
+The backward elimination approach began with the full model. A regression analysis was performed and the least significant predictor (that with the highest p-value) was removed from the model.  This process repeated, removie only the most least significant predictor at each step, until all predictors had p-values below the present threshold.   
 
 
 ## Full Model Selection
@@ -39,15 +39,15 @@ knitr::kable(full, digits = 2) %>%
 
 
 ## Model Alpha
-For this model, a forward selection procedure was undertaken based upon the full model described above. The variables were added as described in  `r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")`.
+For this model, a forward selection procedure was undertaken based upon the full model described above. The variables were added as described in  `r kfigr::figr(label = "model_a_build", prefix = TRUE, link = TRUE, type="Table")`.
 
-`r kfigr::figr(label = "model_a", prefix = TRUE, link = TRUE, type="Table")`: Model Alpha
-```{r model_a, results = "html"}
+`r kfigr::figr(label = "model_a_build", prefix = TRUE, link = TRUE, type="Table")`: Model Alpha forward selection process
+```{r model_a_build, results = "html"}
 # Obtain Data
 mData <- process(mdb, "imdb_num_votes_log")  
 
 # Perform forward selection
-m <- forward(mData$full, y = "imdb_num_votes_log", mName = "Model Alpha")
+m <- forward(mData$full, y = "imdb_num_votes_log")
 
 # Conduct regression analysis
 modelA <- regressionAnalysis(m, mName = "Model Alpha", yVar  = 'imdb_num_votes_log',
@@ -57,14 +57,13 @@ modelA <- regressionAnalysis(m, mName = "Model Alpha", yVar  = 'imdb_num_votes_l
 knitr::kable(m$build, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-`r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")` Forward Selection Process
 
 
 ### Model Overview
 ```{r features}
 features <- openxlsx::read.xlsx("../data/features.xlsx")
 features <- features %>% filter(model == "yes") %>% select(Variable, Description) 
-selected <- data.frame(Variable = modelA$build$Selected)
+selected <- data.frame(Variable = m$build$Selected)
 selected <- selected %>% inner_join(features)
 ```
 This model is defined as follows:
@@ -72,11 +71,11 @@ $$y_i = (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_
 
 where:  
 $y_i$ is the log number of votes for movie $i$   
-$x_{i1}$ is `r tolower(selected$Description[1])` for moving $i$   
-$x_{i2}$ is `r tolower(selected$Description[2])` for moving $i$   
-$x_{i3}$ is `r tolower(selected$Description[3])` for moving $i$   
-$x_{i4}$ is `r tolower(selected$Description[4])` for moving $i$   
-$x_{i5}$ is `r tolower(selected$Description[5])` for moving $i$    
+$x_{i1}$ is `r tolower(selected$Description[1])` for movie $i$   
+$x_{i2}$ is `r tolower(selected$Description[2])` for movie $i$   
+$x_{i3}$ is `r tolower(selected$Description[3])` for movie $i$   
+$x_{i4}$ is `r tolower(selected$Description[4])` for movie $i$   
+$x_{i5}$ is `r tolower(selected$Description[5])` for movie $i$    
 $\epsilon_i$ is the total residual for the model for movie$i$    
 
 ```{r modelA_regression}
@@ -84,14 +83,16 @@ modelA$plots$regression
 ```
 `r kfigr::figr(label = "modelA_regression", prefix = TRUE, link = TRUE, type="Figure")` Model Alpha Regression
 
-The model graphically presented in `r kfigr::figr(label = "modelA_regression", prefix = TRUE, link = TRUE, type="Figure")` `r modelA$comment$apa`
+As suggested by `r kfigr::figr(label = "modelA_regression", prefix = TRUE, link = TRUE, type="Figure")`, `r modelA$comment$apa`
+
+#### Model Coefficients
 
 `r kfigr::figr(label = "modelA_coefficients", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Coefficients
 ```{r modelA_coefficients}
 knitr::kable(modelA$summary$coefficients, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-As shown in `r kfigr::figr(label = "modelA_summary", prefix = TRUE, link = TRUE, type="Table")`, the predicted log of the number of IMDB votes per day for a film was `r round(modelA$summary$coefficients[1,1], 3)` + a genre factor associated with the genre of the film + an MPAA rating factor associated with its rating + `r round(modelA$summary$coefficients[17, 1], 3)` votes for each minute of runtime + `r round(modelA$summary$coefficients[nrow(modelA$summary$coefficients), 1], 3)` votes for each log number of films directed by the director of that film. All predictors were significant.
+As shown in `r kfigr::figr(label = "modelA_coefficients", prefix = TRUE, link = TRUE, type="Table")`, the predicted log of the number of IMDB votes for a film was `r round(modelA$summary$coefficients[1,1], 3)` + a genre factor associated with the genre of the film + an MPAA rating factor associated with its rating + `r round(modelA$summary$coefficients[17, 1], 3)` log votes for each minute of runtime + `r round(modelA$summary$coefficients[nrow(modelA$summary$coefficients), 1], 3)` log votes for each log number of films directed by the director of that film. For the horror, science fiction & fantasy and other genres, the genre variable was not a significant predictor of the log number of IMDB votes. Nor was MPAA rating for PG, PG-13, and R rated films.  
 
 ### Model Diagnostics
 #### Linearity
@@ -139,7 +140,7 @@ modelA$plots$multicollinearity$plot()
 ```
 `r kfigr::figr(label = "modelA_multicollinearity", prefix = TRUE, link = TRUE, type="Figure")`: Model Alpha correlations among quantitative predictors 
 
-`r kfigr::figr(label = "modelA_vif", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Variance Inflation Factors
+`r kfigr::figr(label = "modelA_vif", prefix = TRUE, link = TRUE, type="Table")` Model Alpha variance inflation Factors
 ```{r modelA_vif}
 knitr::kable(modelA$tests$collinearity, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
@@ -152,18 +153,18 @@ gridExtra::grid.arrange(modelA$plots$res_leverage, modelA$plots$cooks, ncol = 2)
 ```
 `r kfigr::figr(label = "modelA_outliers", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Outliers
 
-`r modelA$comments$outliers`
+`r modelA$comments$outliers` The discern the effect of these outliers on the model, a new model (Model B) was created without the outliers removed.
 
 ## Model Beta
-For this model, a forward selection procedure was undertaken based upon the full model with outliers from Model Beta removed. The variables were added as described in  `r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")`.
+For this model, a forward selection procedure was undertaken based upon the full model with **outliers from Model Alpha removed**. The variables were added as described in  `r kfigr::figr(label = "model_b_build", prefix = TRUE, link = TRUE, type="Table")`
 
-`r kfigr::figr(label = "model_b", prefix = TRUE, link = TRUE, type="Table")`: Model Beta
-```{r model_b, results = "html"}
+`r kfigr::figr(label = "model_b_build", prefix = TRUE, link = TRUE, type="Table")`: Model Beta forward selection process
+```{r model_b_build, results = "html"}
 # Obtain Data
 mData <- process(mdb, "imdb_num_votes_log", outliers = modelA$tests$influential)  
 
 # Perform forward selection
-m <- forward(mData$full, y = "imdb_num_votes_log", mName = "Model Beta")
+m <- forward(mData$full, y = "imdb_num_votes_log")
 
 # Conduct regression analysis
 modelB <- regressionAnalysis(m, mName = "Model Beta", yVar  = 'imdb_num_votes_log',
@@ -173,14 +174,12 @@ modelB <- regressionAnalysis(m, mName = "Model Beta", yVar  = 'imdb_num_votes_lo
 knitr::kable(m$build, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-`r kfigr::figr(label = "forward", prefix = TRUE, link = TRUE, type="Table")` Forward Selection Process
-
 
 ### Model Overview
 ```{r features_b}
 features <- openxlsx::read.xlsx("../data/features.xlsx")
 features <- features %>% filter(model == "yes") %>% select(Variable, Description) 
-selected <- data.frame(Variable = modelB$build$Selected)
+selected <- data.frame(Variable = m$build$Selected)
 selected <- selected %>% inner_join(features)
 ```
 This model is defined as follows:
@@ -188,11 +187,11 @@ $$y_i = (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_
 
 where:  
 $y_i$ is the log number of votes for movie $i$   
-$x_{i1}$ is `r tolower(selected$Description[1])` for moving $i$   
-$x_{i2}$ is `r tolower(selected$Description[2])` for moving $i$   
-$x_{i3}$ is `r tolower(selected$Description[3])` for moving $i$   
-$x_{i4}$ is `r tolower(selected$Description[4])` for moving $i$   
-$x_{i5}$ is `r tolower(selected$Description[5])` for moving $i$    
+$x_{i1}$ is `r tolower(selected$Description[1])` for movie $i$   
+$x_{i2}$ is `r tolower(selected$Description[2])` for movie $i$   
+$x_{i3}$ is `r tolower(selected$Description[3])` for movie $i$   
+$x_{i4}$ is `r tolower(selected$Description[4])` for movie $i$   
+$x_{i5}$ is `r tolower(selected$Description[5])` for movie $i$    
 $\epsilon_i$ is the total residual for the model for movie$i$    
 
 ```{r modelB_regression}
@@ -202,12 +201,13 @@ modelB$plots$regression
 
 The model graphically presented in `r kfigr::figr(label = "modelB_regression", prefix = TRUE, link = TRUE, type="Figure")` `r modelB$comment$apa`
 
+#### Model Coefficients
 `r kfigr::figr(label = "modelB_coefficients", prefix = TRUE, link = TRUE, type="Table")` Model Beta Coefficients
 ```{r modelB_coefficients}
 knitr::kable(modelB$summary$coefficients, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-As shown in `r kfigr::figr(label = "modelB_summary", prefix = TRUE, link = TRUE, type="Table")`, the predicted log of the number of IMDB votes per day for a film was `r round(modelB$summary$coefficients[1,1], 3)` + a genre factor associated with the genre of the film + an MPAA rating factor associated with its rating + `r round(modelB$summary$coefficients[17, 1], 3)` votes for each minute of runtime + `r round(modelB$summary$coefficients[nrow(modelB$summary$coefficients), 1], 3)` votes for each log number of films directed by the director of that film. All predictors were significant.
+As shown in `r kfigr::figr(label = "modelB_summary", prefix = TRUE, link = TRUE, type="Table")`, the predicted log of the number of IMDB votes for a film was `r round(modelB$summary$coefficients[1,1], 3)` + a genre factor associated with the genre of the film + `r round(modelB$summary$coefficients[nrow(modelB$summary$coefficients), 1], 3)` votes for each log number of films directed by the director of that film. + an MPAA rating factor associated with its rating + `r round(modelB$summary$coefficients[17, 1], 3)` votes for each minute of runtime. For the horror, science fiction & fantasy and other genres, the genre variable was not a significant predictor of the log number of IMDB votes. Nor was MPAA rating for PG, PG-13, and R rated films.  
 
 ### Model Diagnostics
 #### Linearity
@@ -269,6 +269,255 @@ gridExtra::grid.arrange(modelB$plots$res_leverage, modelB$plots$cooks, ncol = 2)
 `r kfigr::figr(label = "modelB_outliers", prefix = TRUE, link = TRUE, type="Table")` Model Beta Outliers
 
 `r modelB$comments$outliers`
+
+## Model Gamma
+For this model, a backward elimination procedure was undertaken based upon the full model  The variables were removed as described in  `r kfigr::figr(label = "model_c_build", prefix = TRUE, link = TRUE, type="Table")`
+
+`r kfigr::figr(label = "model_c_build", prefix = TRUE, link = TRUE, type="Table")`: Model Gamma
+```{r model_c_build, results = "html"}
+# Obtain Data
+mData <- process(mdb, "imdb_num_votes_log")  
+
+# Perform forward selection
+m <- back(mData$full, y = "imdb_num_votes_log", alpha = 0.05)
+
+# Conduct regression analysis
+modelC <- regressionAnalysis(m, mName = "Model Gamma", yVar  = 'imdb_num_votes_log',
+                               yLab = "Log IMDB Votes")
+
+# Report regression stesp
+knitr::kable(m$build, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+### Model Overview
+```{r features_c}
+features <- openxlsx::read.xlsx("../data/features.xlsx")
+features <- features %>% filter(model == "yes") %>% select(Variable, Description) 
+selected <- data.frame(Variable = m$selected)
+selected <- selected %>% inner_join(features)
+```
+This model is defined as follows:
+$$y_i = (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_{i4} + \beta_5 x_{i5}) + \beta_1 x_{i6} + \beta_2 x_{i7} + \beta_3 x_{i8} + \beta_4 x_{i9} + \beta_5 x_{i10}) + \beta_5 x_{i11}) + \epsilon_i$$
+
+where:  
+$y_i$ is the log number of votes for movie $i$   
+$x_{i1}$ is `r tolower(selected$Description[1])` for movie $i$   
+$x_{i2}$ is `r tolower(selected$Description[2])` for movie $i$   
+$x_{i3}$ is `r tolower(selected$Description[3])` for movie $i$   
+$x_{i4}$ is `r tolower(selected$Description[4])` for movie $i$   
+$x_{i5}$ is `r tolower(selected$Description[5])` for movie $i$    
+$x_{i6}$ is `r tolower(selected$Description[6])` for movie $i$   
+$x_{i7}$ is `r tolower(selected$Description[7])` for movie $i$   
+$x_{i8}$ is `r tolower(selected$Description[8])` for movie $i$   
+$x_{i9}$ is `r tolower(selected$Description[9])` for movie $i$   
+$x_{i10}$ is `r tolower(selected$Description[10])` for movie $i$   
+$x_{i11}$ is `r tolower(selected$Description[11])` for movie $i$   
+$\epsilon_i$ is the total residual for the model for movie$i$    
+
+```{r modelC_regression}
+modelC$plots$regression
+```
+`r kfigr::figr(label = "modelC_regression", prefix = TRUE, link = TRUE, type="Figure")` Model Gamma Regression
+
+The model graphically presented in `r kfigr::figr(label = "modelC_regression", prefix = TRUE, link = TRUE, type="Figure")` `r modelC$comment$apa`
+
+#### Model Coefficients
+`r kfigr::figr(label = "modelC_coefficients", prefix = TRUE, link = TRUE, type="Table")` Model Gamma Coefficients
+```{r modelC_coefficients}
+knitr::kable(modelC$summary$coefficients, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+As shown in `r kfigr::figr(label = "modelC_summary", prefix = TRUE, link = TRUE, type="Table")`, the predicted log of the number of IMDB votes for a film was `r round(modelC$summary$coefficients[1,1], 3)` + a genre factor associated with the genre of the film + an MPAA rating factor associated with its rating  + a month factor tied to the month of theatre release + `r round(modelC$summary$coefficients[27, 1], 3)` log votes if the movie was nominated for a best picture oscar + `r round(modelC$summary$coefficients[28, 1], 3)` log votes if the movie won a best picture oscar + `r round(modelC$summary$coefficients[29, 1], 3)` log votes if the movie won a best actor oscar + `r round(modelC$summary$coefficients[30, 1], 3)` log votes if the movie won an oscar for best director + `r round(modelC$summary$coefficients[32, 1], 3)` log votes for each minute of movie runtime + `r round(modelC$summary$coefficients[33, 1], 3)` log votes for each log number of votes per day score + `r round(modelC$summary$coefficients[34, 1], 3)` log votes for each log number of movies directed by the director of the film. 
+
+The log of runtime, votes per day scores log, and directory experience were all significant predictors of the log number of IMDB votes. The other variables were not significant at each level of the predictor.
+
+### Model Diagnostics
+#### Linearity
+The linearity of each predictor with the log number of IMDB votes is illustrated in `r kfigr::figr(label = "modelC_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
+
+```{r modelC_linearity, fig.height=20}
+gridExtra::grid.arrange(gridExtra::arrangeGrob(modelC$plots$linearity[[1]],
+                                                modelC$plots$linearity[[2]],
+                                                modelC$plots$linearity[[3]], ncol = 3),
+                         gridExtra::arrangeGrob(modelC$plots$linearity[[4]],
+                                                modelC$plots$linearity[[5]], ncol = 2),
+                         nrow = 2)
+                    
+
+```
+`r kfigr::figr(label = "modelC_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model beta linearity plots
+
+`r modelC$comment$linearity`
+
+#### Homoscedasticity
+The following plot (`r kfigr::figr(label = "modelC_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")`) of the residuals versus the fitted values provides a graphic indication of the distribution of residual variances. 
+```{r modelC_homoscedasticity}
+modelC$plots$res_fitted
+```
+`r kfigr::figr(label = "modelC_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")` Model beta homoscedasticity plot
+
+`r modelC$comments$homoscedasticity`
+
+#### Residuals
+The histogram and the normal Q-Q plot in `r kfigr::figr(label = "modelC_residuals", prefix = TRUE, link = TRUE, type="Figure")` illustrate the distribution of residuals.
+
+```{r modelC_residuals}
+gridExtra::grid.arrange(modelC$plots$res_hist, modelC$plots$res_qq, ncol = 2)
+                        
+
+```
+`r kfigr::figr(label = "modelC_residuals", prefix = TRUE, link = TRUE, type="Figure")` Model beta residuals plot
+
+`r modelC$comments$normality`
+
+#### Multicollinearity
+As shown in `r kfigr::figr(label = "modelC_multicollinearity", prefix = TRUE, link = TRUE, type="Figure")` and `r kfigr::figr(label = "modelC_vif", prefix = TRUE, link = TRUE, type="Table")`, `r modelC$comments$collinearity`
+```{r modelC_multicollinearity}
+modelC$plots$multicollinearity$plot()
+```
+`r kfigr::figr(label = "modelC_multicollinearity", prefix = TRUE, link = TRUE, type="Figure")`: Correlations among quantitative predictors 
+
+`r kfigr::figr(label = "modelC_vif", prefix = TRUE, link = TRUE, type="Table")` Model Gamma Variance Inflation Factors
+```{r modelC_vif}
+knitr::kable(modelC$tests$collinearity, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+
+#### Outliers
+```{r modelC_outliers}
+gridExtra::grid.arrange(modelC$plots$res_leverage, modelC$plots$cooks, ncol = 2)
+```
+`r kfigr::figr(label = "modelC_outliers", prefix = TRUE, link = TRUE, type="Table")` Model Gamma Outliers
+
+`r modelC$comments$outliers` To discern the effect of the influential points on the model, a new model (Model Delta) was created without the influential points of this model.
+
+
+## Model Delta
+For this model, a backward elimination procedure was undertaken based upon the full model  The variables were removed as described in  `r kfigr::figr(label = "model_d_build", prefix = TRUE, link = TRUE, type="Table")`
+
+`r kfigr::figr(label = "model_d_build", prefix = TRUE, link = TRUE, type="Table")`: Model Delta
+```{r model_d_build, results = "html"}
+# Obtain Data
+mData <- process(mdb, "imdb_num_votes_log", outliers = modelC$tests$influential)  
+
+# Perform forward selection
+m <- back(mData$full, y = "imdb_num_votes_log", alpha = 0.05)
+
+# Conduct regression analysis
+modelD <- regressionAnalysis(m, mName = "Model Delta", yVar  = 'imdb_num_votes_log',
+                               yLab = "Log IMDB Votes")
+
+# Report regression stesp
+knitr::kable(m$build, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+### Model Overview
+```{r features_d}
+features <- openxlsx::read.xlsx("../data/features.xlsx")
+features <- features %>% filter(model == "yes") %>% select(Variable, Description) 
+selected <- data.frame(Variable = m$selected)
+selected <- selected %>% inner_join(features)
+```
+This model is defined as follows:
+$$y_i = (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_{i4} + \beta_5 x_{i5}) + \beta_1 x_{i6} + \beta_2 x_{i7} + \beta_3 x_{i8} + \beta_4 x_{i9} + \beta_5 x_{i10}) + \beta_5 x_{i11}) + \epsilon_i$$
+
+where:  
+$y_i$ is the log number of votes for movie $i$   
+$x_{i1}$ is `r tolower(selected$Description[1])` for movie $i$   
+$x_{i2}$ is `r tolower(selected$Description[2])` for movie $i$   
+$x_{i3}$ is `r tolower(selected$Description[3])` for movie $i$   
+$x_{i4}$ is `r tolower(selected$Description[4])` for movie $i$   
+$x_{i5}$ is `r tolower(selected$Description[5])` for movie $i$    
+$x_{i6}$ is `r tolower(selected$Description[6])` for movie $i$   
+$x_{i7}$ is `r tolower(selected$Description[7])` for movie $i$   
+$x_{i8}$ is `r tolower(selected$Description[8])` for movie $i$   
+$x_{i9}$ is `r tolower(selected$Description[9])` for movie $i$   
+$x_{i10}$ is `r tolower(selected$Description[10])` for movie $i$   
+$x_{i11}$ is `r tolower(selected$Description[11])` for movie $i$   
+$\epsilon_i$ is the total residual for the model for movie$i$    
+
+```{r modelD_regression}
+modelD$plots$regression
+```
+`r kfigr::figr(label = "modelD_regression", prefix = TRUE, link = TRUE, type="Figure")` Model Delta Regression
+
+The model graphically presented in `r kfigr::figr(label = "modelD_regression", prefix = TRUE, link = TRUE, type="Figure")` `r modelD$comment$apa`
+
+#### Model Coefficients
+`r kfigr::figr(label = "modelD_coefficients", prefix = TRUE, link = TRUE, type="Table")` Model Delta Coefficients
+```{r modelD_coefficients}
+knitr::kable(modelD$summary$coefficients, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+As shown in `r kfigr::figr(label = "modelD_summary", prefix = TRUE, link = TRUE, type="Table")`, the predicted log of the number of IMDB votes for a film was `r round(modelD$summary$coefficients[1,1], 3)` + a genre factor associated with the genre of the film + an MPAA rating factor associated with its rating  + a month factor tied to the month of theatre release + `r round(modelD$summary$coefficients[27, 1], 3)` log votes if the movie was nominated for a best picture oscar + `r round(modelD$summary$coefficients[28, 1], 3)` log votes if the movie won a best picture oscar + `r round(modelD$summary$coefficients[29, 1], 3)` log votes if the movie won a best actor oscar + `r round(modelD$summary$coefficients[30, 1], 3)` log votes if the movie won an oscar for best director + `r round(modelD$summary$coefficients[32, 1], 3)` log votes for each minute of movie runtime + `r round(modelD$summary$coefficients[33, 1], 3)` log votes for each log number of votes per day score + `r round(modelD$summary$coefficients[34, 1], 3)` log votes for each log number of movies directed by the director of the film. 
+
+The log of runtime, votes per day scores log, and directory experience were all significant predictors of the log number of IMDB votes. The other variables were not significant at each level of the predictor.
+
+### Model Diagnostics
+#### Linearity
+The linearity of each predictor with the log number of IMDB votes is illustrated in `r kfigr::figr(label = "modelD_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
+
+```{r modelD_linearity, fig.height=20}
+gridExtra::grid.arrange(gridExtra::arrangeGrob(modelD$plots$linearity[[1]],
+                                                modelD$plots$linearity[[2]],
+                                                modelD$plots$linearity[[3]], ncol = 3),
+                         gridExtra::arrangeGrob(modelD$plots$linearity[[4]],
+                                                modelD$plots$linearity[[5]], ncol = 2),
+                         nrow = 2)
+                    
+
+```
+`r kfigr::figr(label = "modelD_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model beta linearity plots
+
+`r modelD$comment$linearity`
+
+#### Homoscedasticity
+The following plot (`r kfigr::figr(label = "modelD_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")`) of the residuals versus the fitted values provides a graphic indication of the distribution of residual variances. 
+```{r modelD_homoscedasticity}
+modelD$plots$res_fitted
+```
+`r kfigr::figr(label = "modelD_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")` Model beta homoscedasticity plot
+
+`r modelD$comments$homoscedasticity`
+
+#### Residuals
+The histogram and the normal Q-Q plot in `r kfigr::figr(label = "modelD_residuals", prefix = TRUE, link = TRUE, type="Figure")` illustrate the distribution of residuals.
+
+```{r modelD_residuals}
+gridExtra::grid.arrange(modelD$plots$res_hist, modelD$plots$res_qq, ncol = 2)
+                        
+
+```
+`r kfigr::figr(label = "modelD_residuals", prefix = TRUE, link = TRUE, type="Figure")` Model beta residuals plot
+
+`r modelD$comments$normality`
+
+#### Multicollinearity
+As shown in `r kfigr::figr(label = "modelD_multicollinearity", prefix = TRUE, link = TRUE, type="Figure")` and `r kfigr::figr(label = "modelD_vif", prefix = TRUE, link = TRUE, type="Table")`, `r modelD$comments$collinearity`
+```{r modelD_multicollinearity}
+modelD$plots$multicollinearity$plot()
+```
+`r kfigr::figr(label = "modelD_multicollinearity", prefix = TRUE, link = TRUE, type="Figure")`: Correlations among quantitative predictors 
+
+`r kfigr::figr(label = "modelD_vif", prefix = TRUE, link = TRUE, type="Table")` Model Delta Variance Inflation Factors
+```{r modelD_vif}
+knitr::kable(modelD$tests$collinearity, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+
+#### Outliers
+```{r modelD_outliers}
+gridExtra::grid.arrange(modelD$plots$res_leverage, modelD$plots$cooks, ncol = 2)
+```
+`r kfigr::figr(label = "modelD_outliers", prefix = TRUE, link = TRUE, type="Table")` Model Delta Outliers
+
+`r modelD$comments$outliers` To discern the effect of the influential points on the model, a new model (Model Delta) was created without the influential points of this model.
+
+
 
 
 
