@@ -4,12 +4,19 @@
 \alias{process}
 \title{process}
 \usage{
-process(data, y)
+process(data, group = "a", y, outliers = NULL)
 }
 \arguments{
 \item{data}{Data frame containing movie rating data}
 
+\item{group}{Character indicating the data group to return.
+a - Most conservative. Includes almost all variables
+b <- Moderate data set with some data variables remomved
+c >- Liberat data set focusing only on variables most predictive of log IMDB votes}
+
 \item{y}{Character string containing the name of the response variable}
+
+\item{outliers}{Vector of observations to remove}
 }
 \value{
 List with two data frames, independent variables and the dependent
@@ -24,10 +31,9 @@ dependent variables and set with the response variable.
 Other movies functions: \code{\link{associate}},
   \code{\link{back}}, \code{\link{correlate}},
   \code{\link{evalBackwardModel}},
-  \code{\link{evalForwardModel}}, \code{\link{evaluate}},
-  \code{\link{forward}}, \code{\link{fullModel}},
+  \code{\link{evalForwardModel}}, \code{\link{forward}},
   \code{\link{multivariateQuant}},
-  \code{\link{preprocess}},
+  \code{\link{prediction}}, \code{\link{preprocess}},
   \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}

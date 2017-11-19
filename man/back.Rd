@@ -4,7 +4,7 @@
 \alias{back}
 \title{backward}
 \usage{
-back(data, y, alpha = 0.05)
+back(data, y, alpha = 0.15)
 }
 \arguments{
 \item{data}{Data frame containing the full model#'}
@@ -17,11 +17,10 @@ back(data, y, alpha = 0.05)
 \seealso{
 Other movies functions: \code{\link{associate}},
   \code{\link{correlate}}, \code{\link{evalBackwardModel}},
-  \code{\link{evalForwardModel}}, \code{\link{evaluate}},
-  \code{\link{forward}}, \code{\link{fullModel}},
+  \code{\link{evalForwardModel}}, \code{\link{forward}},
   \code{\link{multivariateQuant}},
-  \code{\link{preprocess}}, \code{\link{process}},
-  \code{\link{regressionAnalysis}},
+  \code{\link{prediction}}, \code{\link{preprocess}},
+  \code{\link{process}}, \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }

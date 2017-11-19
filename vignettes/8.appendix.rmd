@@ -692,6 +692,12 @@ edaUni$votesPerDayScoresLog$box
 ## Appendix C: Bivariate Analysis
 ## Appendix D: Multivariate Analysis
 ## Appendix E: Modeling
+**Model Coefficients**
+`r kfigr::figr(label = "a_modelA_coefficients", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Coefficients
+```{r modelA_coefficients}
+knitr::kable(modelA$summary$coefficients, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
 ## Appendix F: Prediction
 ## Appendix G: Source Code
 # References

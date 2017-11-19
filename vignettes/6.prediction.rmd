@@ -1,7 +1,9 @@
 # Part 6: Prediction
+Model Alpha was used to predict the log number of IMDB votes for `r res$movie$Title[1]`, which received `r round(res$movie$Y, 1)` log IMDB votes. The model predicted `r round(res$movie$Predicted, 1)` log number of votes, with a  95% CI[`round(res$movie$Lower, 2)`,`r  round(res$movie$Upper, 2)`]. It should be noted that the actual value was within the confidence interval. The percent error and the log relative error was `r round(res$movie$PE, 2)`%, and `r round(res$movie$LnQ, 2)`% respectively. 
 
-NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk"
-button above. Make sure that your code is visible in the project you submit.
-Delete this note when before you submit your work.
+```{r moviePrediction}
+knitr::kable(res$movie, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
 
 * * *

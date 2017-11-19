@@ -15,11 +15,10 @@ with the highest adjusted r-squared is retained.
 \seealso{
 Other movies functions: \code{\link{associate}},
   \code{\link{back}}, \code{\link{correlate}},
-  \code{\link{evalForwardModel}}, \code{\link{evaluate}},
-  \code{\link{forward}}, \code{\link{fullModel}},
+  \code{\link{evalForwardModel}}, \code{\link{forward}},
   \code{\link{multivariateQuant}},
-  \code{\link{preprocess}}, \code{\link{process}},
-  \code{\link{regressionAnalysis}},
+  \code{\link{prediction}}, \code{\link{preprocess}},
+  \code{\link{process}}, \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }

@@ -58,6 +58,7 @@ evalForwardModel <- function(data, model, y, remaining) {
 forward <- function(data, y) {
 
   final <- list()
+  final[["data"]] <- data
 
   # Initialize key variables
   bestAdjR2 <- newAdjR2 <- 0
@@ -67,7 +68,7 @@ forward <- function(data, y) {
   remaining <- predictors
 
   # Iterate until all predictors are evaluated and return the variables for the best model
-  while (length(remaining) > 0) {
+  for (i in 1:length(predictors)) {
     best <- evalForwardModel(data, model, y, remaining)
     remaining <- remaining[remaining != best$Selected]
     if (best$Adjusted.R2[1] > bestAdjR2) {

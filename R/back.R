@@ -47,7 +47,8 @@ evalBackwardModel <- function(data, y, predictors) {
 #' @export
 back <- function(data, y, alpha = 0.15) {
 
-  finalModel <- list()
+  final <- list()
+  final[["data"]] <- data
 
   # Initialize with full model
   predictors <- colnames(data)                  # Initialize predictors
@@ -62,18 +63,18 @@ back <- function(data, y, alpha = 0.15) {
     r <- evalBackwardModel(data = data, predictors = predictors, y = y)
   }
 
-  finalModel[["selected"]] <- predictors
+  final[["selected"]] <- predictors
 
   # Format Build
   b$Steps <- c(1:nrow(b))
-  finalModel[["build"]] <- b %>% select(Steps, Removed, p.value)
+  final[["build"]] <- b %>% select(Steps, Removed, p.value)
 
 
   # Return final model
   f <- formula(paste(y, " ~ ", paste(predictors, collapse=" + ")))
   m <- lm(f, data)
-  finalModel[["model"]] <- m
+  final[["model"]] <- m
 
-  return(finalModel)
+  return(final)
 
 }

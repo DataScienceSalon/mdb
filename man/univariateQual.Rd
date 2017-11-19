@@ -25,11 +25,10 @@ as a stacked bar plot showing frequencies and percentages.
 Other movies functions: \code{\link{associate}},
   \code{\link{back}}, \code{\link{correlate}},
   \code{\link{evalBackwardModel}},
-  \code{\link{evalForwardModel}}, \code{\link{evaluate}},
-  \code{\link{forward}}, \code{\link{fullModel}},
+  \code{\link{evalForwardModel}}, \code{\link{forward}},
   \code{\link{multivariateQuant}},
-  \code{\link{preprocess}}, \code{\link{process}},
-  \code{\link{regressionAnalysis}},
+  \code{\link{prediction}}, \code{\link{preprocess}},
+  \code{\link{process}}, \code{\link{regressionAnalysis}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }
 \author{

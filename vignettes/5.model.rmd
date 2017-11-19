@@ -1,11 +1,11 @@
 # Part 5: Modeling
-At this stage, several linear regression models, based upon forward selection and backward elimination methods, were developed and evaluated to predict the popularity of a film. Popularity was defined in terms of box office success. Through statistical analysis the log of the number of IMDB votes was the best predictor of box office success, as such this was the response variable. The models and their model selection methods are: 
+At this stage, several linear regression models, based upon forward selection and backward elimination methods, were developed and evaluated to predict the popularity of a film in terms of the log number of IMDB votes. The models and their model selection methods are:  
+`r kfigr::figr(label = "models", prefix = TRUE, link = TRUE, type="Table")`: Prediction Models
 ```{r models}
 models <- openxlsx::read.xlsx(xlsxFile = "../data/models.xlsx")
 knitr::kable(models, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-`r kfigr::figr(label = "models", prefix = TRUE, link = TRUE, type="Table")`: Prediction Models
 
 ## Model Selection
 Both forward selection and backward elimination with p-values model selection techniques were used. The forward selection approach optimized adjusted r-squared; whereas the backward elimination method was based upon p-values.
@@ -16,35 +16,29 @@ The forward selection process began with a null model then all variables were ad
 ### Backward Elimination
 The backward elimination approach began with the full model. A regression analysis was performed and the least significant predictor (that with the highest p-value) was removed from the model.  This process repeated, removie only the most least significant predictor at each step, until all predictors had p-values below the present threshold.   
 
-
 ## Full Model Selection
-In the prior section, association and correlation tests were conducted with a 95% confidence level. All categorical variables were significant (`r kfigr::figr(label = "association", prefix = TRUE, link = TRUE, type="Table")`) and were included in the full model. The decision to remove a quantitative variable was based largely upon its correlation with the response variable  (`r kfigr::figr(label = "correlate", prefix = TRUE, link = TRUE, type="Table")`) and its correlations with other quantitative variables (`r kfigr::figr(label = "cMatrix", prefix = TRUE, link = TRUE, type="Table")`). `r kfigr::figr(label = "removed", prefix = TRUE, link = TRUE, type="Table")` lists the variables removed and the rationale.
+Since the objective of the analysis was to determine what factors *make* a movie popular, the full model did not include variables that could be considered proxies of popularity such as audience rating or IMDB rating. Such ratings are measures of a **film's** popularity, not predictors. Critics rating, on the other hand, was considered not a measure, but a potential leading indicator of movie popularity. Similarly, effort was made to capture the popularity of specific **cast members** to test the hypothesis that a cast's aggregate popularity could influence the popularity of a film.  That said, the criteria for excluding a variable from the full model was as follows:  
+* Measures of film popularity such as the audience rating, IMDB rating and top 200 box office variables  
+* Categorical variables with levels including less than 5 observations, such as title, url, studio, and the actor variables  
+* The year and day of theatrical or dvd release  
 
-`r kfigr::figr(label = "removed", prefix = TRUE, link = TRUE, type="Table")`: Variables excluded from full model
-```{r removed}
-removed <- openxlsx::read.xlsx("../data/features.xlsx")
-removed <- removed  %>% filter(model == "no") %>% select(Type, Variable, Description, Rationale) %>% arrange(Type, Variable)
-knitr::kable(removed, digits = 2) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")     
-```
-
-
-Thus, the full model is presented in `r kfigr::figr(label = "fullModel", prefix = TRUE, link = TRUE, type="Table")`.
+As such, the following full model is presented in `r kfigr::figr(label = "fullModel", prefix = TRUE, link = TRUE, type="Table")`.
 ```{r fullModel}
 full <- openxlsx::read.xlsx("../data/features.xlsx")
-full <- full  %>% filter(model == "yes") %>% select(Type, Variable, Description) %>% arrange(Type, Variable)
+full <- full  %>% filter(b == "yes") %>% select(Type, Variable, Description) %>% arrange(Type, Variable)
 knitr::kable(full, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")     
 ```
 
+The following sections explore various models, model selection techniques, and model diagnostics. Comparisons are conducted and the models are evaluated on test data for prediction accuracy and stability. Lastly, the best performing model is selected and described on detail.   
 
 ## Model Alpha
-For this model, a forward selection procedure was undertaken based upon the full model described above. The variables were added as described in  `r kfigr::figr(label = "model_a_build", prefix = TRUE, link = TRUE, type="Table")`.
+For this model, a forward selection procedure was undertaken based upon the full model described above. `r kfigr::figr(label = "model_a_build", prefix = TRUE, link = TRUE, type="Table")` lists the variables in the order in which they were added.
 
 `r kfigr::figr(label = "model_a_build", prefix = TRUE, link = TRUE, type="Table")`: Model Alpha forward selection process
 ```{r model_a_build, results = "html"}
 # Obtain Data
-mData <- process(mdb, "imdb_num_votes_log")  
+mData <- process(mdb, group = "c", y = "imdb_num_votes_log")  
 
 # Perform forward selection
 m <- forward(mData$full, y = "imdb_num_votes_log")
@@ -58,41 +52,20 @@ knitr::kable(m$build, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
+As indicated in `r kfigr::figr(label = "modelA_overview", prefix = TRUE, link = TRUE, type="Table")`  and graphically depicted in `r kfigr::figr(label = "modelA_regression", prefix = TRUE, link = TRUE, type="Figure")`, `r modelA$comments$apa`
 
-### Model Overview
-```{r features}
-features <- openxlsx::read.xlsx("../data/features.xlsx")
-features <- features %>% filter(model == "yes") %>% select(Variable, Description) 
-selected <- data.frame(Variable = m$build$Selected)
-selected <- selected %>% inner_join(features)
+`r kfigr::figr(label = "modelA_overview", prefix = TRUE, link = TRUE, type="Table")`: Model Alpha  Summary Statistics
+```{r modelA_overview}
+knitr::kable(modelA$glance, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-This model is defined as follows:
-$$y_i = (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_{i4} + \beta_5 x_{i5}) + \epsilon_i$$
 
-where:  
-$y_i$ is the log number of votes for movie $i$   
-$x_{i1}$ is `r tolower(selected$Description[1])` for movie $i$   
-$x_{i2}$ is `r tolower(selected$Description[2])` for movie $i$   
-$x_{i3}$ is `r tolower(selected$Description[3])` for movie $i$   
-$x_{i4}$ is `r tolower(selected$Description[4])` for movie $i$   
-$x_{i5}$ is `r tolower(selected$Description[5])` for movie $i$    
-$\epsilon_i$ is the total residual for the model for movie$i$    
 
 ```{r modelA_regression}
 modelA$plots$regression
 ```
 `r kfigr::figr(label = "modelA_regression", prefix = TRUE, link = TRUE, type="Figure")` Model Alpha Regression
 
-As suggested by `r kfigr::figr(label = "modelA_regression", prefix = TRUE, link = TRUE, type="Figure")`, `r modelA$comment$apa`
-
-#### Model Coefficients
-
-`r kfigr::figr(label = "modelA_coefficients", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Coefficients
-```{r modelA_coefficients}
-knitr::kable(modelA$summary$coefficients, digits = 3) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-As shown in `r kfigr::figr(label = "modelA_coefficients", prefix = TRUE, link = TRUE, type="Table")`, the predicted log of the number of IMDB votes for a film was `r round(modelA$summary$coefficients[1,1], 3)` + a genre factor associated with the genre of the film + an MPAA rating factor associated with its rating + `r round(modelA$summary$coefficients[17, 1], 3)` log votes for each minute of runtime + `r round(modelA$summary$coefficients[nrow(modelA$summary$coefficients), 1], 3)` log votes for each log number of films directed by the director of that film. For the horror, science fiction & fantasy and other genres, the genre variable was not a significant predictor of the log number of IMDB votes. Nor was MPAA rating for PG, PG-13, and R rated films.  
 
 ### Model Diagnostics
 #### Linearity
@@ -100,11 +73,14 @@ The linearity of each predictor with the log number of IMDB votes is illustrated
 
 ```{r modelA_linearity, fig.height=20}
 gridExtra::grid.arrange(gridExtra::arrangeGrob(modelA$plots$linearity[[1]],
-                                                modelA$plots$linearity[[2]],
-                                                modelA$plots$linearity[[3]], ncol = 3),
-                         gridExtra::arrangeGrob(modelA$plots$linearity[[4]],
-                                                modelA$plots$linearity[[5]], ncol = 2),
-                         nrow = 2)
+                                               modelA$plots$linearity[[2]],
+                                               modelA$plots$linearity[[3]], ncol = 3),
+                        gridExtra::arrangeGrob(modelA$plots$linearity[[4]],
+                                               modelA$plots$linearity[[5]],
+                                               modelA$plots$linearity[[6]], ncol = 3),
+                        gridExtra::arrangeGrob(modelA$plots$linearity[[7]],
+                                               modelA$plots$linearity[[8]], ncol = 2),
+                         nrow = 3)
                     
 
 ```
@@ -146,22 +122,21 @@ knitr::kable(modelA$tests$collinearity, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-
 #### Outliers
 ```{r modelA_outliers}
 gridExtra::grid.arrange(modelA$plots$res_leverage, modelA$plots$cooks, ncol = 2)
 ```
-`r kfigr::figr(label = "modelA_outliers", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Outliers
+`r kfigr::figr(label = "modelA_outliers", prefix = TRUE, link = TRUE, type="Figure")` Model Alpha Outliers
 
 `r modelA$comments$outliers` The discern the effect of these outliers on the model, a new model (Model B) was created without the outliers removed.
 
 ## Model Beta
-For this model, a forward selection procedure was undertaken based upon the full model with **outliers from Model Alpha removed**. The variables were added as described in  `r kfigr::figr(label = "model_b_build", prefix = TRUE, link = TRUE, type="Table")`
+This was also a forward selecion model; however, it was based upon the full model with **outliers from Model Alpha removed**. The variables were added as described in  `r kfigr::figr(label = "model_b_build", prefix = TRUE, link = TRUE, type="Table")`
 
 `r kfigr::figr(label = "model_b_build", prefix = TRUE, link = TRUE, type="Table")`: Model Beta forward selection process
 ```{r model_b_build, results = "html"}
 # Obtain Data
-mData <- process(mdb, "imdb_num_votes_log", outliers = modelA$tests$influential)  
+mData <- process(mdb, group = "c", "imdb_num_votes_log", outliers = modelA$tests$influential)  
 
 # Perform forward selection
 m <- forward(mData$full, y = "imdb_num_votes_log")
@@ -175,39 +150,18 @@ knitr::kable(m$build, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-### Model Overview
-```{r features_b}
-features <- openxlsx::read.xlsx("../data/features.xlsx")
-features <- features %>% filter(model == "yes") %>% select(Variable, Description) 
-selected <- data.frame(Variable = m$build$Selected)
-selected <- selected %>% inner_join(features)
-```
-This model is defined as follows:
-$$y_i = (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_{i4} + \beta_5 x_{i5}) + \epsilon_i$$
+As indicated in `r kfigr::figr(label = "modelB_overview", prefix = TRUE, link = TRUE, type="Table")`  and graphically depicted in `r kfigr::figr(label = "modelB_regression", prefix = TRUE, link = TRUE, type="Figure")`, `r modelB$comments$apa`
 
-where:  
-$y_i$ is the log number of votes for movie $i$   
-$x_{i1}$ is `r tolower(selected$Description[1])` for movie $i$   
-$x_{i2}$ is `r tolower(selected$Description[2])` for movie $i$   
-$x_{i3}$ is `r tolower(selected$Description[3])` for movie $i$   
-$x_{i4}$ is `r tolower(selected$Description[4])` for movie $i$   
-$x_{i5}$ is `r tolower(selected$Description[5])` for movie $i$    
-$\epsilon_i$ is the total residual for the model for movie$i$    
+`r kfigr::figr(label = "modelB_overview", prefix = TRUE, link = TRUE, type="Table")`: Model Beta Summary Statistics
+```{r modelB_overview}
+knitr::kable(modelB$glance, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
 
 ```{r modelB_regression}
 modelB$plots$regression
 ```
 `r kfigr::figr(label = "modelB_regression", prefix = TRUE, link = TRUE, type="Figure")` Model Beta Regression
-
-The model graphically presented in `r kfigr::figr(label = "modelB_regression", prefix = TRUE, link = TRUE, type="Figure")` `r modelB$comment$apa`
-
-#### Model Coefficients
-`r kfigr::figr(label = "modelB_coefficients", prefix = TRUE, link = TRUE, type="Table")` Model Beta Coefficients
-```{r modelB_coefficients}
-knitr::kable(modelB$summary$coefficients, digits = 3) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-As shown in `r kfigr::figr(label = "modelB_summary", prefix = TRUE, link = TRUE, type="Table")`, the predicted log of the number of IMDB votes for a film was `r round(modelB$summary$coefficients[1,1], 3)` + a genre factor associated with the genre of the film + `r round(modelB$summary$coefficients[nrow(modelB$summary$coefficients), 1], 3)` votes for each log number of films directed by the director of that film. + an MPAA rating factor associated with its rating + `r round(modelB$summary$coefficients[17, 1], 3)` votes for each minute of runtime. For the horror, science fiction & fantasy and other genres, the genre variable was not a significant predictor of the log number of IMDB votes. Nor was MPAA rating for PG, PG-13, and R rated films.  
 
 ### Model Diagnostics
 #### Linearity
@@ -215,15 +169,19 @@ The linearity of each predictor with the log number of IMDB votes is illustrated
 
 ```{r modelB_linearity, fig.height=20}
 gridExtra::grid.arrange(gridExtra::arrangeGrob(modelB$plots$linearity[[1]],
-                                                modelB$plots$linearity[[2]],
-                                                modelB$plots$linearity[[3]], ncol = 3),
-                         gridExtra::arrangeGrob(modelB$plots$linearity[[4]],
-                                                modelB$plots$linearity[[5]], ncol = 2),
-                         nrow = 2)
+                                               modelB$plots$linearity[[2]],
+                                               modelB$plots$linearity[[3]], ncol = 3),
+                        gridExtra::arrangeGrob(modelB$plots$linearity[[4]],
+                                               modelB$plots$linearity[[5]],
+                                               modelB$plots$linearity[[6]], ncol = 3),
+                        gridExtra::arrangeGrob(modelB$plots$linearity[[7]],
+                                               modelB$plots$linearity[[8]],
+                                               modelB$plots$linearity[[9]], ncol = 3),
+                         nrow = 3)
                     
 
 ```
-`r kfigr::figr(label = "modelB_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model beta linearity plots
+`r kfigr::figr(label = "modelB_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Beta linearity plots
 
 `r modelB$comment$linearity`
 
@@ -232,7 +190,7 @@ The following plot (`r kfigr::figr(label = "modelB_homoscedasticity", prefix = T
 ```{r modelB_homoscedasticity}
 modelB$plots$res_fitted
 ```
-`r kfigr::figr(label = "modelB_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")` Model beta homoscedasticity plot
+`r kfigr::figr(label = "modelB_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")` Model Beta homoscedasticity plot
 
 `r modelB$comments$homoscedasticity`
 
@@ -244,7 +202,7 @@ gridExtra::grid.arrange(modelB$plots$res_hist, modelB$plots$res_qq, ncol = 2)
                         
 
 ```
-`r kfigr::figr(label = "modelB_residuals", prefix = TRUE, link = TRUE, type="Figure")` Model beta residuals plot
+`r kfigr::figr(label = "modelB_residuals", prefix = TRUE, link = TRUE, type="Figure")` Model Beta residuals plot
 
 `r modelB$comments$normality`
 
@@ -266,7 +224,7 @@ knitr::kable(modelB$tests$collinearity, digits = 3) %>%
 ```{r modelB_outliers}
 gridExtra::grid.arrange(modelB$plots$res_leverage, modelB$plots$cooks, ncol = 2)
 ```
-`r kfigr::figr(label = "modelB_outliers", prefix = TRUE, link = TRUE, type="Table")` Model Beta Outliers
+`r kfigr::figr(label = "modelB_outliers", prefix = TRUE, link = TRUE, type="Figure")` Model Beta Outliers
 
 `r modelB$comments$outliers`
 
@@ -276,7 +234,7 @@ For this model, a backward elimination procedure was undertaken based upon the f
 `r kfigr::figr(label = "model_c_build", prefix = TRUE, link = TRUE, type="Table")`: Model Gamma
 ```{r model_c_build, results = "html"}
 # Obtain Data
-mData <- process(mdb, "imdb_num_votes_log")  
+mData <- process(mdb, group = "c", "imdb_num_votes_log")  
 
 # Perform forward selection
 m <- back(mData$full, y = "imdb_num_votes_log", alpha = 0.05)
@@ -290,47 +248,28 @@ knitr::kable(m$build, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-### Model Overview
-```{r features_c}
-features <- openxlsx::read.xlsx("../data/features.xlsx")
-features <- features %>% filter(model == "yes") %>% select(Variable, Description) 
-selected <- data.frame(Variable = m$selected)
-selected <- selected %>% inner_join(features)
-```
-This model is defined as follows:
-$$y_i = (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_{i4} + \beta_5 x_{i5}) + \beta_1 x_{i6} + \beta_2 x_{i7} + \beta_3 x_{i8} + \beta_4 x_{i9} + \beta_5 x_{i10}) + \beta_5 x_{i11}) + \epsilon_i$$
+The model therefore retained the following variables:  
 
-where:  
-$y_i$ is the log number of votes for movie $i$   
-$x_{i1}$ is `r tolower(selected$Description[1])` for movie $i$   
-$x_{i2}$ is `r tolower(selected$Description[2])` for movie $i$   
-$x_{i3}$ is `r tolower(selected$Description[3])` for movie $i$   
-$x_{i4}$ is `r tolower(selected$Description[4])` for movie $i$   
-$x_{i5}$ is `r tolower(selected$Description[5])` for movie $i$    
-$x_{i6}$ is `r tolower(selected$Description[6])` for movie $i$   
-$x_{i7}$ is `r tolower(selected$Description[7])` for movie $i$   
-$x_{i8}$ is `r tolower(selected$Description[8])` for movie $i$   
-$x_{i9}$ is `r tolower(selected$Description[9])` for movie $i$   
-$x_{i10}$ is `r tolower(selected$Description[10])` for movie $i$   
-$x_{i11}$ is `r tolower(selected$Description[11])` for movie $i$   
-$\epsilon_i$ is the total residual for the model for movie$i$    
+`r kfigr::figr(label = "modelC_variables", prefix = TRUE, link = TRUE, type="Table")` Model Gamma Variables
+```{r modelC_variables}
+vars <- openxlsx::read.xlsx(xlsxFile = "../data/features.xlsx")
+vars <- vars %>% filter(Variable %in% m$selected) %>% select(Variable, Description)
+knitr::kable(vars, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+As indicated in `r kfigr::figr(label = "modelC_overview", prefix = TRUE, link = TRUE, type="Table")`  and graphically depicted in `r kfigr::figr(label = "modelC_regression", prefix = TRUE, link = TRUE, type="Figure")`, `r modelC$comments$apa`
+
+`r kfigr::figr(label = "modelC_overview", prefix = TRUE, link = TRUE, type="Table")` Model Gamma Summary Statistics
+```{r modelC_overview}
+knitr::kable(modelC$glance, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
 
 ```{r modelC_regression}
 modelC$plots$regression
 ```
 `r kfigr::figr(label = "modelC_regression", prefix = TRUE, link = TRUE, type="Figure")` Model Gamma Regression
-
-The model graphically presented in `r kfigr::figr(label = "modelC_regression", prefix = TRUE, link = TRUE, type="Figure")` `r modelC$comment$apa`
-
-#### Model Coefficients
-`r kfigr::figr(label = "modelC_coefficients", prefix = TRUE, link = TRUE, type="Table")` Model Gamma Coefficients
-```{r modelC_coefficients}
-knitr::kable(modelC$summary$coefficients, digits = 3) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-As shown in `r kfigr::figr(label = "modelC_summary", prefix = TRUE, link = TRUE, type="Table")`, the predicted log of the number of IMDB votes for a film was `r round(modelC$summary$coefficients[1,1], 3)` + a genre factor associated with the genre of the film + an MPAA rating factor associated with its rating  + a month factor tied to the month of theatre release + `r round(modelC$summary$coefficients[27, 1], 3)` log votes if the movie was nominated for a best picture oscar + `r round(modelC$summary$coefficients[28, 1], 3)` log votes if the movie won a best picture oscar + `r round(modelC$summary$coefficients[29, 1], 3)` log votes if the movie won a best actor oscar + `r round(modelC$summary$coefficients[30, 1], 3)` log votes if the movie won an oscar for best director + `r round(modelC$summary$coefficients[32, 1], 3)` log votes for each minute of movie runtime + `r round(modelC$summary$coefficients[33, 1], 3)` log votes for each log number of votes per day score + `r round(modelC$summary$coefficients[34, 1], 3)` log votes for each log number of movies directed by the director of the film. 
-
-The log of runtime, votes per day scores log, and directory experience were all significant predictors of the log number of IMDB votes. The other variables were not significant at each level of the predictor.
 
 ### Model Diagnostics
 #### Linearity
@@ -338,15 +277,23 @@ The linearity of each predictor with the log number of IMDB votes is illustrated
 
 ```{r modelC_linearity, fig.height=20}
 gridExtra::grid.arrange(gridExtra::arrangeGrob(modelC$plots$linearity[[1]],
-                                                modelC$plots$linearity[[2]],
-                                                modelC$plots$linearity[[3]], ncol = 3),
-                         gridExtra::arrangeGrob(modelC$plots$linearity[[4]],
-                                                modelC$plots$linearity[[5]], ncol = 2),
-                         nrow = 2)
-                    
+                                               modelC$plots$linearity[[2]],
+                                               modelC$plots$linearity[[3]], ncol = 3),
+                        gridExtra::arrangeGrob(modelC$plots$linearity[[4]],
+                                               modelC$plots$linearity[[5]],
+                                               modelC$plots$linearity[[6]], ncol = 3),
+                        gridExtra::arrangeGrob(modelC$plots$linearity[[7]],
+                                               modelC$plots$linearity[[8]],
+                                               modelC$plots$linearity[[9]], ncol = 3),
+                        gridExtra::arrangeGrob(modelC$plots$linearity[[10]],
+                                               modelC$plots$linearity[[11]], ncol = 2),
+                        gridExtra::arrangeGrob(modelC$plots$linearity[[12]],
+                                               modelC$plots$linearity[[13]], ncol = 2),
+                         nrow = 5)
+
 
 ```
-`r kfigr::figr(label = "modelC_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model beta linearity plots
+`r kfigr::figr(label = "modelC_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Gamma linearity plots
 
 `r modelC$comment$linearity`
 
@@ -355,7 +302,7 @@ The following plot (`r kfigr::figr(label = "modelC_homoscedasticity", prefix = T
 ```{r modelC_homoscedasticity}
 modelC$plots$res_fitted
 ```
-`r kfigr::figr(label = "modelC_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")` Model beta homoscedasticity plot
+`r kfigr::figr(label = "modelC_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")` Model Gamma homoscedasticity plot
 
 `r modelC$comments$homoscedasticity`
 
@@ -367,7 +314,7 @@ gridExtra::grid.arrange(modelC$plots$res_hist, modelC$plots$res_qq, ncol = 2)
                         
 
 ```
-`r kfigr::figr(label = "modelC_residuals", prefix = TRUE, link = TRUE, type="Figure")` Model beta residuals plot
+`r kfigr::figr(label = "modelC_residuals", prefix = TRUE, link = TRUE, type="Figure")` Model Gamma residuals plot
 
 `r modelC$comments$normality`
 
@@ -389,18 +336,18 @@ knitr::kable(modelC$tests$collinearity, digits = 3) %>%
 ```{r modelC_outliers}
 gridExtra::grid.arrange(modelC$plots$res_leverage, modelC$plots$cooks, ncol = 2)
 ```
-`r kfigr::figr(label = "modelC_outliers", prefix = TRUE, link = TRUE, type="Table")` Model Gamma Outliers
+`r kfigr::figr(label = "modelC_outliers", prefix = TRUE, link = TRUE, type="Figure")` Model Gamma Outliers
 
 `r modelC$comments$outliers` To discern the effect of the influential points on the model, a new model (Model Delta) was created without the influential points of this model.
 
 
 ## Model Delta
-For this model, a backward elimination procedure was undertaken based upon the full model  The variables were removed as described in  `r kfigr::figr(label = "model_d_build", prefix = TRUE, link = TRUE, type="Table")`
+This was also a backward elimination model; however, it was based upon the full model with **outliers from Model Gamma removed**.   The variables were removed as described in  `r kfigr::figr(label = "model_d_build", prefix = TRUE, link = TRUE, type="Table")`
 
 `r kfigr::figr(label = "model_d_build", prefix = TRUE, link = TRUE, type="Table")`: Model Delta
 ```{r model_d_build, results = "html"}
 # Obtain Data
-mData <- process(mdb, "imdb_num_votes_log", outliers = modelC$tests$influential)  
+mData <- process(mdb, group = "c", "imdb_num_votes_log", outliers = modelC$tests$influential)  
 
 # Perform forward selection
 m <- back(mData$full, y = "imdb_num_votes_log", alpha = 0.05)
@@ -414,47 +361,31 @@ knitr::kable(m$build, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-### Model Overview
-```{r features_d}
-features <- openxlsx::read.xlsx("../data/features.xlsx")
-features <- features %>% filter(model == "yes") %>% select(Variable, Description) 
-selected <- data.frame(Variable = m$selected)
-selected <- selected %>% inner_join(features)
-```
-This model is defined as follows:
-$$y_i = (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_{i4} + \beta_5 x_{i5}) + \beta_1 x_{i6} + \beta_2 x_{i7} + \beta_3 x_{i8} + \beta_4 x_{i9} + \beta_5 x_{i10}) + \beta_5 x_{i11}) + \epsilon_i$$
+The model therefore retained the following variables:  
 
-where:  
-$y_i$ is the log number of votes for movie $i$   
-$x_{i1}$ is `r tolower(selected$Description[1])` for movie $i$   
-$x_{i2}$ is `r tolower(selected$Description[2])` for movie $i$   
-$x_{i3}$ is `r tolower(selected$Description[3])` for movie $i$   
-$x_{i4}$ is `r tolower(selected$Description[4])` for movie $i$   
-$x_{i5}$ is `r tolower(selected$Description[5])` for movie $i$    
-$x_{i6}$ is `r tolower(selected$Description[6])` for movie $i$   
-$x_{i7}$ is `r tolower(selected$Description[7])` for movie $i$   
-$x_{i8}$ is `r tolower(selected$Description[8])` for movie $i$   
-$x_{i9}$ is `r tolower(selected$Description[9])` for movie $i$   
-$x_{i10}$ is `r tolower(selected$Description[10])` for movie $i$   
-$x_{i11}$ is `r tolower(selected$Description[11])` for movie $i$   
-$\epsilon_i$ is the total residual for the model for movie$i$    
+`r kfigr::figr(label = "modelD_variables", prefix = TRUE, link = TRUE, type="Table")` Model Delta Variables
+```{r modelD_variables}
+vars <- openxlsx::read.xlsx(xlsxFile = "../data/features.xlsx")
+vars <- vars %>% filter(Variable %in% m$selected) %>% select(Variable, Description)
+knitr::kable(vars, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+
+As indicated in `r kfigr::figr(label = "modelD_overview", prefix = TRUE, link = TRUE, type="Table")`  and graphically depicted in `r kfigr::figr(label = "modelD_regression", prefix = TRUE, link = TRUE, type="Figure")`, `r modelD$comments$apa`
+
+`r kfigr::figr(label = "modelD_overview", prefix = TRUE, link = TRUE, type="Table")`
+```{r modelD_overview}
+knitr::kable(modelD$glance, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
 
 ```{r modelD_regression}
 modelD$plots$regression
 ```
 `r kfigr::figr(label = "modelD_regression", prefix = TRUE, link = TRUE, type="Figure")` Model Delta Regression
 
-The model graphically presented in `r kfigr::figr(label = "modelD_regression", prefix = TRUE, link = TRUE, type="Figure")` `r modelD$comment$apa`
-
-#### Model Coefficients
-`r kfigr::figr(label = "modelD_coefficients", prefix = TRUE, link = TRUE, type="Table")` Model Delta Coefficients
-```{r modelD_coefficients}
-knitr::kable(modelD$summary$coefficients, digits = 3) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-As shown in `r kfigr::figr(label = "modelD_summary", prefix = TRUE, link = TRUE, type="Table")`, the predicted log of the number of IMDB votes for a film was `r round(modelD$summary$coefficients[1,1], 3)` + a genre factor associated with the genre of the film + an MPAA rating factor associated with its rating  + a month factor tied to the month of theatre release + `r round(modelD$summary$coefficients[27, 1], 3)` log votes if the movie was nominated for a best picture oscar + `r round(modelD$summary$coefficients[28, 1], 3)` log votes if the movie won a best picture oscar + `r round(modelD$summary$coefficients[29, 1], 3)` log votes if the movie won a best actor oscar + `r round(modelD$summary$coefficients[30, 1], 3)` log votes if the movie won an oscar for best director + `r round(modelD$summary$coefficients[32, 1], 3)` log votes for each minute of movie runtime + `r round(modelD$summary$coefficients[33, 1], 3)` log votes for each log number of votes per day score + `r round(modelD$summary$coefficients[34, 1], 3)` log votes for each log number of movies directed by the director of the film. 
-
-The log of runtime, votes per day scores log, and directory experience were all significant predictors of the log number of IMDB votes. The other variables were not significant at each level of the predictor.
 
 ### Model Diagnostics
 #### Linearity
@@ -462,15 +393,23 @@ The linearity of each predictor with the log number of IMDB votes is illustrated
 
 ```{r modelD_linearity, fig.height=20}
 gridExtra::grid.arrange(gridExtra::arrangeGrob(modelD$plots$linearity[[1]],
-                                                modelD$plots$linearity[[2]],
-                                                modelD$plots$linearity[[3]], ncol = 3),
-                         gridExtra::arrangeGrob(modelD$plots$linearity[[4]],
-                                                modelD$plots$linearity[[5]], ncol = 2),
-                         nrow = 2)
+                                               modelD$plots$linearity[[2]],
+                                               modelD$plots$linearity[[3]], ncol = 3),
+                        gridExtra::arrangeGrob(modelD$plots$linearity[[4]],
+                                               modelD$plots$linearity[[5]],
+                                               modelD$plots$linearity[[6]], ncol = 3),
+                        gridExtra::arrangeGrob(modelD$plots$linearity[[7]],
+                                               modelD$plots$linearity[[8]],
+                                               modelD$plots$linearity[[9]], ncol = 3),
+                        gridExtra::arrangeGrob(modelD$plots$linearity[[10]],
+                                               modelD$plots$linearity[[11]], ncol = 2),
+                        gridExtra::arrangeGrob(modelD$plots$linearity[[12]],
+                                               modelD$plots$linearity[[13]], ncol = 2),
+                         nrow = 5)
                     
 
 ```
-`r kfigr::figr(label = "modelD_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model beta linearity plots
+`r kfigr::figr(label = "modelD_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Delta linearity plots
 
 `r modelD$comment$linearity`
 
@@ -479,7 +418,7 @@ The following plot (`r kfigr::figr(label = "modelD_homoscedasticity", prefix = T
 ```{r modelD_homoscedasticity}
 modelD$plots$res_fitted
 ```
-`r kfigr::figr(label = "modelD_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")` Model beta homoscedasticity plot
+`r kfigr::figr(label = "modelD_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")` Model Delta homoscedasticity plot
 
 `r modelD$comments$homoscedasticity`
 
@@ -491,7 +430,7 @@ gridExtra::grid.arrange(modelD$plots$res_hist, modelD$plots$res_qq, ncol = 2)
                         
 
 ```
-`r kfigr::figr(label = "modelD_residuals", prefix = TRUE, link = TRUE, type="Figure")` Model beta residuals plot
+`r kfigr::figr(label = "modelD_residuals", prefix = TRUE, link = TRUE, type="Figure")` Model Delta residuals plot
 
 `r modelD$comments$normality`
 
@@ -513,14 +452,152 @@ knitr::kable(modelD$tests$collinearity, digits = 3) %>%
 ```{r modelD_outliers}
 gridExtra::grid.arrange(modelD$plots$res_leverage, modelD$plots$cooks, ncol = 2)
 ```
-`r kfigr::figr(label = "modelD_outliers", prefix = TRUE, link = TRUE, type="Table")` Model Delta Outliers
+`r kfigr::figr(label = "modelD_outliers", prefix = TRUE, link = TRUE, type="Figure")` Model Delta Outliers
 
-`r modelD$comments$outliers` To discern the effect of the influential points on the model, a new model (Model Delta) was created without the influential points of this model.
+`r modelD$comments$outliers` 
+
+## Model Comparisons
+To summarize, models Alpha and Beta were constructed using forward selection and models Gamma and Delta were developed via backward elimination.  Models Beta and Delta were fitted without the influential data points from models Alpha and Gamma respectively.  
+
+`r kfigr::figr(label = "model_comparison", prefix = TRUE, link = TRUE, type="Table")` Summary of models
+```{r model_comparison}
+# Compare models
+abcd <- rbind(modelA$glance, modelB$glance, modelC$glance, modelD$glance)
+knitr::kable(abcd, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+### Forward Selection vs. Backward Elimination
+As shown in `r kfigr::figr(label = "model_comparison", prefix = TRUE, link = TRUE, type="Table")`, the forward selection algorithm produced fewer predictors than the backward elimination algorithm. Notwithstanding, the differences in root mean square error for the models was not significant  `r round((abcd$RMSE[3] - abcd$RMSE[1]) / abcd$RMSE[3] * 100, 2)`% and `r round((abcd$RMSE[2] - abcd$RMSE[4]) / abcd$RMSE[4] * 100, 2)`%.  Similarly, the differences in adjusted R-squared were `r round((abcd[1,9] - abcd[3,9]) / abcd[3,9] * 100, 2)`% and `r round((abcd[4,9] - abcd[2,9]) / abcd[2,9] * 100, 2)`%, not a significant difference. Lastly the differences in the percent variance explained by the models also lacking in significance (`r round((abcd[3,11] - abcd[1,11]) / abcd[1,11] * 100, 2)`% and `r round((abcd[4,11] - abcd[2,11]) / abcd[2,11] * 100, 2)`%).
+
+### Drop or Not 
+The Beta and Delta models were trained on data sans the influential points from Alpha and Gamma.  The differences in RMSE (`r round((abcd$RMSE[1] - abcd$RMSE[2]) / abcd$RMSE[2] * 100, 2)`% and `r round((abcd$RMSE[3] - abcd$RMSE[4]) / abcd$RMSE[4] * 100, 2)`%) were somewhat significant, as were the differences in adjusted R-squared (`r round((abcd[2,9] - abcd[1,9]) / abcd[1,9] * 100, 2)`% and `r round((abcd[4,9] - abcd[3,9]) / abcd[3,9] * 100, 2)`%), and the percent of variance explained (`r round((abcd[2,11] - abcd[1,11]) / abcd[1,11] * 100, 2)`% and `r round((abcd[4,11] - abcd[3,11]) / abcd[3,11] * 100, 2)`%).
+
+### Prediction Accuracy
+The evaluate the effects of model selection method and the treatment of outliers on prediction accuracy, the four multiregression models were evaluated for prediction accuracy on the test data.  Four measures of prediction accuracy were used:
+
+1. MAPE - Mean Absolute Percentage Error
+2. MPE - Mean Percentage Error
+3. MSE - Mean Squared Error
+4. RMSE - Root Mean Squared Error
+
+In addition, a percent accuracy measure was computed as the percentage of the observations in the test set in which the actual log number of IMDB votes fell within the prediction interval.
+
+`r kfigr::figr(label = "prediction", prefix = TRUE, link = TRUE, type="Table")` Model Predictive Accuracy Summary
+```{r prediction}
+mods <- list(modelA, modelB, modelC, modelD)
+res <- prediction(mods = mods, test = test)
+knitr::kable(res$accuracy, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+There were no significant differences in MAPE, MSE, and RMSE between the models.  The negative MPE indicates that all models were biased with over predictions. From a percent accuracy perspective, it is worth noting that the forward selection and backward selection models performed identically with and without the influence points.  That said, the models *with* the influence points had `r round((sum(res$accuracy[1,11], res$accuracy[3,11]) / sum(res$accuracy[2,11], res$accuracy[4,11]) - 1), 2)` greater prediction accuracy. Indeed, the Alpha and Gamma models performed equally well; however, the Alpha model was able to do so with `r res$accuracy$Size[3] - res$accuracy$Size[1]` fewer variables. Therefore, the most parsimonious model, **Alpha** would advance.
+
+## The Model
+The final prediction equation was defined as follows:  
+$y_i = $
+`r modelA$coefficients$estimate[1]` 
++ `r round(modelA$coefficients$estimate[2], 3)`$x_1$
++ `r round(modelA$coefficients$estimate[3], 3)`$x_2$
++ `r round(modelA$coefficients$estimate[4], 3)`$x_3$
++ `r round(modelA$coefficients$estimate[5], 3)`$x_4$
++ `r round(modelA$coefficients$estimate[6], 3)`$x_5$
++ `r round(modelA$coefficients$estimate[7], 3)`$x_6$
++ `r round(modelA$coefficients$estimate[8], 3)`$x_7$
++ `r round(modelA$coefficients$estimate[9], 3)`$x_8$
++ `r round(modelA$coefficients$estimate[10], 3)`$x_9$
++ `r round(modelA$coefficients$estimate[11], 3)`$x_{10}$
++ `r round(modelA$coefficients$estimate[12], 3)`$x_{11}$
++ `r round(modelA$coefficients$estimate[13], 3)`$x_{12}$
++ `r round(modelA$coefficients$estimate[14], 3)`$x_{13}$
++ `r round(modelA$coefficients$estimate[15], 3)`$x_{14}$
++ `r round(modelA$coefficients$estimate[16], 3)`$x_{15}$
++ `r round(modelA$coefficients$estimate[17], 3)`$x_{16}$
++ `r round(modelA$coefficients$estimate[18], 3)`$x_{17}$
++ `r round(modelA$coefficients$estimate[19], 3)`$x_{18}$
++ `r round(modelA$coefficients$estimate[20], 3)`$x_{19}$
++ `r round(modelA$coefficients$estimate[21], 3)`$x_{20}$
++ `r round(modelA$coefficients$estimate[22], 3)`$x_{21}$
++ `r round(modelA$coefficients$estimate[23], 3)`$x_{22}$
++ `r round(modelA$coefficients$estimate[24], 3)`$x_{23}$
++ `r round(modelA$coefficients$estimate[15], 3)`$x_{24}$
++ `r round(modelA$coefficients$estimate[26], 3)`$x_{25}$
++ `r round(modelA$coefficients$estimate[27], 3)`$x_{26}$
++ `r round(modelA$coefficients$estimate[28], 3)`$x_{27}$
++ $\epsilon$    
+
+where:  
+$x_1$ is `r modelA$coefficients$term[2]`   
+$x_2$ is `r modelA$coefficients$term[3]` coded as 0 or 1 for this genre  
+$x_3$ is `r modelA$coefficients$term[4]` coded as 0 or 1 for this genre  
+$x_4$ is `r modelA$coefficients$term[5]` coded as 0 or 1 for this genre  
+$x_5$ is `r modelA$coefficients$term[6]` coded as 0 or 1 for this genre  
+$x_6$ is `r modelA$coefficients$term[7]` coded as 0 or 1 for this genre  
+$x_7$ is `r modelA$coefficients$term[8]` coded as 0 or 1 for this genre  
+$x_8$ is `r modelA$coefficients$term[9]` coded as 0 or 1 for this genre  
+$x_9$ is `r modelA$coefficients$term[10]` coded as 0 or 1 for this genre  
+$x_{10}$ is `r modelA$coefficients$term[11]` coded as 0 or 1 for this genre  
+$x_{11}$ is `r modelA$coefficients$term[12]` coded as 0 or 1 for this genre  
+$x_{12}$ is `r modelA$coefficients$term[13]` 
+$x_{13}$ is `r modelA$coefficients$term[14]`   
+$x_{14}$ is `r modelA$coefficients$term[15]`    
+$x_{15}$ is `r modelA$coefficients$term[16]`   
+$x_{16}$ is `r modelA$coefficients$term[17]`   
+$x_{17}$ is `r modelA$coefficients$term[18]` coded as 0 or 1 for this genre         
+$x_{18}$ is `r modelA$coefficients$term[19]` coded as 0 or 1 for this month  
+$x_{19}$ is `r modelA$coefficients$term[20]` coded as 0 or 1 for this month  
+$x_{20}$ is `r modelA$coefficients$term[21]` coded as 0 or 1 for this month  
+$x_{21}$ is `r modelA$coefficients$term[22]` coded as 0 or 1 for this month  
+$x_{22}$ is `r modelA$coefficients$term[23]` coded as 0 or 1 for this month  
+$x_{23}$ is `r modelA$coefficients$term[24]` coded as 0 or 1 for this month  
+$x_{24}$ is `r modelA$coefficients$term[25]` coded as 0 or 1 for this month  
+$x_{25}$ is `r modelA$coefficients$term[26]` coded as 0 or 1 for this month  
+$x_{26}$ is `r modelA$coefficients$term[27]` coded as 0 or 1 for this month  
+$x_{27}$ is `r modelA$coefficients$term[28]` coded as 0 or 1 for this month   
+
+### Analysis of Variance
+`r kfigr::figr(label = "modelA_anova", prefix = TRUE, link = TRUE, type="Figure")` summarizes the analysis of variance.
+```{r modelA_anova}
+a <- modelA$anova
+knitr::kable(a, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+`r kfigr::figr(label = "modelA_anova", prefix = TRUE, link = TRUE, type="Figure")` Model Alpha analysis of variance
+
+`r modelA$comments$anova`
 
 
+## Model Coefficients
+Although there are *only* `r nrow(modelA$build)` variables, there are some `r nrow(modelA$coefficients)` coefficients, a consequence of the number of levels in the categorical variables. The coefficients estimates are identified in `r kfigr::figr(label = "modelA_coef", prefix = TRUE, link = TRUE, type="Table")`. 
 
+`r kfigr::figr(label = "modelA_coef", prefix = TRUE, link = TRUE, type="Table")`: Model Alpha Coefficients
+```{r modelA_coef}
+knitr::kable(modelA$coefficients, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
 
+The intercept estimate, `r round(modelA$coefficients$estimate[1], 3)` , is the regression estimate for the mean log number of IMDB votes for an action and adventure film, launched in January with zeros for all of the other variables.  The other coefficient estimates adjust the estimate accordingly. Therefore a prediction for the log number of IMDB votes is equal to the intercept value, `r round(modelA$coefficients$estimate[1], 3)`, plus a number of log IMDB votes associated with the genre of the film, plus `r round(modelA$coefficients$estimate[13], 3)` log IMDB votes for each point of the critics score, plus `r round(modelA$coefficients$estimate[14], 3)` log IMDB votes for the log number of movies in which the cast had previously appeared, plus `r round(modelA$coefficients$estimate[15], 3)` log IMDB votes for each minute of runtime, plus `r round(modelA$coefficients$estimate[16], 3)` log IMDB votes for the log number of movies directed by the film's director, plus `r round(modelA$coefficients$estimate[17], 3)` log IMDB votes if the film was nominated for a best picture oscar.  Lastly, a number of log IMDB votes are added if the film was not released in January, according to the coefficient estimates in `r kfigr::figr(label = "modelA_coef", prefix = TRUE, link = TRUE, type="Table")`.
 
+```{r modelA_coef_summary}
+coefs <- as.data.frame(modelA$summary$coefficients)
+coefs$coef <- rownames(coefs)
+quant <- coefs %>% filter(!(grepl("genre", coef)) & !(grepl("thtr", coef))) %>% arrange(desc(Estimate))
+genres <- coefs %>% filter(grepl("genre", coef)) %>% arrange(desc(Estimate))
+months <- coefs %>% filter(grepl("thtr", coef)) %>% arrange(desc(Estimate))
+```
 
+According to `r kfigr::figr(label = "modelA_genre", prefix = TRUE, link = TRUE, type="Table")`, action and adventures are the most popular, all else equal, followed by science fiction and fantasy, then animation!  Documentaries and art house / international films are predicted to be the least popular in terms of the log number of IMDB votes, all else equal. 
+
+`r kfigr::figr(label = "modelA_genre", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Genres and Popularity
+```{r modelA_genre}
+knitr::kable(genres, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+According to `r kfigr::figr(label = "modelA_months", prefix = TRUE, link = TRUE, type="Table")`, a film is predicted to have the highest number of log IMDB votes if released during the summer or December. The month associated with the lowest degree of success, all else equal, was May.  
+
+`r kfigr::figr(label = "modelA_months", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Timing and Popularity
+```{r modelA_months}
+knitr::kable(months, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
 
 * * *

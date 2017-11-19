@@ -35,8 +35,8 @@ knitr::knit_hooks$set(inline = function(x) {
 ```
 
 ```{r load-data}
-#mdb2 <- openxlsx::read.xlsx("../data/sample.xlsx")
-#save(file = "../data/mdb2.RData", mdb2)
+# test <- openxlsx::read.xlsx("../data/test.xlsx")
+# save(file = "../data/test.RData", test)
 load("../data/movies.Rdata")
 load("../data/mdb2.Rdata")
 ```
@@ -51,9 +51,9 @@ library(ggplot2)
 source("../R/analysis.R")
 source("../R/associate.R")
 source("../R/back.R")
-#source("../R/bivariate.R")
 source("../R/correlate.R")
 source("../R/forward.R")
+source("../R/prediction.R")
 source("../R/preprocess.R")
 source("../R/process.R")
 source("../R/regressionAnalysis.R")
@@ -63,11 +63,20 @@ source("../R/univariateQuant.R")
 source("../R/visualization.R")
 ```
 
+```{r preprocess}
+# dataSets  <- preprocess(movies, mdb2)
+# mdb <- dataSets$mdb
+# mdb2 <- dataSets$mdb2
+# test <- dataSets$test
+# save(mdb, file = "../data/mdb.RData")
+# save(mdb2, file = "../data/mdb2.RData")
+# save(test, file = "../data/test.RData")
+```
 
-```{r mdb}
-dataSets  <- preprocess(movies, mdb2)
-mdb <- dataSets$mdb1
-mdb2 <- dataSets$mdb2
+```{r univariate}
+load("../data/mdb.Rdata")
+load("../data/mdb2.Rdata")
+load("../data/test.Rdata")
 edaUni <- univariate(mdb)
 ```
 

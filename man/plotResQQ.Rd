@@ -21,8 +21,9 @@ resQQ Residual Normal QQ Plot
 }
 \seealso{
 Other visualization functions: \code{\link{plotBox}},
-  \code{\link{plotCooks}}, \code{\link{plotFreqProp}},
-  \code{\link{plotHist}}, \code{\link{plotQQ}},
+  \code{\link{plotCooks}}, \code{\link{plotCorr}},
+  \code{\link{plotFreqProp}}, \code{\link{plotHist}},
+  \code{\link{plotLinear}}, \code{\link{plotQQ}},
   \code{\link{plotResAll}}, \code{\link{plotResFit}},
   \code{\link{plotResLeverage}}, \code{\link{plotScatter}}
 }

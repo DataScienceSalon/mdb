@@ -9,7 +9,7 @@ preprocess(movies, mdb2)
 \arguments{
 \item{movies}{Data frame containing the movies data set}
 
-\item{mdb2}{Data set of 100 randomly selected observations from the movies data set, in which total box office revenue was added.}
+\item{mdb2}{Data set of 100 randomly selected observations from the movies data set, in which total daily box office revenue was added.}
 }
 \description{
 \code{preprocess} Performs preprocessing of data for analysis
@@ -18,9 +18,9 @@ preprocess(movies, mdb2)
 Other movies functions: \code{\link{associate}},
   \code{\link{back}}, \code{\link{correlate}},
   \code{\link{evalBackwardModel}},
-  \code{\link{evalForwardModel}}, \code{\link{evaluate}},
-  \code{\link{forward}}, \code{\link{fullModel}},
-  \code{\link{multivariateQuant}}, \code{\link{process}},
+  \code{\link{evalForwardModel}}, \code{\link{forward}},
+  \code{\link{multivariateQuant}},
+  \code{\link{prediction}}, \code{\link{process}},
   \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}

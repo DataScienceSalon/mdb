@@ -26,7 +26,8 @@ showing frequencies and proportions
 }
 \seealso{
 Other visualization functions: \code{\link{plotBox}},
-  \code{\link{plotCooks}}, \code{\link{plotHist}},
+  \code{\link{plotCooks}}, \code{\link{plotCorr}},
+  \code{\link{plotHist}}, \code{\link{plotLinear}},
   \code{\link{plotQQ}}, \code{\link{plotResAll}},
   \code{\link{plotResFit}}, \code{\link{plotResLeverage}},
   \code{\link{plotResQQ}}, \code{\link{plotScatter}}

@@ -19,7 +19,8 @@ cooks Cooks distance plot for residuals
 }
 \seealso{
 Other visualization functions: \code{\link{plotBox}},
-  \code{\link{plotFreqProp}}, \code{\link{plotHist}},
+  \code{\link{plotCorr}}, \code{\link{plotFreqProp}},
+  \code{\link{plotHist}}, \code{\link{plotLinear}},
   \code{\link{plotQQ}}, \code{\link{plotResAll}},
   \code{\link{plotResFit}}, \code{\link{plotResLeverage}},
   \code{\link{plotResQQ}}, \code{\link{plotScatter}}

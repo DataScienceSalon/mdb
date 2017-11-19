@@ -21,6 +21,12 @@ preprocess <- function(movies, mdb2) {
   mdb1 <- mdb1[complete.cases(mdb1),]
 
   #---------------------------------------------------------------------------#
+  #              Remove TV Movies and NC-17 (too few observations)            #
+  #---------------------------------------------------------------------------#
+  mdb1 <-  mdb1 %>% filter(title_type != "TV Movie" & mpaa_rating != "NC-17")
+  mdb1$mpaa_rating <- factor(mdb1$mpaa_rating)
+
+  #---------------------------------------------------------------------------#
   #               Create Days Since Theatrical Release                        #
   #---------------------------------------------------------------------------#
   mdb1 <- mdb1 %>% mutate(thtr_rel_date = as.Date(paste(mdb1$thtr_rel_year,
@@ -145,17 +151,41 @@ preprocess <- function(movies, mdb2) {
 
 
   #---------------------------------------------------------------------------#
+  #                 Split Data into Training and Test Sets                    #
+  #---------------------------------------------------------------------------#
+  # Ensure sample has all genres and MPAA ratings.
+  genres <- unique(mdb1$genre)
+  mpaa <- unique(mdb1$mpaa_rating)
+  representative <- FALSE
+  seed <- 232
+  while(representative == FALSE) {
+    set.seed(seed)
+    idx <- sample(1:nrow(mdb1), nrow(mdb1) * .8)
+    train <- mdb1[idx, ]
+    test <- mdb1[-idx, ]
+    if ((setequal(genres, unique(train$genre)) &
+         setequal(mpaa, unique(train$mpaa_rating)))) {
+      representative <- TRUE
+    } else {
+      seed <- seed + sample(1:100, 1)
+    }
+  }
+
+  #---------------------------------------------------------------------------#
   #                     Create Daily Box Office Sample Set                    #
   #---------------------------------------------------------------------------#
   keep <- c("title", "box_office")
   mdb2 <- mdb2[, names(mdb2) %in% keep]
-  mdb2 <- inner_join(mdb2, mdb1)
+  mdb2 <- inner_join(mdb2, train)
   mdb2 <- mdb2 %>% mutate(daily_box_office = box_office / thtr_days)
   mdb2 <- mdb2 %>% mutate(daily_box_office_log = log2(daily_box_office))
+  mdb2 <- mdb2 %>% filter(title %in% train$title)
+
 
   data <- list(
-    mdb1 = mdb1,
-    mdb2 = mdb2
+    mdb = train,
+    mdb2 = mdb2,
+    test = test
   )
 
 

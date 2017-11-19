@@ -4,14 +4,12 @@
 \alias{forward}
 \title{forward}
 \usage{
-forward(data, y, mName)
+forward(data, y)
 }
 \arguments{
 \item{data}{Data frame containing the full model}
 
 \item{y}{Character string containing the name of the response variable}
-
-\item{mName}{Character string containing the name of model}
 }
 \description{
 \code{forward} Creates prediction model using forward selection
@@ -20,10 +18,10 @@ forward(data, y, mName)
 Other movies functions: \code{\link{associate}},
   \code{\link{back}}, \code{\link{correlate}},
   \code{\link{evalBackwardModel}},
-  \code{\link{evalForwardModel}}, \code{\link{evaluate}},
-  \code{\link{fullModel}}, \code{\link{multivariateQuant}},
-  \code{\link{preprocess}}, \code{\link{process}},
-  \code{\link{regressionAnalysis}},
+  \code{\link{evalForwardModel}},
+  \code{\link{multivariateQuant}},
+  \code{\link{prediction}}, \code{\link{preprocess}},
+  \code{\link{process}}, \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }
