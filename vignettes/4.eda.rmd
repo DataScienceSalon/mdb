@@ -9,23 +9,23 @@ The exploratory data analysis comprised both a univariate and bivariate examinat
 As mentioned above, the first objective was to identify an available variable that would proxy for box office success. Correlation tests were conducted between the quantitative variables and the log of daily box office revenue. The variables most highly correlated with log of daily box office revenue are summarized in
 `r kfigr::figr(label = "correlation1", prefix = TRUE, link = TRUE, type="Table")`.
 
-`r kfigr::figr(label = "correlation1", prefix = TRUE, link = TRUE, type="Table")` Variables most highly correlated with the log daily box office revenue
+`r kfigr::figr(label = "correlation1", prefix = TRUE, link = TRUE, type="Table")`: Variables most highly correlated with the log daily box office revenue
 ```{r correlation1}
-mData <- process(mdb2, group = "a", y = c("daily_box_office_log"))
+mData <- process(train, group = "a", y = c("daily_box_office_log"))
 cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log Daily Box Office", plot = FALSE)
 knitr::kable(head(cData$tests, 10), digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-The **log of the number of IMDB votes per day** would proxy for daily box office revenue and correlation with this dependent variable was the focus of the bivariate analysis that follows.
+The **log of the number of imdb votes per day** would proxy for daily box office revenue and correlation with this dependent variable was the focus of the bivariate analysis that follows.
 
 ### Categorical Variable Analysis
-Association tests were conducted between the categorical variables and the log number of IMDB votes per day.  `r kfigr::figr(label = "association", prefix = TRUE, link = TRUE, type="Table")` summarizes the associations in terms of r-squared.
+Association tests were conducted between the categorical variables and the log number of imdb votes per day.  `r kfigr::figr(label = "association", prefix = TRUE, link = TRUE, type="Table")` summarizes the associations in terms of r-squared.
 
-`r kfigr::figr(label = "association", prefix = TRUE, link = TRUE, type="Table")` Association between categorical variables and the log number of IMDB votes per day
+`r kfigr::figr(label = "association", prefix = TRUE, link = TRUE, type="Table")` Association between categorical variables and the log number of imdb votes per day
 ```{r association}
-mData <- process(mdb, group = "b", y = "imdb_num_votes_log")
-aData <- associate(x = mData$categorical, y = mData$dependent, yLab = "Log IMDB Votes")
+mData <- process(train, group = "b", y = "imdb_num_votes_log")
+aData <- associate(x = mData$categorical, y = mData$dependent, yLab = "Log imdb Votes")
 knitr::kable(head(aData$tests, 10), digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
@@ -33,22 +33,22 @@ knitr::kable(head(aData$tests, 10), digits = 2) %>%
 The associations were significant at a 95% confidence level for for all categorical variables.
 
 ### Quantitative Variable Analysis
-The correlations between the quantitative variables and the log number of IMDB votes are listed in `r kfigr::figr(label = "correlate", prefix = TRUE, link = TRUE, type="Table")` in order of highest to lowest correlation.
+The correlations between the quantitative variables and the log number of imdb votes are listed in `r kfigr::figr(label = "correlate", prefix = TRUE, link = TRUE, type="Table")` in order of highest to lowest correlation.
 
-`r kfigr::figr(label = "correlate", prefix = TRUE, link = TRUE, type="Table")`: Correlation of quantitative variables and the log number of IMDB votes.
+`r kfigr::figr(label = "correlate", prefix = TRUE, link = TRUE, type="Table")`: Correlation of quantitative variables and the log number of imdb votes.
 ```{r correlate}
-mData <- process(mdb, group = "b", y = "imdb_num_votes_log")
-cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log IMDB Votes per Day", plot = FALSE)
+mData <- process(train, group = "b", y = "imdb_num_votes_log")
+cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log imdb Votes per Day", plot = FALSE)
 knitr::kable(cData$tests, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-As indicated in `r kfigr::figr(label = "correlate", prefix = TRUE, link = TRUE, type="Table")`, the variable most highly correlated with the log of IMDB votes was the log of cast votes, $r = $ `r ifelse(cData$tests$p.value[1] < 0.001, "p < .001", ifelse(cData$tests$p.value[1] < 0.01, "p < .01", "p < .05"))`. As such, the log of cast votes would be the response variable for this analysis.
+As indicated in `r kfigr::figr(label = "correlate", prefix = TRUE, link = TRUE, type="Table")`, the variable most highly correlated with the log of imdb votes was the log of cast votes, $r = $ `r ifelse(cData$tests$p.value[1] < 0.001, "p < .001", ifelse(cData$tests$p.value[1] < 0.01, "p < .01", "p < .05"))`. As such, the log of cast votes would be the response variable for this analysis.
 
 Now that the response variable has been selected, the degree of correlation among the remaining quantitative variables (multicollinearity) was the focus.  
 
 ```{r multicollinearity, fig.height=10, fig.width=20}
-mData <- process(mdb, group = "b",  y = "imdb_num_votes_log")
-cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log IMDB Votes", plot = TRUE)
+mData <- process(train, group = "b",  y = "imdb_num_votes_log")
+cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log imdb Votes", plot = TRUE)
 knitr::kable(cData$tests, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```

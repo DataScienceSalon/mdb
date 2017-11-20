@@ -25,9 +25,9 @@ model.
 }
 \seealso{
 Other movies functions: \code{\link{associate}},
-  \code{\link{back}}, \code{\link{correlate}},
-  \code{\link{evalBackwardModel}}, \code{\link{forward}},
-  \code{\link{multivariateQuant}},
+  \code{\link{backwardElimination}}, \code{\link{back}},
+  \code{\link{comparePredictions}},
+  \code{\link{correlate}}, \code{\link{forward}},
   \code{\link{prediction}}, \code{\link{preprocess}},
   \code{\link{process}}, \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},

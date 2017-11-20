@@ -1,3 +1,20 @@
 # Part 7: Conclusion
 
+According to `r kfigr::figr(label = "modelA_genre", prefix = TRUE, link = TRUE, type="Table")`, action and adventures are the most popular, all else equal, followed by science fiction and fantasy, then animation!  Documentaries and art house / international films are predicted to be the least popular in terms of the log number of IMDB votes, all else equal. 
+
+`r kfigr::figr(label = "modelA_genre", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Genres and Popularity
+```{r modelA_genre}
+knitr::kable(genres, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+According to `r kfigr::figr(label = "modelA_months", prefix = TRUE, link = TRUE, type="Table")`, a film is predicted to have the highest number of log IMDB votes if released during the summer or December. The month associated with the lowest degree of success, all else equal, was May.  
+
+`r kfigr::figr(label = "modelA_months", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Timing and Popularity
+```{r modelA_months}
+knitr::kable(months, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+
 * * *

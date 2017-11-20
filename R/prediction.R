@@ -3,63 +3,73 @@
 #==============================================================================#
 #' prediction
 #'
-#' \code{prediction} Performs prediction on test data and returns results
+#' \code{prediction} Performs prediction on an randomly sampled individual observation
 #'
-#' @param models List containing linear models used to perform predictions
-#' @param test Data frame containing the movies data set
+#' @param mod Linear regression model
+#' @param mName Character string containing the model name
+#' @param case Data frame containing single case to predict
+#' @param units Character string indicating the unit for the value being predicted (w/o log)
+#' @param conf Numeric indicator (0 to 1) of the confidence level for the prediction interval.
 #'
 #' @return
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-prediction <- function(mods, test) {
+prediction <- function(mod, mName, case, units, conf = .90) {
 
-  # Perform analysis
-  analysis <- lapply(mods, function(m) {
-    p <- predict(m$mod, test, se.fit = TRUE, scale = NULL, df = Inf,
-                 interval = "prediction", level = 0.95)
-    d <- data.frame(Title = test$title,
-                    Y = test$imdb_num_votes_log,
-                    Predicted =  p$fit[,1],
-                    Lower = p$fit[,2],
-                    Upper = p$fit[,3],
-                    SE = p$se.fit,
-                    E = test$imdb_num_votes_log - p$fit[,1],
-                    PE = (test$imdb_num_votes_log - p$fit[,1]) / test$imdb_num_votes_log * 100,
-                    AE = abs(p$fit[,1] - test$imdb_num_votes_log),
-                    APE = abs(p$fit[,1] - test$imdb_num_votes_log) /
-                      test$imdb_num_votes_log * 100,
-                    SQRE = (test$imdb_num_votes_log - p$fit[,1])^2,
-                    LnQ = log(p$fit[,1] / test$imdb_num_votes_log))
-    a <- data.frame(MAPE = mean(d$APE),
-                    MPE = mean(d$PE),
-                    MSE = mean(d$SQRE),
-                    RMSE =  sqrt(mean(d$SQRE)))
-    pa <- data.frame(x = (nrow(test %>% filter(imdb_num_votes_log > p$fit[,2] & imdb_num_votes_log < p$fit[,3])) /
-             nrow(test)) * 100)
-    colnames(pa) <- c("% Accuracy")
-    r <- cbind(m$glance,a, pa)
-    r <- r[, c(1,2,5,8,9,11,12,13,14,15, 16)]
-    res <- list()
-    res[["data"]] <- d
-    res[["analysis"]] <- r
-    res
-  })
+  # Get summmary statistics for model
+  s <- broom::glance(mod)
 
-  result <- list()
-  # Extract Summary
-  result[["accuracy"]] <- data.table::rbindlist(lapply(analysis, function(x) {
-    x$analysis
-  }))
+  # Extract name of response variable
+  yVar <- mod$terms[[2]]
 
-  result[["data"]] <- lapply(analysis, function(x) {
-    x$data
-  })
+  # Perform prediction and summarize results
+  p <- predict(mod, case, se.fit = TRUE, scale = NULL, df = Inf,
+               interval = "prediction", level = conf)
 
-  # Select random prediction for analysis
-  set.seed(252)
-  result[["movie"]] <- analysis[[1]]$data[sample(nrow(analysis[[1]]$data), 1), ]
+  # Compute error figures in log and linear scales
+  y <- case[,(colnames(case) == yVar)]
+  yLin <- 2^y
 
-  return(result)
+  yHat <- p$fit[1]
+  yHatLin <- 2^yHat
+
+  e <-  y - yHat
+  eLin <- yLin - yHatLin
+
+  pe <- abs(e / y * 100)
+  peLin <- abs(yLin - yHatLin) / yLin * 100
+
+  overUnder <- ifelse(e > 0, "under", "over")
+
+  comment <- paste0(mName, " regression model (F=(", s$df, ",", s$df.residual,
+                    ") = ", round(s$statistic, 2), " p-value < ",
+                    ifelse(s$p.value < .001, ".001",
+                           ifelse(s$p.value < .01, ".01",
+                                  ifelse(s$p.value < .05, ".05"))),
+                    ") was used to predict the ", yVar,  " of the film '",
+                    case$title, "'. The actual value was ", round(y, 2), " log ",
+                    units, " or ", round(yLin, 2), " ", units, " on the linear scale. ",
+                    "The model predicted ", round(yHat, 2), " log ", units,
+                    " with a 95% prediction interval CI[",
+                    round(p$fit[2], 2), ",", round(p$fit[3], 2),"] log ", units,
+                    ", equating to a prediction of ", round(yHatLin, 0), " ", units,
+                    " with a range from ", round(2^p$fit[2], 0), " to ",
+                    round(2^p$fit[3], 0)," ", units, ". The model ", overUnder,
+                    " predicted by ", round(peLin, 2), "% or ",
+                    abs(round(eLin, 0)), " ", units, " on the linear scale. ")
+
+  analysis <- list()
+  analysis[["y"]] <- y
+  analysis[["yLin"]] <- yLin
+  analysis[["yHat"]] <- yHat
+  analysis[["yHatLin"]] <- yHatLin
+  analysis[["e"]] <- e
+  analysis[["eLin"]] <- eLin
+  analysis[["pe"]] <- pe
+  analysis[["peLin"]] <- peLin
+  analysis[["comment"]] <- comment
+
+  return(analysis)
 }

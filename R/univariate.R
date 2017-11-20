@@ -5,7 +5,7 @@
 #'
 #' \code{univariate} Performs univariate analysis of variables
 #'
-#' @param dataSets List containing the two movie data bases
+#' @param mdb Data frame containing movie information
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
@@ -15,7 +15,6 @@ univariate <- function(mdb) {
   #---------------------------------------------------------------------------#
   #                       Conduct Qualitative Analysis                        #
   #---------------------------------------------------------------------------#
-  type <- univariateQual(as.data.frame(mdb$title_type), xLab = "Title Type")
   genre <- univariateQual(as.data.frame(mdb$genre), xLab = "Genre")
   mpaa <- univariateQual(as.data.frame(mdb$mpaa_rating), xLab = "MPAA Rating")
   season <- univariateQual(as.data.frame(mdb$thtr_rel_season), xLab = "Season")
@@ -60,19 +59,15 @@ univariate <- function(mdb) {
                                yLab = "Cast Votes", units = "votes")
   castVotesLog <- univariateQuant(data.frame(mdb$title, mdb$cast_votes_log),
                                yLab = "Log Cast Votes", units = "log(votes)")
-  scores <- univariateQuant(data.frame(mdb$title, mdb$scores),
-                            yLab = "Total Scores", units = "points")
-  scoresLog <- univariateQuant(data.frame(mdb$title, mdb$scores_log),
-                            yLab = "Log Total Scores", units = "points")
   votesPerDay <- univariateQuant(data.frame(mdb$title, mdb$votes_per_day),
                             yLab = "Votes per Day", units = "votes")
   votesPerDayLog <- univariateQuant(data.frame(mdb$title, mdb$votes_per_day_log),
                                  yLab = "Log Votes per Day", units = "votes")
-  votesPerDayScores <- univariateQuant(data.frame(mdb$title, mdb$votes_per_day_scores),
-                                 yLab = "Scores * Votes per Day", units = "scores")
-  votesPerDayScoresLog <- univariateQuant(data.frame(mdb$title, mdb$votes_per_day_scores_log),
-                                    yLab = "Log Scores * Votes per Day", units = "scores")
 
+  #---------------------------------------------------------------------------#
+  #                   Obtain statistics on box office revenue                 #
+  #---------------------------------------------------------------------------#
+  mdb2 <- mdb %>% filter(!is.na(box_office))
   dailyBoxOffice <- univariateQuant(data.frame(mdb2$title, mdb2$daily_box_office),
                                  yLab = "Daily Box Office", units = "dollars")
   dailyBoxOfficeLog <- univariateQuant(data.frame(mdb2$title, mdb2$daily_box_office_log),
@@ -88,14 +83,12 @@ univariate <- function(mdb) {
                     imdbVotes$outliers, imdbVotesLog$outliers,
                     imdbRating$outliers, criticsScores$outliers,
                     audienceScores$outliers, castVotes$outliers,
-                    castVotesLog$outliers, scores$outliers, scoresLog$outliers,
-                    votesPerDay$outliers, votesPerDayLog$outliers,
-                    votesPerDayScores$outliers, votesPerDayScoresLog$outliers,
-                    dailyBoxOffice$outliers, dailyBoxOffice$outliers)
+                    castVotesLog$outliers, votesPerDay$outliers,
+                    votesPerDayLog$outliers, dailyBoxOffice$outliers,
+                    dailyBoxOffice$outliers)
 
   # Return analysis
   analysis <- list(
-    type = type,
     genre = genre,
     mpaa = mpaa,
     season = season,
@@ -121,12 +114,8 @@ univariate <- function(mdb) {
     audienceScores = audienceScores,
     castVotes = castVotes,
     castVotesLog = castVotesLog,
-    scores = scores,
-    scoresLog = scoresLog,
     votesPerDay = votesPerDay,
     votesPerDayLog = votesPerDayLog,
-    votesPerDayScores = votesPerDayScores,
-    votesPerDayScoresLog = votesPerDayScoresLog,
     dailyBoxOffice = dailyBoxOffice,
     dailyBoxOfficeLog = dailyBoxOfficeLog,
     outliers = outliers

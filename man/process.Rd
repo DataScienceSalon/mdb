@@ -29,11 +29,11 @@ dependent variables and set with the response variable.
 }
 \seealso{
 Other movies functions: \code{\link{associate}},
-  \code{\link{back}}, \code{\link{correlate}},
-  \code{\link{evalBackwardModel}},
-  \code{\link{evalForwardModel}}, \code{\link{forward}},
-  \code{\link{multivariateQuant}},
-  \code{\link{prediction}}, \code{\link{preprocess}},
+  \code{\link{backwardElimination}}, \code{\link{back}},
+  \code{\link{comparePredictions}},
+  \code{\link{correlate}}, \code{\link{evalForwardModel}},
+  \code{\link{forward}}, \code{\link{prediction}},
+  \code{\link{preprocess}},
   \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}

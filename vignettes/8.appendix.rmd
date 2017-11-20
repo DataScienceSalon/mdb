@@ -452,60 +452,6 @@ edaUni$runtimeLog$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_runtime_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$runtimeLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$runtimeLog$out`
 
-### Scores
-This variable captured the total score for each film defined as the average of 10 * IMDB Rating and audience_score.
-
-`r kfigr::figr(label = "a_scores_stats", prefix = TRUE, link = TRUE, type="Table")`: Scores summary statistics
-```{r a_scores_stats}
-knitr::kable(edaUni$scores$stats, digits = 2) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-
-```{r a_scores_dist}
-gridExtra::grid.arrange(edaUni$scores$hist, edaUni$scores$qq, ncol = 2)
-```
-`r kfigr::figr(label = "a_scores_dist", prefix = TRUE, link = TRUE, type="Figure")`: Scores histogram and QQ Plot
-
-```{r a_scores_box, fig.height=4}
-edaUni$scores$box
-```
-`r kfigr::figr(label = "a_scores_box", prefix = TRUE, link = TRUE, type="Figure")`: Scores boxplot
-
-**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_scores_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$scores$central`
-
-**Dispersion**: `r edaUni$scores$disp`
-
-**Shape of Distribution**:  `r edaUni$scores$skew` `r edaUni$scores$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_scores_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that approximates normality.
-
-**Outliers**: The boxplot in `r kfigr::figr(label = "a_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$scores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$scores$out`
-
-### Scores (Log)
-This is a log transformation of scores variable.
-
-`r kfigr::figr(label = "a_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log scores summary statistics
-```{r a_scores_log_stats}
-knitr::kable(edaUni$scoresLog$stats, digits = 2) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-
-```{r a_scores_log_dist}
-gridExtra::grid.arrange(edaUni$scoresLog$hist, edaUni$scoresLog$qq, ncol = 2)
-```
-`r kfigr::figr(label = "a_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log scores histogram and QQ Plot
-
-```{r a_scores_log_box, fig.height=4}
-edaUni$scoresLog$box
-```
-`r kfigr::figr(label = "a_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log scores boxplot
-
-**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$scoresLog$central`
-
-**Dispersion**: `r edaUni$scoresLog$disp`
-
-**Shape of Distribution**:  `r edaUni$scoresLog$skew` `r edaUni$scoresLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs rather significantly from normality.
-
-**Outliers**: The boxplot in `r kfigr::figr(label = "a_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$scoresLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$scoresLog$out`
-
 ### Theatre Days
 This variable captured the number of days since January 1, 2016 and theatrical release.
 
@@ -627,64 +573,6 @@ edaUni$votesPerDayLog$box
 **Shape of Distribution**:  `r edaUni$votesPerDayLog$skew` `r edaUni$votesPerDayLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_votes_per_day_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs rather significantly from normality.
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_votes_per_day_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$votesPerDayLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$votesPerDayLog$out`
-
-### Votes per Day * Scores
-This variable is the product of the number of votes per day and the scores variable.
-
-`r kfigr::figr(label = "a_votes_per_day_scores_stats", prefix = TRUE, link = TRUE, type="Table")`: Scores per Day summary statistics
-```{r a_votes_per_day_scores_stats}
-knitr::kable(edaUni$votesPerDayScores$stats, digits = 2) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-
-```{r a_votes_per_day_scores_dist}
-gridExtra::grid.arrange(edaUni$votesPerDayScores$hist, edaUni$votesPerDayScores$qq, ncol = 2)
-```
-`r kfigr::figr(label = "a_votes_per_day_scores_dist", prefix = TRUE, link = TRUE, type="Figure")`: Scores per Day histogram and QQ Plot
-
-```{r a_votes_per_day_scores_box, fig.height=4}
-edaUni$votesPerDayScores$box
-```
-`r kfigr::figr(label = "a_votes_per_day_scores_box", prefix = TRUE, link = TRUE, type="Figure")`: Scores per Day boxplot
-
-**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_votes_per_day_scores_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$votesPerDayScores$central`
-
-**Dispersion**: `r edaUni$votesPerDayScores$disp`
-
-**Shape of Distribution**:  `r edaUni$votesPerDayScores$skew` `r edaUni$votesPerDayScores$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_votes_per_day_scores_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that approximates normality.
-
-**Outliers**: The boxplot in `r kfigr::figr(label = "a_votes_per_day_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$votesPerDayScores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$votesPerDayScores$out`
-
-### Votes per Day * Scores (Log)
-This is a log transformation of votes per day * scores variable.
-
-`r kfigr::figr(label = "a_votes_per_day_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log scores summary statistics
-```{r a_votes_per_day_scores_log_stats}
-knitr::kable(edaUni$votesPerDayScoresLog$stats, digits = 2) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-
-```{r a_votes_per_day_scores_log_dist}
-gridExtra::grid.arrange(edaUni$votesPerDayScoresLog$hist, edaUni$votesPerDayScoresLog$qq, ncol = 2)
-```
-`r kfigr::figr(label = "a_votes_per_day_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log scores histogram and QQ Plot
-
-```{r a_votes_per_day_scores_log_box, fig.height=4}
-edaUni$votesPerDayScoresLog$box
-```
-`r kfigr::figr(label = "a_votes_per_day_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log scores boxplot
-
-**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_votes_per_day_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$votesPerDayScoresLog$central`
-
-**Dispersion**: `r edaUni$votesPerDayScoresLog$disp`
-
-**Shape of Distribution**:  `r edaUni$votesPerDayScoresLog$skew` `r edaUni$votesPerDayScoresLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_votes_per_day_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs rather significantly from normality.
-
-**Outliers**: The boxplot in `r kfigr::figr(label = "a_votes_per_day_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$votesPerDayScoresLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$votesPerDayScoresLog$out`
-
-
-
-
 
 
 

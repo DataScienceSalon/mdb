@@ -4,27 +4,26 @@
 \alias{prediction}
 \title{prediction}
 \usage{
-prediction(mods, test)
+prediction(mod, data)
 }
 \arguments{
-\item{test}{Data frame containing the movies data set}
+\item{mod}{Linear regression model}
 
-\item{models}{List containing linear models used to perform predictions}
+\item{data}{Data frame containing the movie data}
 }
 \value{
 
 }
 \description{
-\code{prediction} Performs prediction on test data and returns results
+\code{prediction} Performs prediction on an randomly sampled individual observation
 }
 \seealso{
 Other movies functions: \code{\link{associate}},
-  \code{\link{back}}, \code{\link{correlate}},
-  \code{\link{evalBackwardModel}},
-  \code{\link{evalForwardModel}}, \code{\link{forward}},
-  \code{\link{multivariateQuant}},
-  \code{\link{preprocess}}, \code{\link{process}},
-  \code{\link{regressionAnalysis}},
+  \code{\link{backwardElimination}}, \code{\link{back}},
+  \code{\link{comparePredictions}},
+  \code{\link{correlate}}, \code{\link{evalForwardModel}},
+  \code{\link{forward}}, \code{\link{preprocess}},
+  \code{\link{process}}, \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }

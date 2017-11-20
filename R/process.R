@@ -35,7 +35,7 @@ process <- function(data, group = "a", y, outliers = NULL) {
   omitB <- c("imdb_num_votes", 'votes_per_day',	'votes_per_day_log',
              'votes_per_day_scores',	'votes_per_day_scores_log')
 
-  omitC <- c('runtime',	'thtr_days_log',	'director_experience',
+  omitC <- c('runtime',  'thtr_days',	'thtr_days_log', 	'director_experience',
              'cast_experience',	'imdb_num_votes',	'imdb_rating',
              'audience_score',	'cast_votes',	'scores',	'scores_log',
              'votes_per_day',	'votes_per_day_log', 'thtr_rel_date',
@@ -64,12 +64,16 @@ process <- function(data, group = "a", y, outliers = NULL) {
   # Gather features requested by the data group
   d <- d[, !((names(data) %in% omit))]
 
+  # Get Dependent variable
+  yVar <- as.data.frame(d[, names(d) %in% y])
+  names(yVar) <- y
+
   # Split Data
   nums <- sapply(d, is.numeric)
   pack[["numeric"]] <- d[, nums]
   pack[["numeric"]] <- as.data.frame(pack[["numeric"]][, !(names(pack[["numeric"]]) %in% y)])
   pack[["categorical"]] <- d[, !nums]
-  pack[["dependent"]] <- as.data.frame(d[, names(d) %in% y])
+  pack[["dependent"]] <- yVar
   pack[["full"]] <- cbind(pack[["categorical"]], pack[["numeric"]], pack[["dependent"]])
 
   return(pack)

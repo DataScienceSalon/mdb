@@ -5,9 +5,9 @@
 #------------------------------------------------------------------------------#
 #                 Univariate Backward Elmination Regression                    #
 #------------------------------------------------------------------------------#
-#' evalBackwardModel
+#' backwardElimination
 #'
-#' \code{evalBackwardModel} Performs step-wise backward elimination of univariate
+#' \code{backwardElimination} Performs step-wise backward elimination of univariate
 #' linear regression models.  From the full model, each variable is removed
 #' from the model, one-at-a-time, and the model is re-evaluated. The model
 #' with the highest adjusted r-squared is retained.
@@ -15,7 +15,7 @@
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-evalBackwardModel <- function(data, y, predictors) {
+backwardElimination <- function(data, y, predictors) {
 
   f <- lrFormula <- formula(paste(y, " ~ ",  paste(predictors, collapse=" + ")))
   m <- lm(f, data = data)
@@ -45,7 +45,7 @@ evalBackwardModel <- function(data, y, predictors) {
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-back <- function(data, y, alpha = 0.15) {
+back <- function(data, y, alpha = 0.05) {
 
   final <- list()
   final[["data"]] <- data
@@ -53,21 +53,23 @@ back <- function(data, y, alpha = 0.15) {
   # Initialize with full model
   predictors <- colnames(data)                  # Initialize predictors
   predictors <- predictors[!(predictors == y)]  # Remove response from list of predictors
-  r <- evalBackwardModel(data = data, predictors = predictors, y = y)
+  r <- backwardElimination(data = data, predictors = predictors, y = y)
   b <- data.frame()                             # Intialize build data frame
 
   # Iterate through predictor sets
   while(r$Size > 1 & r$p > alpha) {
     b <- rbind(b, r)
     predictors <- predictors[!(predictors == r$Removed)]
-    r <- evalBackwardModel(data = data, predictors = predictors, y = y)
+    r <- backwardElimination(data = data, predictors = predictors, y = y)
   }
 
   final[["selected"]] <- predictors
 
   # Format Build
-  b$Steps <- c(1:nrow(b))
-  final[["build"]] <- b %>% select(Steps, Removed, p.value)
+  if (nrow(b) > 0) {
+    b$Steps <- c(1:nrow(b))
+    final[["build"]] <- b %>% select(Steps, Removed, p.value)
+  }
 
 
   # Return final model

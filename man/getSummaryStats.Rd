@@ -18,7 +18,8 @@ Data frame containing summary statistics
 \code{getSummaryStats} Provides summary stats for quantitative variable
 }
 \seealso{
-Other analysis functions: \code{\link{getPSampleSize}}
+Other analysis functions: \code{\link{getPSampleSize}},
+  \code{\link{slr}}
 }
 \author{
 John James, \email{jjames@datasciencesalon.org}

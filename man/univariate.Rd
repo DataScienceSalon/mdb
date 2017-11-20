@@ -14,12 +14,12 @@ univariate(mdb)
 }
 \seealso{
 Other movies functions: \code{\link{associate}},
-  \code{\link{back}}, \code{\link{correlate}},
-  \code{\link{evalBackwardModel}},
-  \code{\link{evalForwardModel}}, \code{\link{forward}},
-  \code{\link{multivariateQuant}},
-  \code{\link{prediction}}, \code{\link{preprocess}},
-  \code{\link{process}}, \code{\link{regressionAnalysis}},
+  \code{\link{backwardElimination}}, \code{\link{back}},
+  \code{\link{comparePredictions}},
+  \code{\link{correlate}}, \code{\link{evalForwardModel}},
+  \code{\link{forward}}, \code{\link{prediction}},
+  \code{\link{preprocess}}, \code{\link{process}},
+  \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}
 }

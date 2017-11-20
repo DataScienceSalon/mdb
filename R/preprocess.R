@@ -17,34 +17,41 @@ preprocess <- function(movies, mdb2) {
   #                        Extract Variables of Interest                      #
   #---------------------------------------------------------------------------#
   drops <- c("critics_rating", "audience_rating", "imdb_url", "rt_url")
-  mdb1 <- movies[,!(names(movies) %in% drops)]
-  mdb1 <- mdb1[complete.cases(mdb1),]
+  mdb <- movies[,!(names(movies) %in% drops)]
+  mdb <- mdb[complete.cases(mdb),]
 
   #---------------------------------------------------------------------------#
-  #              Remove TV Movies and NC-17 (too few observations)            #
+  #     Remove TV Movies (out of scope) and NC-17 (too few observations)      #
   #---------------------------------------------------------------------------#
-  mdb1 <-  mdb1 %>% filter(title_type != "TV Movie" & mpaa_rating != "NC-17")
-  mdb1$mpaa_rating <- factor(mdb1$mpaa_rating)
+  mdb <-  mdb %>% filter(title_type != "TV Movie" & mpaa_rating != "NC-17")
+  mdb$mpaa_rating <- factor(mdb$mpaa_rating)
+
+  #---------------------------------------------------------------------------#
+  #                                Dedupe                                     #
+  #---------------------------------------------------------------------------#
+  dupes <- mdb %>% group_by(title) %>% summarize(total = n())
+  dupes <- dupes %>% filter(total > 1) %>% select(title)
+  mdb <- mdb[!(mdb$title %in% dupes$title), ]
 
   #---------------------------------------------------------------------------#
   #               Create Days Since Theatrical Release                        #
   #---------------------------------------------------------------------------#
-  mdb1 <- mdb1 %>% mutate(thtr_rel_date = as.Date(paste(mdb1$thtr_rel_year,
-                                                       mdb1$thtr_rel_month,
-                                                       mdb1$thtr_rel_day,
+  mdb <- mdb %>% mutate(thtr_rel_date = as.Date(paste(mdb$thtr_rel_year,
+                                                       mdb$thtr_rel_month,
+                                                       mdb$thtr_rel_day,
                                                       sep = "-"), "%Y-%m-%d"))
   thruDate <- as.Date("2016-01-01", "%Y-%m-%d")
 
-  mdb1 <- mdb1 %>% mutate(thtr_days = as.numeric(thruDate - thtr_rel_date))
+  mdb <- mdb %>% mutate(thtr_days = as.numeric(thruDate - thtr_rel_date))
 
-  mdb1 <- mdb1 %>% mutate(thtr_days_log = log(thtr_days))
+  mdb <- mdb %>% mutate(thtr_days_log = log(thtr_days))
 
 
   #---------------------------------------------------------------------------#
-  #                        Create Various Mutations                           #
+  #             Update date factors and created season variable               #
   #---------------------------------------------------------------------------#
 
-  mdb1 <- mdb1 %>% mutate(
+  mdb <- mdb %>% mutate(
     imdb_num_votes_log = log2(imdb_num_votes),
     thtr_rel_season = ifelse(thtr_rel_month %in% c(3:5), "Spring",
                              ifelse(thtr_rel_month %in% c(6:8), "Summer",
@@ -62,129 +69,140 @@ preprocess <- function(movies, mdb2) {
                                                               ifelse(thtr_rel_month == 9, "Sep",
                                                                      ifelse(thtr_rel_month == 10, "Oct",
                                                                             ifelse(thtr_rel_month == 11, "Nov",
-                                                                                   "Dec"))))))))))),
-    scores = (((10 * imdb_rating) + audience_score) / 2),
-    scores_log = log2(scores),
-    runtime_log = log2(runtime),
-    votes_per_day = (imdb_num_votes / thtr_days),
-    votes_per_day_log = log2(votes_per_day),
-    votes_per_day_scores = (votes_per_day * scores),
-    votes_per_day_scores_log = log2(votes_per_day_scores))
+                                                                                   "Dec"))))))))))))
 
 
-  mdb1$thtr_rel_month <- factor(mdb1$thtr_rel_month, levels = c("Jan", "Feb", "Mar", "Apr",
+  mdb$thtr_rel_month <- factor(mdb$thtr_rel_month, levels = c("Jan", "Feb", "Mar", "Apr",
                                                               "May", "Jun", "Jul", "Aug",
                                                               "Sep", "Oct", "Nov", "Dec"))
-  mdb1$thtr_rel_season <- factor(mdb1$thtr_rel_season, levels = c("Spring", "Summer", "Fall",
+  mdb$thtr_rel_season <- factor(mdb$thtr_rel_season, levels = c("Spring", "Summer", "Fall",
                                                                   "Holidays", "Winter"))
 
 
+  #---------------------------------------------------------------------------#
+  #                         Create log of runtime                             #
+  #---------------------------------------------------------------------------#
+  mdb <- mdb %>% mutate(runtime_log = log2(runtime))
+
+  #---------------------------------------------------------------------------#
+  #                         Add Votes per Day                                 #
+  #---------------------------------------------------------------------------#
+  mdb <- mdb %>% mutate(votes_per_day = (imdb_num_votes / thtr_days),
+                        votes_per_day_log = log2(votes_per_day))
+
+  #---------------------------------------------------------------------------#
+  #                       Add Box Office Information                          #
+  #---------------------------------------------------------------------------#
+  keep <- c("title", "box_office")
+  mdb2 <- mdb2[, names(mdb2) %in% keep]
+  mdb <- merge(mdb, mdb2, all.x = TRUE)
+
+  #---------------------------------------------------------------------------#
+  #                   Add daily box office variables                          #
+  #---------------------------------------------------------------------------#
+  mdb <- mdb %>% mutate(daily_box_office = box_office / thtr_days,
+                        daily_box_office_log = log2(daily_box_office))
 
   #---------------------------------------------------------------------------#
   #                           Create Cast Vote                                #
   #---------------------------------------------------------------------------#
   # Create actor score share data frames
-  actor1 <- mdb1 %>% mutate(actor = actor1, votes = .40 * votes_per_day) %>%
+  actor1 <- mdb %>% mutate(actor = actor1, votes = .40 * imdb_num_votes) %>%
     select(actor, votes)
-  actor2 <- mdb1 %>% mutate(actor = actor2, votes = .30 * votes_per_day) %>%
+  actor2 <- mdb %>% mutate(actor = actor2, votes = .30 * imdb_num_votes) %>%
     select(actor, votes)
-  actor3 <- mdb1 %>% mutate(actor = actor3, votes = .15 * votes_per_day) %>%
+  actor3 <- mdb %>% mutate(actor = actor3, votes = .15 * imdb_num_votes) %>%
     select(actor, votes)
-  actor4 <- mdb1 %>% mutate(actor = actor4, votes = .10 * votes_per_day) %>%
+  actor4 <- mdb %>% mutate(actor = actor4, votes = .10 * imdb_num_votes) %>%
     select(actor, votes)
-  actor5 <- mdb1 %>% mutate(actor = actor5, votes = .05 * votes_per_day) %>%
+  actor5 <- mdb %>% mutate(actor = actor5, votes = .05 * imdb_num_votes) %>%
     select(actor, votes)
   actors <- rbind(actor1, actor2, actor3, actor4, actor5)
   actors <- actors %>% group_by(actor) %>% summarize(votes = sum(votes))
   actors <- actors[complete.cases(actors),]
 
   # Merge actor votes into main data frame
-  mdb1 <- left_join(mdb1, actors, by = c("actor1" = "actor"))
-  names(mdb1)[names(mdb1) == "votes"] <- "votes1"
-  mdb1 <- left_join(mdb1, actors, by = c("actor2" = "actor"))
-  names(mdb1)[names(mdb1) == "votes"] <- "votes2"
-  mdb1 <- left_join(mdb1, actors, by = c("actor3" = "actor"))
-  names(mdb1)[names(mdb1) == "votes"] <- "votes3"
-  mdb1 <- left_join(mdb1, actors, by = c("actor4" = "actor"))
-  names(mdb1)[names(mdb1) == "votes"] <- "votes4"
-  mdb1 <- left_join(mdb1, actors, by = c("actor5" = "actor"))
-  names(mdb1)[names(mdb1) == "votes"] <- "votes5"
+  mdb <- left_join(mdb, actors, by = c("actor1" = "actor"))
+  names(mdb)[names(mdb) == "votes"] <- "votes1"
+  mdb <- left_join(mdb, actors, by = c("actor2" = "actor"))
+  names(mdb)[names(mdb) == "votes"] <- "votes2"
+  mdb <- left_join(mdb, actors, by = c("actor3" = "actor"))
+  names(mdb)[names(mdb) == "votes"] <- "votes3"
+  mdb <- left_join(mdb, actors, by = c("actor4" = "actor"))
+  names(mdb)[names(mdb) == "votes"] <- "votes4"
+  mdb <- left_join(mdb, actors, by = c("actor5" = "actor"))
+  names(mdb)[names(mdb) == "votes"] <- "votes5"
 
-  # Create cast votes variable
-  mdb1 <- mdb1 %>% mutate(cast_votes = votes1 + votes2 + votes3 + votes4 + votes5)
-  mdb1 <- mdb1 %>% mutate(cast_votes_log = log2(cast_votes))
+  # Create cast votes variable and clean up
+  mdb <- mdb %>% mutate(cast_votes = votes1 + votes2 + votes3 + votes4 + votes5)
+  mdb <- mdb %>% mutate(cast_votes = cast_votes - imdb_num_votes)
+  mdb <- mdb %>% mutate(cast_votes_log =
+                          ifelse(cast_votes > 0, log2(cast_votes), 0))
   drops <- c("votes1", "votes2", "votes3", "votes3", "votes4", "votes5")
-  mdb1 <- mdb1[,!(names(mdb1) %in% drops)]
-
+  mdb <- mdb[,!(names(mdb) %in% drops)]
 
   #---------------------------------------------------------------------------#
   #                        Create Director Experience                         #
   #---------------------------------------------------------------------------#
-  directorExperience <- mdb1 %>% group_by(director) %>%
+  directorExperience <- mdb %>% group_by(director) %>%
     summarize(director_experience = n())
-  mdb1 <- left_join(mdb1, directorExperience)
-  mdb1 <- mdb1 %>% mutate(director_experience_log = log2(director_experience))
+  mdb <- left_join(mdb, directorExperience)
+  mdb <- mdb %>% mutate(director_experience_log = log2(director_experience))
+
   #---------------------------------------------------------------------------#
   #                        Create Cast Experience                             #
   #---------------------------------------------------------------------------#
-  actor1 <- mdb1 %>% mutate(actor = actor1) %>% group_by(actor) %>%  summarize(N = n())
-  actor2 <- mdb1 %>% mutate(actor = actor2) %>% group_by(actor) %>%  summarize(N = n())
-  actor3 <- mdb1 %>% mutate(actor = actor3) %>% group_by(actor) %>%  summarize(N = n())
-  actor4 <- mdb1 %>% mutate(actor = actor4) %>% group_by(actor) %>%  summarize(N = n())
-  actor5 <- mdb1 %>% mutate(actor = actor5) %>% group_by(actor) %>%  summarize(N = n())
+  actor1 <- mdb %>% mutate(actor = actor1) %>% group_by(actor) %>%  summarize(N = n())
+  actor2 <- mdb %>% mutate(actor = actor2) %>% group_by(actor) %>%  summarize(N = n())
+  actor3 <- mdb %>% mutate(actor = actor3) %>% group_by(actor) %>%  summarize(N = n())
+  actor4 <- mdb %>% mutate(actor = actor4) %>% group_by(actor) %>%  summarize(N = n())
+  actor5 <- mdb %>% mutate(actor = actor5) %>% group_by(actor) %>%  summarize(N = n())
   actors <- rbind(actor1, actor2, actor3, actor4, actor5)
   actors <- actors %>% group_by(actor) %>%  summarize(cast_experience = n())
-  mdb1 <- left_join(mdb1, actors, by = c("actor1" = "actor"))
-  names(mdb1)[names(mdb1) == "cast_experience"] <- "ce1"
-  mdb1 <- left_join(mdb1, actors, by = c("actor2" = "actor"))
-  names(mdb1)[names(mdb1) == "cast_experience"] <- "ce2"
-  mdb1 <- left_join(mdb1, actors, by = c("actor3" = "actor"))
-  names(mdb1)[names(mdb1) == "cast_experience"] <- "ce3"
-  mdb1 <- left_join(mdb1, actors, by = c("actor4" = "actor"))
-  names(mdb1)[names(mdb1) == "cast_experience"] <- "ce4"
-  mdb1 <- left_join(mdb1, actors, by = c("actor5" = "actor"))
-  names(mdb1)[names(mdb1) == "cast_experience"] <- "ce5"
-  mdb1 <- mdb1 %>% mutate(cast_experience = ce1 + ce2 + ce3 + ce4 + ce5)
-  mdb1 <- mdb1 %>% mutate(cast_experience_log = log2(cast_experience))
+  mdb <- left_join(mdb, actors, by = c("actor1" = "actor"))
+  names(mdb)[names(mdb) == "cast_experience"] <- "ce1"
+  mdb <- left_join(mdb, actors, by = c("actor2" = "actor"))
+  names(mdb)[names(mdb) == "cast_experience"] <- "ce2"
+  mdb <- left_join(mdb, actors, by = c("actor3" = "actor"))
+  names(mdb)[names(mdb) == "cast_experience"] <- "ce3"
+  mdb <- left_join(mdb, actors, by = c("actor4" = "actor"))
+  names(mdb)[names(mdb) == "cast_experience"] <- "ce4"
+  mdb <- left_join(mdb, actors, by = c("actor5" = "actor"))
+  names(mdb)[names(mdb) == "cast_experience"] <- "ce5"
+  mdb <- mdb %>% mutate(cast_experience = ce1 + ce2 + ce3 + ce4 + ce5)
+  mdb <- mdb %>% mutate(cast_experience_log =
+                          ifelse(cast_experience > 0, log2(cast_experience), 0))
   drops <- c("ce1", "ce2", "ce3", "ce3", "ce4", "ce5")
-  mdb1 <- mdb1[,!(names(mdb1) %in% drops)]
-
+  mdb <- mdb[,!(names(mdb) %in% drops)]
 
   #---------------------------------------------------------------------------#
   #                 Split Data into Training and Test Sets                    #
   #---------------------------------------------------------------------------#
   # Ensure sample has all genres and MPAA ratings.
-  genres <- unique(mdb1$genre)
-  mpaa <- unique(mdb1$mpaa_rating)
+  genres <- unique(mdb$genre)
+  mpaa <- unique(mdb$mpaa_rating)
+
+  # Ensure that the test set contains observations that include box office variables
+  titles <- mdb$title %in% mdb2$title
+  titles <- mdb[titles, ]$title
   representative <- FALSE
   seed <- 232
   while(representative == FALSE) {
     set.seed(seed)
-    idx <- sample(1:nrow(mdb1), nrow(mdb1) * .8)
-    train <- mdb1[idx, ]
-    test <- mdb1[-idx, ]
+    idx <- sample(1:nrow(mdb), nrow(mdb) * .8)
+    train <- mdb[idx, ]
+    test <- mdb[-idx, ]
     if ((setequal(genres, unique(train$genre)) &
-         setequal(mpaa, unique(train$mpaa_rating)))) {
+         setequal(mpaa, unique(train$mpaa_rating))) &
+        nrow(test %>% filter(title %in% titles)) > 0) {
       representative <- TRUE
     } else {
       seed <- seed + sample(1:100, 1)
     }
   }
 
-  #---------------------------------------------------------------------------#
-  #                     Create Daily Box Office Sample Set                    #
-  #---------------------------------------------------------------------------#
-  keep <- c("title", "box_office")
-  mdb2 <- mdb2[, names(mdb2) %in% keep]
-  mdb2 <- inner_join(mdb2, train)
-  mdb2 <- mdb2 %>% mutate(daily_box_office = box_office / thtr_days)
-  mdb2 <- mdb2 %>% mutate(daily_box_office_log = log2(daily_box_office))
-  mdb2 <- mdb2 %>% filter(title %in% train$title)
-
-
   data <- list(
-    mdb = train,
-    mdb2 = mdb2,
+    train = train,
     test = test
   )
 

@@ -4,7 +4,7 @@
 \alias{regressionAnalysis}
 \title{regressionAnalysis}
 \usage{
-regressionAnalysis(mod, mName, yVar, yLab)
+regressionAnalysis(mod, mName, yVar, yLab, full = TRUE)
 }
 \arguments{
 \item{mod}{Linear model}
@@ -14,6 +14,8 @@ regressionAnalysis(mod, mName, yVar, yLab)
 \item{yVar}{Character string containing the name of the dependent variable}
 
 \item{yLab}{Capitalized character string for the dependent variable}
+
+\item{full}{Logical indicating whether a full analysis should be conducted}
 }
 \value{
 analysis plots, summary statistics, test results and interpretive text
@@ -23,12 +25,12 @@ analysis plots, summary statistics, test results and interpretive text
 }
 \seealso{
 Other movies functions: \code{\link{associate}},
-  \code{\link{back}}, \code{\link{correlate}},
-  \code{\link{evalBackwardModel}},
-  \code{\link{evalForwardModel}}, \code{\link{forward}},
-  \code{\link{multivariateQuant}},
-  \code{\link{prediction}}, \code{\link{preprocess}},
-  \code{\link{process}}, \code{\link{univariateQual}},
+  \code{\link{backwardElimination}}, \code{\link{back}},
+  \code{\link{comparePredictions}},
+  \code{\link{correlate}}, \code{\link{evalForwardModel}},
+  \code{\link{forward}}, \code{\link{prediction}},
+  \code{\link{preprocess}}, \code{\link{process}},
+  \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }
 \author{
