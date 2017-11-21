@@ -26,10 +26,10 @@ process <- function(data, group = "a", y, outliers = NULL) {
 
   # Define data groups in terms of the variables to omit
   omitA <- c('title',	'title_type',	'imdb_url',	'rt_url',
-                'thtr_rel_year',	'thtr_rel_day',	'dvd_rel_year',
-                'dvd_rel_month',	'dvd_rel_day',	'scores',	'scores_log',
-                'votes_per_day_scores',	'votes_per_day_scores_log',
-                'daily_box_office', "box_office", 'actor1', 'actor2',
+             'thtr_rel_year',	'thtr_rel_day',	'dvd_rel_year',
+             'dvd_rel_month',	'dvd_rel_day',	'scores',	'scores_log',
+             'votes_per_day_scores',	'votes_per_day_scores_log',
+             'daily_box_office', "box_office", 'actor1', 'actor2',
              'actor3', 'actor4', 'actor5', 'director', 'studio')
 
   omitB <- c("imdb_num_votes", 'votes_per_day',	'votes_per_day_log',

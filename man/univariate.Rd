@@ -7,7 +7,7 @@
 univariate(mdb)
 }
 \arguments{
-\item{dataSets}{List containing the two movie data bases}
+\item{mdb}{Data frame containing movie information}
 }
 \description{
 \code{univariate} Performs univariate analysis of variables

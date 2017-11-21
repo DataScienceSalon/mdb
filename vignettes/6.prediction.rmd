@@ -8,13 +8,11 @@ The first prediction is was a test of the simple linear regression model created
 
 ```{r prediction}
 # Obtain complete cases with box office information
-cases <- test[complete.cases(test), ]
-set.seed(233)
-case <- cases[sample(1:nrow(cases), 1), ]
-revenue <- prediction(mod =modelOne$best$mod, mName = "Model One", case = case, units = "dollars per day")
-votes <- prediction(mod =modelA$mod, mName = "Model Alpha", case = case, units = "IMDB votes")
+load(file = "../data/case.Rdata")
+revenue <- prediction(mod = modelOne$best$mod, mName = "Model One", case = case, unit = "dollars per day")
+votes <- prediction(mod = modelA$mod, mName = "Model Alpha", case = case, unit = "IMDB votes")
 case$imdb_num_votes_log <- votes$yHat
-revenue2 <- prediction(mod =modelOne$best$mod, mName = "Model One", case = case, units = "dollars per day")
+revenue2 <- prediction(mod =modelOne$best$mod, mName = "Model One", case = case, unit = "dollars per day")
 
 ```
 
@@ -26,4 +24,5 @@ revenue2 <- prediction(mod =modelOne$best$mod, mName = "Model One", case = case,
 
 ## Revenue with Predicted Data
 `r revenue2$comment`
+
 * * *

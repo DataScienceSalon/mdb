@@ -55,6 +55,10 @@ univariate <- function(mdb) {
                                    yLab = "Critics Score", units = "points")
   audienceScores <- univariateQuant(data.frame(mdb$title, mdb$critics_score),
                                     yLab = "Audience Score", units = "points")
+  castScores <- univariateQuant(data.frame(mdb$title, mdb$cast_scores),
+                               yLab = "Cast Votes", units = "scores")
+  castScoresLog <- univariateQuant(data.frame(mdb$title, mdb$cast_scores_log),
+                                  yLab = "Log Cast Votes", units = "log(scores)")
   castVotes <- univariateQuant(data.frame(mdb$title, mdb$cast_votes),
                                yLab = "Cast Votes", units = "votes")
   castVotesLog <- univariateQuant(data.frame(mdb$title, mdb$cast_votes_log),
@@ -82,10 +86,11 @@ univariate <- function(mdb) {
                     thtrDays$outliers, thtrDaysLog$outliers,
                     imdbVotes$outliers, imdbVotesLog$outliers,
                     imdbRating$outliers, criticsScores$outliers,
-                    audienceScores$outliers, castVotes$outliers,
-                    castVotesLog$outliers, votesPerDay$outliers,
-                    votesPerDayLog$outliers, dailyBoxOffice$outliers,
-                    dailyBoxOffice$outliers)
+                    audienceScores$outliers,
+                    castScores$outliers, castScoresLog$outliers,
+                    castVotes$outliers, castVotesLog$outliers,
+                    votesPerDay$outliers, votesPerDayLog$outliers,
+                    dailyBoxOffice$outliers, dailyBoxOffice$outliers)
 
   # Return analysis
   analysis <- list(
@@ -112,6 +117,8 @@ univariate <- function(mdb) {
     imdbRating = imdbRating,
     criticsScores = criticsScores,
     audienceScores = audienceScores,
+    castScores = castScores,
+    castScoresLog = castScoresLog,
     castVotes = castVotes,
     castVotesLog = castVotesLog,
     votesPerDay = votesPerDay,

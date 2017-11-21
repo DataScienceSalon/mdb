@@ -20,8 +20,8 @@ The remainder of this sections is organized as follows.
 2.5. Model Gamma  
 2.6. Model Delta  
 2.7. Model Comparison  
-2.8. Model Two: Final Multiregression Model
-3. Model Summary
+2.8. Model Two: Final Multiregression Model   
+3. Model Summary  
 
 ## Model One: Simple Linear Regression
 ### Model Selection
@@ -149,7 +149,7 @@ mData <- process(train, group = "c", y = "imdb_num_votes_log")
 m <- forward(mData$full, y = "imdb_num_votes_log")
 
 # Conduct regression analysis
-modelA <- regressionAnalysis(m, mName = "Model Alpha", yVar  = 'imdb_num_votes_log',
+modelA <- regressionAnalysis(mod = m, mName = "Model Alpha", yVar  = 'imdb_num_votes_log',
                                yLab = "Log IMDB Votes")
 
 # Report regression steps
@@ -184,10 +184,9 @@ gridExtra::grid.arrange(gridExtra::arrangeGrob(modelA$plots$linearity[[1]],
                                                modelA$plots$linearity[[5]],
                                                modelA$plots$linearity[[6]], ncol = 3),
                         gridExtra::arrangeGrob(modelA$plots$linearity[[7]],
-                                               modelA$plots$linearity[[8]], ncol = 2),
-                        gridExtra::arrangeGrob(modelA$plots$linearity[[9]],
-                                               modelA$plots$linearity[[10]], ncol = 2),
-                         nrow = 4)
+                                               modelA$plots$linearity[[8]], 
+                                               modelA$plots$linearity[[9]], ncol = 3),
+                         nrow = 3)
                     
 
 ```
@@ -618,17 +617,6 @@ $y_i$ =
 + `r round(modelA$coefficients$estimate[20], 3)`$x_{19}$
 + `r round(modelA$coefficients$estimate[21], 3)`$x_{20}$
 + `r round(modelA$coefficients$estimate[22], 3)`$x_{21}$
-+ `r round(modelA$coefficients$estimate[23], 3)`$x_{22}$
-+ `r round(modelA$coefficients$estimate[24], 3)`$x_{23}$
-+ `r round(modelA$coefficients$estimate[15], 3)`$x_{24}$
-+ `r round(modelA$coefficients$estimate[26], 3)`$x_{25}$
-+ `r round(modelA$coefficients$estimate[27], 3)`$x_{26}$
-+ `r round(modelA$coefficients$estimate[28], 3)`$x_{27}$
-+ `r round(modelA$coefficients$estimate[29], 3)`$x_{28}$
-+ `r round(modelA$coefficients$estimate[30], 3)`$x_{29}$
-+ `r round(modelA$coefficients$estimate[31], 3)`$x_{30}$
-+ `r round(modelA$coefficients$estimate[32], 3)`$x_{31}$
-+ `r round(modelA$coefficients$estimate[33], 3)`$x_{32}$
 + $\epsilon$
 
 where:
@@ -653,17 +641,6 @@ $x_{18}$ is `r modelA$coefficients$term[19]`
 $x_{19}$ is `r modelA$coefficients$term[20]`
 $x_{20}$ is `r modelA$coefficients$term[21]`
 $x_{21}$ is `r modelA$coefficients$term[22]`
-$x_{22}$ is `r modelA$coefficients$term[23]`
-$x_{23}$ is `r modelA$coefficients$term[24]`
-$x_{24}$ is `r modelA$coefficients$term[25]`
-$x_{25}$ is `r modelA$coefficients$term[26]`
-$x_{26}$ is `r modelA$coefficients$term[27]`
-$x_{27}$ is `r modelA$coefficients$term[28]`
-$x_{28}$ is `r modelA$coefficients$term[29]`
-$x_{29}$ is `r modelA$coefficients$term[30]`
-$x_{30}$ is `r modelA$coefficients$term[31]`
-$x_{31}$ is `r modelA$coefficients$term[32]`
-$x_{32}$ is `r modelA$coefficients$term[33]`
 
 The genre, MPAA rating and month of release variables were code 0 or 1 in accordance with the genre, MPAA rating and month of release for each observation.
 
@@ -689,16 +666,16 @@ knitr::kable(modelA$coefficients, digits = 3) %>%
 
 The intercept estimate, `r round(modelA$coefficients$estimate[1], 3)` , is the regression estimate for the mean log number of IMDB votes for an action and adventure film, launched in January with no oscar wins or nominations and zeros for all of the other variables.  The other coefficient estimates adjust the estimate accordingly. Therefore a prediction for the log number of IMDB votes is equal to:
 * the intercept value, `r round(modelA$coefficients$estimate[1], 3)`,
+* plus `r round(subset(modelA$coefficients, term == "cast_scores", select = estimate), 3)` log IMDB votes for each composite score point earned by the cast members,
 * plus a number of log IMDB votes associated with the genre of the film,
-* plus `r round(subset(modelA$coefficients, term == "cast_votes_log", select = estimate), 3)` log IMDB votes for each log IMDB vote previously earned by the cast members,
 * plus `r round(subset(modelA$coefficients, term == "critics_score", select = estimate), 3)` log IMDB votes for each point of the Rottentomatoes critics score,
-* plus `r round(subset(modelA$coefficients, term == "runtime_log", select = estimate), 3)` log IMDB votes for each minute of runtime,
 * plus a number of log IMDB votes for the associated MPAA rating,
-* plus `r round(subset(modelA$coefficients, term == "best_pic_nomyes", select = estimate), 3)` log IMDB votes if the film was nominated for an oscar for best film,
+* plus `r round(subset(modelA$coefficients, term == "cast_experience_log", select = estimate), 3)` log IMDB votes for each log of the number of movies in which the cast has previously appeared,
+* plus `r round(subset(modelA$coefficients, term == "runtime_log", select = estimate), 3)` log IMDB votes for each log minute of runtime,
 * plus `r round(subset(modelA$coefficients, term == "best_pic_winyes", select = estimate), 3)` log IMDB votes if the film won an oscar for best picture,
-* plus `r round(subset(modelA$coefficients, term == "best_actor_winyes", select = estimate), 3)` log IMDB votes if the film won an oscar for best actor,
-* plus a number of log IMDB votes associated with the month of theatrical release,
-* plus `r round(subset(modelA$coefficients, term == "director_experience_log", select = estimate), 3)` log IMDB votes for each film directed by the film's director.
+* plus `r round(subset(modelA$coefficients, term == "cast_votes_log", select = estimate), 3)` log IMDB votes for the log of the votes previously earned by the cast members,
+* plus `r round(subset(modelA$coefficients, term == "best_pic_nomyes", select = estimate), 3)` log IMDB votes if the film was nominated for an oscar for best film.
+
 
 ## Model Summary
 The purpose of this section was to develop a model that would be able to predict "box office success". Given the signficant right skew in box office revenue, the log of box office revenue became the proxy for box office success. Therefore, two regression models were fit in this section.  Model One, the simple linear regression model (F(`r modelOne$best$glance[1,3]`, `r modelOne$best$glance[1,4]`) = `r round(modelOne$best$glance[1,5],2)`, p < .001) showed that the log number of IMDB votes was the best predictor of the log of box office revenue.  Designated log IMDB votes as the response variable, Model Two (F(`r modelA$glance[1,3]`, `r modelA$glance[1,4]`) = `r round(modelA$glance[1,5], 2)`, p < .001) was selected from among four multiregression linear models employing forward selection and backward elimination algorithms. Next, the models will be used to predict the number of log IMDB votes and the log box office for a randomly selected film.

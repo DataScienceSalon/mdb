@@ -8,7 +8,7 @@
 #' @param mod Linear regression model
 #' @param mName Character string containing the model name
 #' @param case Data frame containing single case to predict
-#' @param units Character string indicating the unit for the value being predicted (w/o log)
+#' @param unit Character string indicating the unit for the value being predicted (w/o log)
 #' @param conf Numeric indicator (0 to 1) of the confidence level for the prediction interval.
 #'
 #' @return
@@ -16,7 +16,7 @@
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-prediction <- function(mod, mName, case, units, conf = .90) {
+prediction <- function(mod, mName, case, unit, conf = .90) {
 
   # Get summmary statistics for model
   s <- broom::glance(mod)
@@ -50,15 +50,11 @@ prediction <- function(mod, mName, case, units, conf = .90) {
                                   ifelse(s$p.value < .05, ".05"))),
                     ") was used to predict the ", yVar,  " of the film '",
                     case$title, "'. The actual value was ", round(y, 2), " log ",
-                    units, " or ", round(yLin, 2), " ", units, " on the linear scale. ",
-                    "The model predicted ", round(yHat, 2), " log ", units,
-                    " with a 95% prediction interval CI[",
-                    round(p$fit[2], 2), ",", round(p$fit[3], 2),"] log ", units,
-                    ", equating to a prediction of ", round(yHatLin, 0), " ", units,
-                    " with a range from ", round(2^p$fit[2], 0), " to ",
-                    round(2^p$fit[3], 0)," ", units, ". The model ", overUnder,
-                    " predicted by ", round(peLin, 2), "% or ",
-                    abs(round(eLin, 0)), " ", units, " on the linear scale. ")
+                    unit, ". ", "The model predicted ", round(yHat, 2), " log ",
+                    unit, " with a 95% prediction interval CI[",
+                    round(p$fit[2], 2), ",", round(p$fit[3], 2),"] log ", unit,
+                    ", equating to an ", overUnder, " prediction of ",
+                    round(pe, 2), "%. ")
 
   analysis <- list()
   analysis[["y"]] <- y

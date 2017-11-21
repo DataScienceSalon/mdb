@@ -34,12 +34,6 @@ knitr::knit_hooks$set(inline = function(x) {
 })
 ```
 
-```{r load-data}
-#test <- openxlsx::read.xlsx("../data/test.xlsx")
-#save(file = "../data/test.RData", test)
-load("../data/movies.Rdata")
-load("../data/mdb2.Rdata")
-```
 
 ```{r load-libraries}
 library(dplyr)
@@ -65,13 +59,33 @@ source("../R/univariateQuant.R")
 source("../R/visualization.R")
 ```
 
+
+```{r restore-data}
+# mdb2 <- openxlsx::read.xlsx(xlsxFile = "../data/sample.xlsx")
+# save(mdb2, file = "../data/mdb2.Rdata")
+```
+
+
+```{r load-data}
+load("../data/movies.Rdata")
+load("../data/mdb2.Rdata")
+load("../data/case.Rdata")
+load("../data/train.Rdata")
+load("../data/test.Rdata")
+```
+
 ```{r preprocess}
 # dataSets  <- preprocess(movies, mdb2)
 # train <- dataSets$train
 # test <- dataSets$test
+# case <- dataSets$case
+# mdb2 <- dataSets$mdb2
 # save(train, file = "../data/train.RData")
 # save(test, file = "../data/test.RData")
+# save(case, file = "../data/case.RData")
+# save(mdb2, file = "../data/mdb2.RData")
 ```
+
 
 ```{r univariate}
 load("../data/train.Rdata")

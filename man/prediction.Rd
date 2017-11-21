@@ -4,12 +4,18 @@
 \alias{prediction}
 \title{prediction}
 \usage{
-prediction(mod, data)
+prediction(mod, mName, case, unit, conf = 0.9)
 }
 \arguments{
 \item{mod}{Linear regression model}
 
-\item{data}{Data frame containing the movie data}
+\item{mName}{Character string containing the model name}
+
+\item{case}{Data frame containing single case to predict}
+
+\item{unit}{Character string indicating the unit for the value being predicted (w/o log)}
+
+\item{conf}{Numeric indicator (0 to 1) of the confidence level for the prediction interval.}
 }
 \value{
 

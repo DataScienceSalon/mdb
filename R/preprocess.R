@@ -94,14 +94,53 @@ preprocess <- function(movies, mdb2) {
   #                       Add Box Office Information                          #
   #---------------------------------------------------------------------------#
   keep <- c("title", "box_office")
-  mdb2 <- mdb2[, names(mdb2) %in% keep]
-  mdb <- merge(mdb, mdb2, all.x = TRUE)
+  md <- mdb2[, names(mdb2) %in% keep]
+  mdb <- merge(mdb, md, all.x = TRUE)
+
 
   #---------------------------------------------------------------------------#
-  #                   Add daily box office variables                          #
+  #                           Create Cast Scores                              #
   #---------------------------------------------------------------------------#
-  mdb <- mdb %>% mutate(daily_box_office = box_office / thtr_days,
-                        daily_box_office_log = log2(daily_box_office))
+  # Create actor score share data frames
+  actor1 <- mdb %>% mutate(actor = actor1, scores = .40 * (imdb_rating * 10) +
+                             audience_score) %>%
+    select(actor, scores)
+  actor2 <- mdb %>% mutate(actor = actor2, scores = .30 * (imdb_rating * 10) +
+                             audience_score) %>%
+    select(actor, scores)
+  actor3 <- mdb %>% mutate(actor = actor3, scores = .15 * (imdb_rating * 10) +
+                             audience_score) %>%
+    select(actor, scores)
+  actor4 <- mdb %>% mutate(actor = actor4, scores = .10 * (imdb_rating * 10) +
+                             audience_score) %>%
+    select(actor, scores)
+  actor5 <- mdb %>% mutate(actor = actor5, scores = .05 * (imdb_rating * 10) +
+                             audience_score) %>%
+    select(actor, scores)
+  actors <- rbind(actor1, actor2, actor3, actor4, actor5)
+  actors <- actors %>% group_by(actor) %>% summarize(scores = sum(scores))
+  actors <- actors[complete.cases(actors),]
+
+  # Merge actor votes into main data frame
+  mdb <- left_join(mdb, actors, by = c("actor1" = "actor"))
+  names(mdb)[names(mdb) == "scores"] <- "scores1"
+  mdb <- left_join(mdb, actors, by = c("actor2" = "actor"))
+  names(mdb)[names(mdb) == "scores"] <- "scores2"
+  mdb <- left_join(mdb, actors, by = c("actor3" = "actor"))
+  names(mdb)[names(mdb) == "scores"] <- "scores3"
+  mdb <- left_join(mdb, actors, by = c("actor4" = "actor"))
+  names(mdb)[names(mdb) == "scores"] <- "scores4"
+  mdb <- left_join(mdb, actors, by = c("actor5" = "actor"))
+  names(mdb)[names(mdb) == "scores"] <- "scores5"
+
+  # Create cast votes variable and clean up
+  mdb <- mdb %>% mutate(cast_scores = scores1 + scores2 + scores3 + scores4 + scores5)
+  mdb <- mdb %>% mutate(cast_scores = cast_scores - ((10 * imdb_rating) + audience_score))
+  mdb <- mdb %>% mutate(cast_scores_log =
+                          ifelse(cast_scores > 0, log2(cast_scores), 0))
+  drops <- c("scores1", "scores2", "scores3", "scores3", "scores4", "scores5")
+  mdb <- mdb[,!(names(mdb) %in% drops)]
+
 
   #---------------------------------------------------------------------------#
   #                           Create Cast Vote                                #
@@ -176,6 +215,15 @@ preprocess <- function(movies, mdb2) {
   mdb <- mdb[,!(names(mdb) %in% drops)]
 
   #---------------------------------------------------------------------------#
+  #                      Add new variables to mdb2                            #
+  #---------------------------------------------------------------------------#
+  mdb <- mdb %>% mutate(daily_box_office = box_office / thtr_days,
+                        daily_box_office_log = log2(daily_box_office))
+  keep <- c("title", "daily_box_office", "daily_box_office_log", "imdb_num_votes_log")
+  md <- mdb[, names(mdb) %in% keep]
+  mdb2 <- merge(mdb2, md, all.x = TRUE)
+
+  #---------------------------------------------------------------------------#
   #                 Split Data into Training and Test Sets                    #
   #---------------------------------------------------------------------------#
   # Ensure sample has all genres and MPAA ratings.
@@ -201,9 +249,20 @@ preprocess <- function(movies, mdb2) {
     }
   }
 
+  #---------------------------------------------------------------------------#
+  #         Designate one cases from training set for prediction              #
+  #---------------------------------------------------------------------------#
+  cases <- train[complete.cases(train),]
+  set.seed(259)
+  case <- cases[sample(1:nrow(cases), 1), ]
+  train <- train %>% filter(title != case$title)
+  mdb2 <- mdb2 %>% filter(title != case$title)
+
   data <- list(
     train = train,
-    test = test
+    test = test,
+    case = case,
+    mdb2 = mdb2
   )
 
 

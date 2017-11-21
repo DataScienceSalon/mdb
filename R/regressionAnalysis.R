@@ -109,7 +109,7 @@ regressionAnalysis <- function(mod, mName, yVar, yLab, full = TRUE) {
     tests[["homoscedasticity"]] <- car::ncvTest(mod)
 
     # Multi-collinearity if greater than 1 variable
-    if (length(g$Size) > 1) {
+    if (g$Size > 1) {
       tests[["collinearity"]] <- car::vif(mod)
     }
 

@@ -114,6 +114,62 @@ edaUni$castExperienceLog$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_experience_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castExperienceLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castExperienceLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
 
+
+### Cast Scores
+This variable captured the total number of scores allocated to each cast member for a film.
+
+`r kfigr::figr(label = "a_cast_scores_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast scores summary statistics
+```{r a_cast_scores_stats}
+knitr::kable(edaUni$castScores$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_scores_dist}
+gridExtra::grid.arrange(edaUni$castScores$hist, edaUni$castScores$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_scores_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast scores histogram and QQ Plot
+
+```{r a_cast_scores_box, fig.height=4}
+edaUni$castScores$box
+```
+`r kfigr::figr(label = "a_cast_scores_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast scores boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_scores_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castScores$central`
+
+**Dispersion**: `r edaUni$castScores$disp`
+
+**Shape of Distribution**:  `r edaUni$castScores$skew` `r edaUni$castScores$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_scores_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castScores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castScores$out`
+
+### Cast Scores (Log)
+This is a log transformation of the cast scores variable.
+
+`r kfigr::figr(label = "a_cast_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log cast scores summary statistics
+```{r a_cast_scores_log_stats}
+knitr::kable(edaUni$castScoresLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_scores_log_dist}
+gridExtra::grid.arrange(edaUni$castScoresLog$hist, edaUni$castScoresLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log cast scores histogram and QQ Plot
+
+```{r a_cast_scores_log_box, fig.height=4}
+edaUni$castScoresLog$box
+```
+`r kfigr::figr(label = "a_cast_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log cast scores boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castScoresLog$central`
+
+**Dispersion**: `r edaUni$castScoresLog$disp`
+
+**Shape of Distribution**:  `r edaUni$castScoresLog$skew` `r edaUni$castScoresLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that approximates normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castScoresLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castScoresLog$out`
+
+
 ### Cast Votes
 This variable captured the total number of votes allocated to each cast member for a film.
 
