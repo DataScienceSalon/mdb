@@ -27,10 +27,10 @@ analysis plots, summary statistics, test results and interpretive text
 Other movies functions: \code{\link{associate}},
   \code{\link{backwardElimination}}, \code{\link{back}},
   \code{\link{comparePredictions}},
-  \code{\link{correlate}}, \code{\link{evalForwardModel}},
-  \code{\link{forward}}, \code{\link{prediction}},
-  \code{\link{preprocess}}, \code{\link{process}},
-  \code{\link{univariateQual}},
+  \code{\link{correlate}}, \code{\link{createDependent}},
+  \code{\link{evalForwardModel}}, \code{\link{forward}},
+  \code{\link{prediction}}, \code{\link{preprocess}},
+  \code{\link{process}}, \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }
 \author{

@@ -37,13 +37,12 @@ slr <- function(data, y) {
   s <- s %>% filter(`p-value` < .05) %>% arrange(desc(.[[9]]))
 
   # Return final model
-  m <- list()
   f <- formula(paste(y, " ~ ", paste(s$Model[1], collapse=" + ")))
-  m[["model"]] <- lm(f, data)
+  m <- lm(f, data)
 
   # Return results
   analysis <- list()
   analysis[["summary"]] <- s
-  analysis[["best"]] <- regressionAnalysis(mod = m, mName = s$Model[1], yVar = y, yLab = "Log Daily Box Office")
+  analysis[["model"]] <- m
   return(analysis)
 }

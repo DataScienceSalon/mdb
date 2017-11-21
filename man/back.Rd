@@ -18,10 +18,10 @@ back(data, y, alpha = 0.05)
 Other movies functions: \code{\link{associate}},
   \code{\link{backwardElimination}},
   \code{\link{comparePredictions}},
-  \code{\link{correlate}}, \code{\link{evalForwardModel}},
-  \code{\link{forward}}, \code{\link{prediction}},
-  \code{\link{preprocess}}, \code{\link{process}},
-  \code{\link{regressionAnalysis}},
+  \code{\link{correlate}}, \code{\link{createDependent}},
+  \code{\link{evalForwardModel}}, \code{\link{forward}},
+  \code{\link{prediction}}, \code{\link{preprocess}},
+  \code{\link{process}}, \code{\link{regressionAnalysis}},
   \code{\link{univariateQual}},
   \code{\link{univariateQuant}}, \code{\link{univariate}}
 }

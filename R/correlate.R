@@ -48,10 +48,11 @@ correlate <- function(x, y, yLab = NULL, plot = FALSE) {
                                   ifelse(t$p.value < 0.01, "p < .01",
                                          ifelse(t$p.value < 0.05, "p < .05",
                                                 round(t$p.value, 3)))),
-               `95% CI` = paste("[ ", round(t$conf.int[1], 2), ", ",
+               `CI` = paste("[ ", round(t$conf.int[1], 2), ", ",
                                 round(t$conf.int[2], 2), " ]")
                )
   }))
+  colnames(cTests) <- c("Variable", "Correlation", "Statistic", "df", "p-value", "95% CI")
   analysis[["tests"]] <- cTests %>% arrange(desc(abs(Correlation)))
 
   # Produce scatter plots

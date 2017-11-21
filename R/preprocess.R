@@ -37,8 +37,8 @@ preprocess <- function(movies, mdb2) {
   #               Create Days Since Theatrical Release                        #
   #---------------------------------------------------------------------------#
   mdb <- mdb %>% mutate(thtr_rel_date = as.Date(paste(mdb$thtr_rel_year,
-                                                       mdb$thtr_rel_month,
-                                                       mdb$thtr_rel_day,
+                                                      mdb$thtr_rel_month,
+                                                      mdb$thtr_rel_day,
                                                       sep = "-"), "%Y-%m-%d"))
   thruDate <- as.Date("2016-01-01", "%Y-%m-%d")
 
@@ -76,7 +76,7 @@ preprocess <- function(movies, mdb2) {
                                                               "May", "Jun", "Jul", "Aug",
                                                               "Sep", "Oct", "Nov", "Dec"))
   mdb$thtr_rel_season <- factor(mdb$thtr_rel_season, levels = c("Spring", "Summer", "Fall",
-                                                                  "Holidays", "Winter"))
+                                                                "Holidays", "Winter"))
 
 
   #---------------------------------------------------------------------------#

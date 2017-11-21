@@ -473,9 +473,9 @@ plotCorr <- function(mod, yVar) {
 
     plot <- function() {
       corrplot::corrplot(r, diag = FALSE,
-                         order = "hclust", number.cex = .7,
+                         order = "hclust", number.cex = 1,
                          addCoef.col = "black", tl.col = "black",
-                         tl.srt = 90, tl.pos = "td", tl.cex = 0.5,
+                         tl.srt = 90, tl.pos = "td", tl.cex = 1,
                          method = "color", type = "upper",
                          col = RColorBrewer::brewer.pal(n = 11,
                                                         name = "PiYG"))

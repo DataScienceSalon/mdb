@@ -110,7 +110,13 @@ regressionAnalysis <- function(mod, mName, yVar, yLab, full = TRUE) {
 
     # Multi-collinearity if greater than 1 variable
     if (g$Size > 1) {
-      tests[["collinearity"]] <- car::vif(mod)
+      t <- car::vif(mod)
+      tests[["collinearity"]] <- t
+      if (class(t) %in% c("matrix")) {
+        maxVif <- max(t[, 1])
+      } else {
+        maxVif <- max(t[1])
+      }
     }
 
     # Correlation Test (ct) if more than 1 factor and all numeric
@@ -202,9 +208,9 @@ regressionAnalysis <- function(mod, mName, yVar, yLab, full = TRUE) {
     }
 
     if (tests$homoscedasticity$p  < 0.05) {
-      comments[["homoscedasticity"]] <- paste0("The residuals plot above indicated equal dispersion  ",
-                                               "of residuals about zero mean. ",
-                                               "A Breusch–Pagan test test was conducted to ",
+      comments[["homoscedasticity"]] <- paste0("An examination of the residuals plot revealed unequal ",
+                                               "disperson of residuals about the mean. ",
+                                               "A Breusch-Pagan test was conducted to ",
                                                 "test the homoscedasticity assumption.  The results ",
                                                 "were significant (F(", tests$homoscedasticity$Df,
                                                 "), p < ",
@@ -212,25 +218,23 @@ regressionAnalysis <- function(mod, mName, yVar, yLab, full = TRUE) {
                                                        ifelse(tests$homoscedasticity$p < .01, ".01",
                                                               ifelse(tests$homoscedasticity$p < .05,
                                                                      ".05", round(tests$homoscedasticity$p, 3)))),
-                                                ").  As such, the homoscedasticity assumption was met in this case. ")
+                                                ").  As such, the null hypothesis of homoscedasticity is ",
+                                               "rejected and therefore, the homoscedasticity assumption ",
+                                               "was not met this case. ")
     } else {
-      comments[["homoscedasticity"]] <- paste0("An examination of the residuals plot revealed unequal ",
+      comments[["homoscedasticity"]] <- paste0("The residuals plot above indicated equal dispersion ",
                                                "disperson of residuals about the mean. ",
-                                               "A Breusch–Pagan test was conducted to ",
+                                               "A Breusch-Pagan test was conducted to ",
                                                "test the homoscedasticity assumption.  The results ",
-                                               "were not significant (F(", tests$homoscedasticity$Df[2],
-                                               "), p < ",
-                                               ifelse(tests$homoscedasticity$p < .001, ".001",
-                                                      ifelse(tests$homoscedasticity$p < .01, ".01",
-                                                             ifelse(tests$homoscedasticity$p < .05,
-                                                                    ".05", round(tests$homoscedasticity$p, 3)))),
-                                               ").  As such the homoscedasticity assumption was not met in this case.  ")
+                                               "were not significant (F(", tests$homoscedasticity$Df,
+                                               "), p = ", round(tests$homoscedasticity$p, 3),
+                                               ").  As such the homoscedasticity assumption was met in this case.  ")
     }
 
-    if (tests$normal_res$p.value  < 0.05) {
+    if (tests$normal_res$p.value[1] > 0.001) {
       comments[["normality"]] <- paste0("The histogram and normal Q-Q plot suggested a nearly normal ",
-                                        "distribution of residuals.  A review of the Shapiro-Wilk  ",
-                                        "test (SW = ", round(tests$normal_res$statistic, 3), ", p = ",
+                                        "distribution of residuals.  A review of the Shapiro-Wilk ",
+                                        "test (alpha = 0.001, SW = ", round(tests$normal_res$statistic, 3), ", p = ",
                                         round(tests$normal_res$p.value,3),
                                         ") and the skewness (",round(moments::skewness(res), 3), ") and ",
                                         "kurtosis (", round(moments::kurtosis(res), 3), ") supported ",
@@ -238,7 +242,7 @@ regressionAnalysis <- function(mod, mName, yVar, yLab, full = TRUE) {
     } else {
       comments[["normality"]] <- paste0("The histogram and normal Q-Q plot did not suggest a normal ",
                                         "distribution of residuals.  A review of the Shapiro-Wilk  ",
-                                        "test (SW = ", round(tests$normal_res$statistic, 3), ", p = ",
+                                        "test (alpha = 0.001, SW = ", round(tests$normal_res$statistic, 3), ", p = ",
                                         round(tests$normal_res$p.value, 3),
                                         ") and the skewness (", round(moments::skewness(res), 3), ") and ",
                                         "kurtosis (", round(moments::kurtosis(res),3), ") indicated that ",
@@ -248,16 +252,16 @@ regressionAnalysis <- function(mod, mName, yVar, yLab, full = TRUE) {
 
     if (g$Size > 1) {
 
-      if (max(tests$collinearity[,1]) < 4) {
+      if (maxVif < 4) {
         comments[["collinearity"]] <- paste0("collinearity did not appear extant for this model.  ",
                                              "Variance inflation factors were computed for each predictor in ",
-                                             " the model.  The maximum VIF of ", round(max(tests$collinearity[,1]),0),
+                                             " the model.  The maximum VIF of ", round(maxVif,1),
                                              " did not exceed the threshold of 4. As such, the absense of ",
                                              "multicollinearity was assumed for this model.  ")
       } else {
-        comments[["collinearity"]] <- paste0("collinearity appeared extant for this moiiidel.  ",
+        comments[["collinearity"]] <- paste0("collinearity appeared extant for this model.  ",
                                              "Variance inflation factors were computed for each predictor in ",
-                                             " the model.  The maximum VIF of ", round(max(tests$collinearity[,1]),0),
+                                             " the model.  The maximum VIF of ", round(maxVif,1),
                                              " exceeded the threshold of 4. As such, the correlation among the  ",
                                              "predictors would require further consideration.  ",
                                              "The multicollinearity assumption was not met for this model.  ")
