@@ -1,20 +1,47 @@
 # Part 7: Conclusion
+```{r conclusion}
+conclusions <- conclusion(slr = modelOne, mlr = modelA, data = train)
+```
 
-According to `r kfigr::figr(label = "modelA_genre", prefix = TRUE, link = TRUE, type="Table")`, action and adventures are the most popular, all else equal, followed by science fiction and fantasy, then animation!  Documentaries and art house / international films are predicted to be the least popular in terms of the log number of IMDB votes, all else equal. 
+The purpose of this analysis was to determine the factors that make a movie popular, in terms of box office revenue. Concretely, the focus was on the decisions a studio executive can make at the inception of a film project to maximize box office revenue. Though the data contained *measures* of popularity, such as audience ratings, critics scores, top 200 box office and academy award success, there was a dearth of information available with which to predict success. Focusing only on those variables that are "knowable" at project inception, the analysis was limited to the following possible predictors:  
 
-`r kfigr::figr(label = "modelA_genre", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Genres and Popularity
-```{r modelA_genre}
-knitr::kable(genres, digits = 3) %>%
+`r kfigr::figr(label = "predictors", prefix = TRUE, link = TRUE, type="Table")`: Multiregression prediction variables
+```{r predictors}
+features <- openxlsx::read.xlsx(xlsxFile = "../data/features.xlsx")
+features <- features %>% filter(c == "yes") %>% select(Variable, Description) %>% arrange(Variable)
+knitr::kable(features, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-According to `r kfigr::figr(label = "modelA_months", prefix = TRUE, link = TRUE, type="Table")`, a film is predicted to have the highest number of log IMDB votes if released during the summer or December. The month associated with the lowest degree of success, all else equal, was May.  
+The available data suggest that the two most important decisions a studio executive can make at project inception to maximize box office revenue is the selection of cast and genre.
 
-`r kfigr::figr(label = "modelA_months", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Timing and Popularity
-```{r modelA_months}
-knitr::kable(months, digits = 3) %>%
+## Cast 
+Cast votes is a measure of the popularity of actors, and account for `r round(modelA$anova %>% filter(Term == 'cast_scores') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'cast_scores') %>% select(7) / sum(modelA$anova[1:6,7]) * 100, 2)`% of the variance attributed to the terms. Measured as the sum of the total number of point scores allocated to each cast member from prior work; whereby, the total cast score for a film, calculated as 10 x the IMDB rating plus the audience score, was apportioned to the actors as follows:   
+* Actor 1: 40%  
+* Actor 2: 30%  
+* Actor 3: 15%  
+* Actor 4: 10%   
+* Actor 5: 5%  
+
+`r kfigr::figr(label = "castVotes", prefix = TRUE, link = TRUE, type="Table")`: Cast Votes Analysis
+```{r castVotes}
+knitr::kable(conclusions$castScores, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
+
+`r kfigr::figr(label = "castVotes", prefix = TRUE, link = TRUE, type="Table")` shows the effect of cast scores at various points in the sample data. Casting actors with high scores can dramatically affect potential box office revenue. A `r round(conclusions$castScores[2,6] / conclusions$castScores[5,6], 0) -1` fold increase in cast scores produces an equivalent increase in estimated daily box office revenue. However, a `r round(conclusions$castScores[1,6] / conclusions$castScores[5,6], 0) -1` increase in cast scores could produce upwards of a `r round(conclusions$castScores[1,5] / conclusions$castScores[5,5], 0) -1` increase daily at the box office. Cast is likely the single most important decision a studio executive can make at project inception.
+
+## Genre
+The multiregression analysis showed that genre accounts for `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7) / sum(modelA$anova[1:6,7]) * 100, 2)`% of the variance attributed to the terms. `r kfigr::figr(label = "genres", prefix = TRUE, link = TRUE, type="Table")` shows the estimates for the slope, log IMDB votes, log daily box office, and % increase in box office revenue on the linear scale for films with zeros for the other variables in the regression. 
+
+`r kfigr::figr(label = "genres", prefix = TRUE, link = TRUE, type="Table")`: Genre Analysis
+```{r genres}
+knitr::kable(conclusions$genres, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+In order of influence, action and adventure films are the most popular, followed by science fiction & fantasy and horror. Considering documentaries as a baseline, the revenue for action and adventure, science fiction, and horror films would be `r round(genres[1,5] / genres[nrow(genres),5], -1)`, `r round(genres[2,5] / genres[nrow(genres),5], -1)` and `r round(genres[3,5] / genres[nrow(genres),5], -1)` fold increase in box office revenue over documentaries, respectively. 
+
 
 
 * * *

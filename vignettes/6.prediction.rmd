@@ -1,28 +1,13 @@
 # Part 6: Prediction
-A sample from test set was selected and three following three predictions were performed:
-1. Revenue with actual data
-2. IMDB Votes with actual data
-3. Revenue with predicted IMDB Votes
-
-The first prediction is was a test of the simple linear regression model created during the modeling phase. Here, the log daily box office revenue was predicted based upon the *actual* log of IMDB votes, and converted to dollars on the linear scale. The second prediction tested the multiregression linear model on *actual* data. The predicted log number of IMDB votes was then used by the third model to predict the log of daily box office revenue based upon *predicted* data.  
-
 ```{r prediction}
 # Obtain complete cases with box office information
-load(file = "../data/case.Rdata")
-revenue <- prediction(mod = modelOne$best$mod, mName = "Model One", case = case, unit = "dollars per day")
+revenue <- prediction(mod = modelOne$mod, mName = "Model One", case = case, unit = "dollars per day")
 votes <- prediction(mod = modelA$mod, mName = "Model Alpha", case = case, unit = "IMDB votes")
 case$imdb_num_votes_log <- votes$yHat
-revenue2 <- prediction(mod =modelOne$best$mod, mName = "Model One", case = case, unit = "dollars per day")
+revenue2 <- prediction(mod =modelOne$mod, mName = "Model One", case = case, unit = "dollars per day")
 
 ```
 
-## Revenue with Actual Data
-`r revenue$comment`
-
-## IMDB Votes with Actual Data
 `r votes$comment`
-
-## Revenue with Predicted Data
-`r revenue2$comment`
 
 * * *

@@ -70,9 +70,6 @@ source("../R/visualization.R")
 ```{r load-data}
 load("../data/movies.Rdata")
 load("../data/mdb2.Rdata")
-load("../data/case.Rdata")
-load("../data/train.Rdata")
-load("../data/test.Rdata")
 ```
 
 ```{r preprocess}
@@ -91,11 +88,14 @@ load("../data/test.Rdata")
 ```{r univariate}
 load("../data/train.Rdata")
 load("../data/test.Rdata")
+load("../data/case.Rdata")
 edaUni <- univariate(mdb = train)
 ```
 
-
 ```{r model, child = '5.model.rmd'}
+```
+
+```{r model, child = '6.prediction.rmd'}
 ```
 
 # References
