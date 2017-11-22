@@ -46,6 +46,7 @@ source("../R/analysis.R")
 source("../R/associate.R")
 source("../R/back.R")
 source("../R/comparePredictions.R")
+source("../R/conclusion.R")
 source("../R/correlate.R")
 source("../R/createDependent.R")
 source("../R/forward.R")
@@ -92,10 +93,13 @@ load("../data/case.Rdata")
 edaUni <- univariate(mdb = train)
 ```
 
+```{r model, child = '4.eda.rmd'}
+```
+
 ```{r model, child = '5.model.rmd'}
 ```
 
-```{r model, child = '6.prediction.rmd'}
+```{r model, child = '7.conclusion.rmd'}
 ```
 
 # References

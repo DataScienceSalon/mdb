@@ -16,7 +16,7 @@
 #' @export
 conclusion <- function(slr, mlr, data) {
 
-  analysis <- list()
+
   # Extract slr slope for log imdb num votes
   slrEst <- slr$coefficients$estimate
 
@@ -30,36 +30,54 @@ conclusion <- function(slr, mlr, data) {
   genres <- genres %>% mutate(logVotes = mlr$coefficients[1,2] + estimate,
                               logBoxOffice = slrEst[1] + logVotes * slrEst[2],
                               boxOffice = 2^logBoxOffice)
-  genres <- genres %>% mutate(pctInc = (boxOffice - min(boxOffice)) /
-                                 min(boxOffice) * 100)
-  genres <- genres %>% select(term, estimate, logVotes, logBoxOffice, pctInc)
-  colnames(genres) <- c("Term", "Estimate", "Log IMDB Votes (Est)",
-                        "Log Daily Box Office (Est)",  "% Increase Daily Box Office")
+  gv <- genres %>% select(term, logVotes)
+  gb <- genres %>% select(term, boxOffice)
 
-  # Cast Scores
-  s <- summary(data$cast_scores)
-  castScores <- rbindlist(lapply(seq_along(s), function(x) {
-    cs <- list()
-    cs[['qty']] <- names(s[x])
-    cs[['scores']] <- s[x]
-    cs[['logVotes']] <- mlr$coefficients[1,2] + s[x] * mlr$coefficients[2,2]
-    cs[['logBoxOffice']] <- slrEst[1] + cs$logVotes * slrEst[2]
-    cs[['boxOffice']] <- 2^cs$logBoxOffice
-    cs
-  }))
-  castScores <- castScores %>% arrange(desc(scores))
-  castScores <- castScores %>% mutate(boxOfficeTtlPct = (boxOffice - min(boxOffice))
-                                      / min(boxOffice) * 100,
-                                      scoresTtlPct = (scores - min(scores))
-                                      / min(scores) * 100)
+  gvp <- plotBar(data = gv, xLab = 'Genre', yLab = 'Log IMDB Votes',
+                 plotTitle = 'Genre vs Log IMDB Votes')
+  gbp <- plotBar(data = gb, xLab = 'Genre', yLab = 'Daily Box Office',
+                 plotTitle = 'Genre vs Daily Box Office')
+  genre <- list()
+  data <- list()
+  plots <- list()
+  data[['genreVotes']] <- gv
+  data[['genreDBO']] <- gb
+  plots[['genreVotes']] <- gvp
+  plots[['genreDBO']] <- gbp
+  genre[['data']] <- data
+  genre[['plots']] <- plots
 
-  castScores <- castScores %>% mutate(pct = (boxOffice - mean(boxOffice)) / mean(boxOffice) * 100)
-  castScores <- castScores %>% select(qty, scores, logVotes, logBoxOffice, boxOfficeTtlPct, scoresTtlPct)
-  colnames(castScores) <- c('Qty', 'Cast Scores', 'Log Votes' , 'Log Daily Box Office (est)',
-                            '% Increase Daily Box Office', '% Increase Scores')
 
-  analysis[['genres']] <- genres
-  analysis[['castScores']] <- castScores
+  # Simulate Cast Votes data and compute imdb votes
+  d <- data.frame(scores = exp(seq(1, 8, by = .001 )))
+  d <- d %>% mutate(votes = mlr$coefficients$estimate[1] +
+                    mlr$coefficients$estimate[2] * scores)
+  d <- d %>% mutate(dbol = slr$coefficients$estimate[1] +
+                      slr$coefficients$estimate[2] * votes,
+                    dbo = 2^dbol)
+  # Extract Data
+  sv <- d %>% select(scores, votes)
+  sb <- d %>% select(scores, dbo)
+
+  # Render Plots
+  svp <- plotLine(data = sv, xLab = 'Cast Scores', yLab = 'Log IMDB Votes',
+                 plotTitle = 'Cast Scores vs. Log IMDB Votes')
+  sbp <- plotLine(data = sb, xLab = 'Cast Scores ', yLab = 'Daily Box Office',
+                  plotTitle = 'Cast Scores vs. Daily Box Office')
+
+  scores <- list()
+  data <- list()
+  plots <- list()
+  data[['scoresVotes']] <- sv
+  data[['scoresDBO']] <- sb
+  plots[['scoresVotes']] <- svp
+  plots[['scoresDBO']] <- sbp
+  scores[['data']] <- data
+  scores[['plots']] <- plots
+
+  analysis <- list()
+  analysis[['genre']] <- genre
+  analysis[['scores']] <- scores
 
   return(analysis)
 

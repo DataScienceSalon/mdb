@@ -489,3 +489,84 @@ plotCorr <- function(mod, yVar) {
   p <- plotList(r = cor(x))
   return(p)
 }
+
+
+#------------------------------------------------------------------------------#
+#                                 Line Plot                                    #
+#------------------------------------------------------------------------------#
+#' plotLine
+#'
+#' \code{plotLine} Renders a line plot
+#'
+#' @param data Data frame containing plokt data
+#' @param xLab Capital case character string containing the name of the x variable (optional)
+#' @param yLab Capital case character string containing the name of the y variable
+#' @param plotTitle Character case character string containing the title for the plot
+#'
+#' @return List containing a contingency table and a stacked bar plot.
+#' @author John James, \email{jjames@@datasciencesalon.org}
+#' @family visualization functions
+#' @export
+plotLine <- function(data, xLab = NULL, yLab, plotTitle = NULL) {
+
+  # Render plot
+  myPal <- colorRampPalette(RColorBrewer::brewer.pal(11, "PiYG"))
+
+  lp <- ggplot2::ggplot(data = data,
+                        ggplot2::aes(x = data[1],
+                                     y = data[2]))  +
+    ggplot2::geom_line() +
+    ggplot2::theme_minimal(base_size = 16) +
+    ggplot2::theme(text = ggplot2::element_text(family="Open Sans"),
+                   legend.position = "right") +
+    ggplot2::ggtitle(plotTitle) +
+    ggplot2::labs(y = yLab, x = xLab)
+
+  return(lp)
+}
+
+
+#------------------------------------------------------------------------------#
+#                                Bar Plot                                      #
+#------------------------------------------------------------------------------#
+#' plotBar
+#'
+#' \code{plotBar} Renders a bar plot
+#'
+#' @param data Data frame or vector containing a single categorical factor variable
+#' @param yLab Capital case character string describing the y variable
+#' @param xLab Capital case character string containing the name of the variable x variable
+#' @param plotTitle Capital case character string for the title of the plot
+#'
+#' @return Bar plot
+#' @author John James, \email{jjames@@datasciencesalon.org}
+#' @family visualization functions
+#' @export
+plotBar <- function(data, yLab, xLab, plotTitle = NULL) {
+
+  # Format title
+  if (is.null(plotTitle)) {
+    plotTitle <- paste(yLab, "by", xLab)
+  }
+
+  # Render plot
+  myPal <- colorRampPalette(RColorBrewer::brewer.pal(11, "PiYG"))
+  barPlot <- ggplot2::ggplot(data = data,
+                             ggplot2::aes(x = reorder(data[[1]], -data[[2]]),
+                                          y = data[[2]],
+                                          fill = data[[1]]))  +
+    ggplot2::geom_bar(stat='identity') +
+    ggplot2::theme_minimal(base_size = 16) +
+    ggplot2::theme(text = ggplot2::element_text(family="Open Sans"),
+                   axis.title.x = ggplot2::element_blank(),
+                   axis.ticks.x = ggplot2::element_blank(),
+                   axis.text.x = ggplot2::element_blank(),
+                   legend.position = "bottom") +
+    ggplot2::scale_fill_manual(values = myPal(length(data[[1]]))) +
+    ggplot2::ggtitle(plotTitle) +
+    ggplot2::ylab(yLab) +
+    ggplot2::labs(fill = xLab)
+
+  return(barPlot)
+}
+
