@@ -20,10 +20,11 @@ resQQ Residual Normal QQ Plot
 \code{plotResQQ} Plots regression diagnostics
 }
 \seealso{
-Other visualization functions: \code{\link{plotBox}},
-  \code{\link{plotCooks}}, \code{\link{plotCorr}},
-  \code{\link{plotFreqProp}}, \code{\link{plotHist}},
-  \code{\link{plotLinear}}, \code{\link{plotQQ}},
+Other visualization functions: \code{\link{plotBar}},
+  \code{\link{plotBox}}, \code{\link{plotCooks}},
+  \code{\link{plotCorr}}, \code{\link{plotFreqProp}},
+  \code{\link{plotHist}}, \code{\link{plotLinear}},
+  \code{\link{plotLine}}, \code{\link{plotQQ}},
   \code{\link{plotResAll}}, \code{\link{plotResFit}},
   \code{\link{plotResLeverage}}, \code{\link{plotScatter}}
 }

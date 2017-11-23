@@ -20,9 +20,10 @@ list containing ressidual v predictor plots
 \code{plotLinear} Plots linear regression lines for each predictor
 }
 \seealso{
-Other visualization functions: \code{\link{plotBox}},
-  \code{\link{plotCooks}}, \code{\link{plotCorr}},
-  \code{\link{plotFreqProp}}, \code{\link{plotHist}},
+Other visualization functions: \code{\link{plotBar}},
+  \code{\link{plotBox}}, \code{\link{plotCooks}},
+  \code{\link{plotCorr}}, \code{\link{plotFreqProp}},
+  \code{\link{plotHist}}, \code{\link{plotLine}},
   \code{\link{plotQQ}}, \code{\link{plotResAll}},
   \code{\link{plotResFit}}, \code{\link{plotResLeverage}},
   \code{\link{plotResQQ}}, \code{\link{plotScatter}}

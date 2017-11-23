@@ -1,5 +1,5 @@
 # Part 5: Modeling
-The aim at this stage was to develop two prediction models.  Model One, a simple linear regression model identified which of the quantitative variables was the best predictor of the log of daily box office revenue. The best predictor for the log of daily box office revenue identified by Model One was designated the response variable for Model Two: a multiregression model that selected the best predictors for the designated response variable. The latter was the best performing of four multiregression models, developed using both forward selection and backward elimination method selection methods.  These four models and their model selection methods were:  
+The aim at this stage was to develop two prediction models:  Model One, a multiregression model that predicts the log of IMDB votes, and Model Two, a simple linear regression model that predicts log box office revenue based upon the log of IMDB votes. The former was the best performing of four multiregression models, developed using both forward selection and backward elimination method selection methods.  These four models and their model selection methods were:  
 
 `r kfigr::figr(label = "models", prefix = TRUE, link = TRUE, type="Table")`: Multiregression prediction models
 ```{r models}
@@ -10,154 +10,44 @@ knitr::kable(models, digits = 2) %>%
 
 The remainder of this sections is organized as follows.  
 
-1. Model One: Simple Linear Regression Model  
-1.1. Model Selection  
-1.2. Model Diagnostics  
-1.3. Model Interpretation  
-
-2. Model Two: Multiregression Model  
-2.1. Model Selection Methods  
-2.2. Full Model  
-2.3. Model Alpha  
-2.4. Model Beta  
-2.5. Model Gamma  
-2.6. Model Delta  
-2.7. Model Comparison  
-2.8. Model Two: Final Multiregression Model   
-
+1. Model One: Multiregression Model  
+1.1. Model Selection Methods  
+1.2. Full Model  
+1.3. Model Alpha  
+1.4. Model Beta  
+1.5. Model Gamma  
+1.6. Model Delta  
+1.7. Model Comparison  
+1.8. Model Two: Final Multiregression Model   
+   
+2. Model Two: Simple Linear Regression Model   
+2.1. Model Overview    
+2.2. Model Diagnostics     
+   
 3. Model Summary  
 
-## Model One: Simple Linear Regression
-### Model Selection
-Several simple linear models were fit to determine which of the following quantititive variables in `r kfigr::figr(label = "modelOne_variables", prefix = TRUE, link = TRUE, type="Table")` was the best predictor of the log of daily box office revenue.
-
-`r kfigr::figr(label = "modelOne_variables", prefix = TRUE, link = TRUE, type="Table")`: Simple linear regression variables
-```{r modelOne_variables}
-vars <- openxlsx::read.xlsx(xlsxFile = "../data/features.xlsx")
-vars <- vars %>% filter(a == "yes", Type == "Numeric", Context == "Explanatory") %>% select(Variable, Description) %>% arrange(Variable)
-knitr::kable(vars, digits = 2) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")  
-```
-
-```{r modelOne_analysis}
-runModelOne <- function() {
-  homoscedasticity <- FALSE
-  out <- c()
-  while(homoscedasticity == FALSE) {
-    mData <- process(mdb2, stage = "a", y = "daily_box_office_log", outliers = out)
-    m <- slr(mData$full, y = "daily_box_office_log") 
-    modelOne <- regressionAnalysis(mod = m, mName = "Model One", yVar  = 'daily_box_office_log',
-                                 yLab = "Log Daily Box Office") 
-    if (modelOne$tests$homoscedasticity$p > .05) {
-      homoscedasticity <- TRUE
-      save(modelOne, file = '../data/modelOne.Rdata')
-    } else {
-      out <- c(out, modelOne$tests$influential)
-    }
-  }
-  return(modelOne)
-}
-
-rerun <- FALSE
-if (rerun == TRUE) {
-  modelOne <- runModelOne()
-} else {
-  load(file = '../data/modelOne.Rdata')
-}
-
-```
-
-As suggested by the correlation analysis in `r kfigr::figr(label = "correlation1", prefix = TRUE, link = TRUE, type="Table")` and summarized in `r kfigr::figr(label = "modelOne_comparison", prefix = TRUE, link = TRUE, type="Table")` the log number of IMDB votes was the best predictor of the log of daily box office revenue (F(`r modelOne$anova$Df[1]`, `r modelOne$anova$Df[2]`) =  `r round(modelOne$anova[1,5], 3)`, p <  `r ifelse(modelOne$anova[1,6][1] < .001, ".001", ifelse(modelOne$anova[1,6][1] < .01, ".01", ifelse(modelOne$anova[1,6][1] < .05, ".05", round(modelOne$anova[1,6][1], 3))))`), with an adjusted R-Squared of `r round(modelOne$glance[1,9], 3)`. The model accounted for `r round(modelOne$glance[1,11], 0)`% of the variance in the response.
-
-`r kfigr::figr(label = "modelOne_comparison", prefix = TRUE, link = TRUE, type="Table")`: Best performing simple linear regression on log of box office revenue 
-```{r modelOne_comparison}
-knitr::kable(head(modelOne$anova, 5), digits = 2) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")  
-```
-
-### Model Diagnostics
-#### Linearity
-The linearity of the predictor with the log of daily box office is illustrated in `r kfigr::figr(label = "modelOne_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
-
-```{r modelOne_linearity}
-modelOne$plots$linearity[[1]]
-```
-`r kfigr::figr(label = "modelOne_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model One linearity plot
-
-`r modelOne$comment$linearity`
-
-#### Homoscedasticity
-The following plot (`r kfigr::figr(label = "modelOne_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")`) of the residuals versus the fitted values provides a graphic indication of the distribution of residual variances. 
-```{r modelOne_homoscedasticity}
-modelOne$plots$res_fitted
-```
-`r kfigr::figr(label = "modelOne_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")` Model One homoscedasticity plot
-
-`r modelOne$comments$homoscedasticity`
-
-#### Residuals
-The histogram and the normal Q-Q plot in `r kfigr::figr(label = "modelOne_residuals", prefix = TRUE, link = TRUE, type="Figure")` illustrate the distribution of residuals.
-
-```{r modelOne_residuals}
-gridExtra::grid.arrange(modelOne$plots$res_hist, modelOne$plots$res_qq, ncol = 2)
-
-```
-`r kfigr::figr(label = "modelOne_residuals", prefix = TRUE, link = TRUE, type="Figure")` Model One residuals plot
-
-`r modelOne$comments$normality`
-  
-#### Outliers
-```{r modelOne_outliers}
-gridExtra::grid.arrange(modelOne$plots$res_leverage, modelOne$plots$cooks, ncol = 2)
-```
-`r kfigr::figr(label = "modelOne_outliers", prefix = TRUE, link = TRUE, type="Figure")` Model One Outliers
-
-`r modelOne$comments$outliers` A case-wise review of the influential points did not reveal any data quality issues; therefore, the influential points were not removed from the model. 
-
-### Model Interpretation
-The final prediction equation was defined as follows:  
-$y_i$ = `r round(modelOne$coefficients$estimate[1], 2)` 
-+ `r round(modelOne$coefficients$estimate[2], 2)`$x_1$
-+ $\epsilon$    
-
-where:  
-$x_1$ is `r modelOne$coefficients$term[2]`   
-
-#### Analysis of Variance
-`r kfigr::figr(label = "modelOne_anova", prefix = TRUE, link = TRUE, type="Figure")` summarizes the analysis of variance.
-```{r modelOne_anova}
-a <- modelOne$anova
-knitr::kable(a, digits = 3) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-`r kfigr::figr(label = "modelOne_anova", prefix = TRUE, link = TRUE, type="Figure")` Model Alpha analysis of variance
-
-`r modelOne$comments$anova`
-
-#### Interpretation of Coefficients
-The intercept `r round(modelOne$coefficients$estimate[1], 2)` is the prediction of log daily box office revenue for a film where the log number of IMDB votes is zero. The prediction of the log daily box office (in log dollars) is therefore, `r round(modelOne$coefficients$estimate[1], 2)` plus `r round(modelOne$coefficients$estimate[2], 2)` log dollars of daily box office revenue for each log IMDB vote.
-  
-## Model Two: Multiple Linear Regression
-Model Two was the best performing of models Alpha, Beta, Gamma, and Delta. The following provides an overview of the model selection methods used, then each model is described and diagnosed vis-a-vis assumptions of linearity, homoscedasticity, normality of errors, multicollinearity, and the treatment of influential points.
+## Model One: Multiple Linear Regression
+Model One was the best performing of models Alpha, Beta, Gamma, and Delta. The following provides an overview of the model selection methods used, then each model is described and diagnosed vis-a-vis assumptions of linearity, homoscedasticity, normality of errors, multicollinearity, and the treatment of influential points.
 
 ### Model Selection Methods
-Both forward selection and backward elimination with p-values model selection techniques were used. The forward selection approach optimized adjusted r-squared; whereas the backward elimination method was based upon p-values.
+Both forward selection and backward elimination model selection techniques were used. The forward selection approach optimized adjusted r-squared; whereas the backward elimination method was based upon p-values.
 
 #### Forward Selection
 The forward selection process began with a null model then all variables were added to the model, one-by-one, and the model which provided the greatest improvement over the current best adjusted R-squared was selected. The process repeated with each variable that was not already in the model until all variables were analyzed. Only the models that improved adjusted r-squared were retained at each step. 
 
 #### Backward Elimination
-The backward elimination approach began with the full model. A regression analysis was performed and the least significant predictor (that with the highest p-value) was removed from the model.  This process repeated, removie only the most least significant predictor at each step, until all predictors had p-values below the present threshold.   
+The backward elimination approach began with the full model. A regression analysis was performed and the least significant predictor (that with the highest p-value) was removed from the model.  This process repeated, removing only the most least significant predictor at each step, until all predictors had p-values below the designated $\alpha = .05$ threshold.   
 
 ### Full Model Selection
-The objective of the analysis was to determine what factors *make* a movie popular. Popularity, in this case, was defined as the log of daily box office revenue. The simple linear regression in `r kfigr::figr(label = "modelOne_comparison", prefix = TRUE, link = TRUE, type="Table")`, identified the log of IMDB votes as the best predictor of the log of daily box office revenue. As such, the full model would include those variables that would indicate the log of IMDB votes *before* any audience votes had been cast. As such, the following variables were excluded from the analysis.
-
-* Variables that could only be obtained once audience votes had been cast, such as audience score, IMDB rating and top 200 box office  
-* Categorical variables with levels including less than 5 observations, such as title, url, studio, and the actor variables   
-* Redundant variables such as log transformations   
-* Other variables not considered a predictor of popularity, such as the year and day of theatrical or dvd release    
+The motivation for this analysis was provide insight to inform the decisions studio executives must make at the early stages of a film project. That said, the variables selected for the full model were those that are *"knowable"*  by studio executives before theatrical release. Consequently variables excluded from consideration as predictors consist of:  
+* variables not "knowable" at project inception. This would include film ratings, scores, academy awards, and box office results
+* variables that are redundant with other variables with higher correlations with the dependent variable.
+* categorical variables with levels containing fewer than 5 observations, such as the actor, director and studio variables
+* dvd release dates as dvd sales are out of the scope of this analysis.
 
 As such, the full model is presented in `r kfigr::figr(label = "fullModel", prefix = TRUE, link = TRUE, type="Table")`.
+
+`r kfigr::figr(label = "fullModel", prefix = TRUE, link = TRUE, type="Table")`: Variables in Full Model
 ```{r fullModel}
 full <- openxlsx::read.xlsx("../data/features.xlsx")
 full <- full  %>% filter(c == "yes" & Context == "Explanatory") %>% select(Type, Variable, Description) %>% arrange(Type, Variable)
@@ -176,7 +66,7 @@ For this model, a forward selection procedure was undertaken based upon the full
 mData <- process(train, stage = "m", y = "imdb_num_votes_log")  
 
 # Perform forward selection
-m <- forward(mData$full, y = "imdb_num_votes_log")
+m <- forward(data = mData$full, y = "imdb_num_votes_log")
 
 # Conduct regression analysis
 modelA <- regressionAnalysis(mod = m, mName = "Model Alpha", yVar  = 'imdb_num_votes_log',
@@ -206,16 +96,10 @@ modelA$plots$regression
 ##### Linearity
 The linearity of each predictor with the log number of IMDB votes is illustrated in `r kfigr::figr(label = "modelA_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
 
-```{r modelA_linearity, fig.height=20}
-gridExtra::grid.arrange(gridExtra::arrangeGrob(modelA$plots$linearity[[1]],
-                                               modelA$plots$linearity[[2]],
-                                               modelA$plots$linearity[[3]], ncol = 3),
-                        gridExtra::arrangeGrob(modelA$plots$linearity[[4]],
-                                               modelA$plots$linearity[[5]],
-                                               modelA$plots$linearity[[6]], ncol = 3),
-                         nrow = 2)
-                    
-
+```{r modelA_linearity, fig.height=10}
+library(gridExtra)
+n <- length(modelA$plots$linearity)
+nCol <- floor(sqrt(n))
 ```
 `r kfigr::figr(label = "modelA_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Alpha linearity plots
 
@@ -301,15 +185,8 @@ modelB$plots$regression
 The linearity of each predictor with the log number of IMDB votes is illustrated in `r kfigr::figr(label = "modelB_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
 
 ```{r modelB_linearity, fig.height=10}
-gridExtra::grid.arrange(gridExtra::arrangeGrob(modelB$plots$linearity[[1]],
-                                               modelB$plots$linearity[[2]],
-                                               modelB$plots$linearity[[3]], ncol = 3),
-                        gridExtra::arrangeGrob(modelB$plots$linearity[[4]],
-                                               modelB$plots$linearity[[5]],
-                                               modelB$plots$linearity[[6]], ncol = 3),
-                         nrow = 2)
-                    
-
+n <- length(modelB$plots$linearity)
+nCol <- floor(sqrt(n))
 ```
 `r kfigr::figr(label = "modelB_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Beta linearity plots
 
@@ -349,6 +226,7 @@ knitr::kable(modelB$tests$collinearity, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
+Upon further analysis, the high VIF for genre and MPAA rating was a consequence of the reference categories having a small proportion of the overall cases. The reference category for genre, Action & Adventure, had just `r nrow(subset(train, genre == "Action & Adventure"))` films, `r round(nrow(subset(train, genre == "Action & Adventure")) / nrow(train) * 100, 1)`% of the cases. The reference category for MPAA rating was G, consisting of `r nrow(subset(train, mpaa_rating == "G"))` observations, `r round(nrow(subset(train, mpaa_rating == "G")) / nrow(train) * 100, 1)`% of the cases. Though the p-values for the indicator variables may be high, the overall test that all indicators have coefficients of zero is unaffected by the high VIFs
 
 ##### Outliers
 ```{r modelB_outliers}
@@ -406,14 +284,8 @@ modelC$plots$regression
 The linearity of each predictor with the log number of IMDB votes is illustrated in `r kfigr::figr(label = "modelC_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
 
 ```{r modelC_linearity, fig.height=10}
-gridExtra::grid.arrange(gridExtra::arrangeGrob(modelC$plots$linearity[[1]],
-                                               modelC$plots$linearity[[2]],
-                                               modelC$plots$linearity[[3]], ncol = 3),
-                        gridExtra::arrangeGrob(modelC$plots$linearity[[4]],
-                                               modelC$plots$linearity[[5]], ncol = 2),
-                         nrow = 2)
-
-
+n <- length(modelC$plots$linearity)
+nCol <- floor(sqrt(n))
 ```
 `r kfigr::figr(label = "modelC_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Gamma linearity plots
 
@@ -452,7 +324,6 @@ modelC$plots$multicollinearity$plot()
 knitr::kable(modelC$tests$collinearity, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-
 
 ##### Outliers
 ```{r modelC_outliers}
@@ -514,15 +385,8 @@ modelD$plots$regression
 The linearity of each predictor with the log number of IMDB votes is illustrated in `r kfigr::figr(label = "modelD_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
 
 ```{r modelD_linearity, fig.height=10}
-gridExtra::grid.arrange(gridExtra::arrangeGrob(modelD$plots$linearity[[1]],
-                                               modelD$plots$linearity[[2]],
-                                               modelD$plots$linearity[[3]], ncol = 3),
-                        gridExtra::arrangeGrob(modelD$plots$linearity[[4]],
-                                               modelD$plots$linearity[[5]],
-                                               modelD$plots$linearity[[6]], ncol = 3),
-                         nrow = 2)
-                    
-
+n <- length(modelD$plots$linearity)
+nCol <- floor(sqrt(n))
 ```
 `r kfigr::figr(label = "modelD_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Delta linearity plots
 
@@ -605,86 +469,164 @@ accuracy <- comparePredictions(mods = mods, test = test)
 knitr::kable(accuracy, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-There were no significant differences in MAPE, MSE, and RMSE between the models.  The negative MPE indicated that all models were biased with over predictions. From a percent accuracy perspective, it is worth noting that the forward selection and backward selection models performed nearly identically with and without the influence points. Further, the models *with* the influence points had slightly greater prediction accuracy. That said, model Gamma had the lowest error rates, and highest prediction accuracy with the lowest number of predictors.  As such, this most parsimonious model would advance to the prediction stage.
+There were no significant differences in MAPE, MSE, and RMSE between the models.  The negative MPE indicated that all models were biased with over predictions. The models *with* the influence points had slightly greater prediction accuracy though the models without the outliers had higher adjusted coefficients of determination. Given the lack of justification for excluding the influential points, models Beta and Delta were ruled out. Though models Alpha and Gamma performed identically, Alpha was selected as the most parsimonious model since two predictors accounted for  `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[,7]) * 100, 1)`% of total variation and `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[1:6,7]) * 100, 1)`% of variation allocated to terms. 
 
 ### Model Two: Final Multiregression Model
 The final prediction equation was defined as follows:
 $y_i$ =
-`r modelA$coefficients$estimate[1]`
-+ `r round(modelA$coefficients$estimate[2], 3)`$x_1$
-+ `r round(modelA$coefficients$estimate[3], 3)`$x_2$
-+ `r round(modelA$coefficients$estimate[4], 3)`$x_3$
-+ `r round(modelA$coefficients$estimate[5], 3)`$x_4$
-+ `r round(modelA$coefficients$estimate[6], 3)`$x_5$
-+ `r round(modelA$coefficients$estimate[7], 3)`$x_6$
-+ `r round(modelA$coefficients$estimate[8], 3)`$x_7$
-+ `r round(modelA$coefficients$estimate[9], 3)`$x_8$
-+ `r round(modelA$coefficients$estimate[10], 3)`$x_9$
-+ `r round(modelA$coefficients$estimate[11], 3)`$x_{10}$
-+ `r round(modelA$coefficients$estimate[12], 3)`$x_{11}$
-+ `r round(modelA$coefficients$estimate[13], 3)`$x_{12}$
-+ `r round(modelA$coefficients$estimate[14], 3)`$x_{13}$
-+ `r round(modelA$coefficients$estimate[15], 3)`$x_{14}$
-+ `r round(modelA$coefficients$estimate[16], 3)`$x_{15}$
-+ `r round(modelA$coefficients$estimate[17], 3)`$x_{16}$
-+ `r round(modelA$coefficients$estimate[18], 3)`$x_{17}$
-+ `r round(modelA$coefficients$estimate[19], 3)`$x_{18}$
+`r modelC$coefficients$estimate[1]`
++ `r round(modelC$coefficients$estimate[2], 3)`$x_1$
++ `r round(modelC$coefficients$estimate[3], 3)`$x_2$
++ `r round(modelC$coefficients$estimate[4], 3)`$x_3$
++ `r round(modelC$coefficients$estimate[5], 3)`$x_4$
++ `r round(modelC$coefficients$estimate[6], 3)`$x_5$
++ `r round(modelC$coefficients$estimate[7], 3)`$x_6$
++ `r round(modelC$coefficients$estimate[8], 3)`$x_7$
++ `r round(modelC$coefficients$estimate[9], 3)`$x_8$
++ `r round(modelC$coefficients$estimate[10], 3)`$x_9$
++ `r round(modelC$coefficients$estimate[11], 3)`$x_{10}$
++ `r round(modelC$coefficients$estimate[12], 3)`$x_{11}$
++ `r round(modelC$coefficients$estimate[13], 3)`$x_{12}$
++ `r round(modelC$coefficients$estimate[14], 3)`$x_{13}$
++ `r round(modelC$coefficients$estimate[15], 3)`$x_{14}$
++ `r round(modelC$coefficients$estimate[16], 3)`$x_{15}$
++ `r round(modelC$coefficients$estimate[17], 3)`$x_{16}$
 + $\epsilon$
 
 where:
-$x_1$ is `r modelA$coefficients$term[2]`   
-$x_2$ is `r modelA$coefficients$term[3]`   
-$x_3$ is `r modelA$coefficients$term[4]`   
-$x_4$ is `r modelA$coefficients$term[5]`   
-$x_5$ is `r modelA$coefficients$term[6]`   
-$x_6$ is `r modelA$coefficients$term[7]`   
-$x_7$ is `r modelA$coefficients$term[8]`   
-$x_8$ is `r modelA$coefficients$term[9]`   
-$x_9$ is `r modelA$coefficients$term[10]`   
-$x_{10}$ is `r modelA$coefficients$term[11]`   
-$x_{11}$ is `r modelA$coefficients$term[12]`   
-$x_{12}$ is `r modelA$coefficients$term[13]`   
-$x_{13}$ is `r modelA$coefficients$term[14]`   
-$x_{14}$ is `r modelA$coefficients$term[15]`   
-$x_{15}$ is `r modelA$coefficients$term[16]`   
-$x_{16}$ is `r modelA$coefficients$term[17]`   
-$x_{17}$ is `r modelA$coefficients$term[18]`   
-$x_{18}$ is `r modelA$coefficients$term[19]`   
+$x_1$ is `r modelC$coefficients$term[2]`   
+$x_2$ is `r modelC$coefficients$term[3]`   
+$x_3$ is `r modelC$coefficients$term[4]`   
+$x_4$ is `r modelC$coefficients$term[5]`   
+$x_5$ is `r modelC$coefficients$term[6]`   
+$x_6$ is `r modelC$coefficients$term[7]`   
+$x_7$ is `r modelC$coefficients$term[8]`   
+$x_8$ is `r modelC$coefficients$term[9]`   
+$x_9$ is `r modelC$coefficients$term[10]`   
+$x_{10}$ is `r modelC$coefficients$term[11]`   
+$x_{11}$ is `r modelC$coefficients$term[12]`   
+$x_{12}$ is `r modelC$coefficients$term[13]`   
+$x_{13}$ is `r modelC$coefficients$term[14]`   
+$x_{14}$ is `r modelC$coefficients$term[15]`   
+$x_{15}$ is `r modelC$coefficients$term[16]`   
+$x_{16}$ is `r modelC$coefficients$term[17]`   
+
 
 The genre, MPAA rating and month of release variables were code 0 or 1 in accordance with the genre, MPAA rating and month of release for each observation.
 
 #### Analysis of Variance
-`r kfigr::figr(label = "modelA_anova", prefix = TRUE, link = TRUE, type="Figure")` summarizes the analysis of variance.
-```{r modelA_anova}
-a <- modelA$anova
+`r kfigr::figr(label = "modelC_anova", prefix = TRUE, link = TRUE, type="Figure")` summarizes the analysis of variance.
+```{r modelC_anova}
+a <- modelC$anova
 knitr::kable(a, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-`r kfigr::figr(label = "modelA_anova", prefix = TRUE, link = TRUE, type="Figure")` Model Alpha analysis of variance
+`r kfigr::figr(label = "modelC_anova", prefix = TRUE, link = TRUE, type="Figure")` Model Alpha analysis of variance
 
-`r modelA$comments$anova`
+`r modelC$comments$anova`
 
 #### Interpretation of Coefficients
-Although there were *only* `r nrow(modelA$build)` variables, there were some `r nrow(modelA$coefficients)` coefficients, a consequence of the number of levels in the categorical variables. The coefficients estimates are identified in `r kfigr::figr(label = "modelA_coef", prefix = TRUE, link = TRUE, type="Table")`.
+Although there were *only* `r nrow(modelC$build)` variables, there were some `r nrow(modelC$coefficients)` coefficients, a consequence of the number of levels in the categorical variables. The coefficients estimates are identified in `r kfigr::figr(label = "modelC_coef", prefix = TRUE, link = TRUE, type="Table")`.
 
-`r kfigr::figr(label = "modelA_coef", prefix = TRUE, link = TRUE, type="Table")`: Model Alpha Coefficients
-```{r modelA_coef}
-knitr::kable(modelA$coefficients, digits = 3) %>%
+`r kfigr::figr(label = "modelC_coef", prefix = TRUE, link = TRUE, type="Table")`: Model Alpha Coefficients
+```{r modelC_coef}
+knitr::kable(modelC$coefficients, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-The intercept estimate, `r round(modelA$coefficients$estimate[1], 3)` , is the regression estimate for the mean log number of IMDB votes for a G-rated action and adventure film, with zeros for all of the other variables.  The other coefficient estimates adjust the estimate accordingly. Therefore a prediction for the log number of IMDB votes was equal to:  
-* the intercept value, `r round(modelA$coefficients$estimate[1], 3)`,    
-* plus `r round(subset(modelA$coefficients, term == "cast_scores", select = estimate), 3)` log IMDB votes for each point score for the cast members,  
-* plus a number of log IMDB votes associated with the genre of the film,   
-* plus `r round(subset(modelA$coefficients, term == "runtime_log", select = estimate), 3)` log IMDB votes for each log minute of runtime,   
-* plus a number of log IMDB votes associated with the MPAA rating for the film,    
-* plus `r round(subset(modelA$coefficients, term == "director_experience_log", select = estimate), 3)` log IMDB votes for the log unit of films directed by the film's director.
+The intercept estimate, `r round(modelC$coefficients$estimate[1], 3)` , is the regression estimate for the mean log number of IMDB votes for a G-rated action and adventure film, with zeros for all of the other variables.  The other coefficient estimates adjust the estimate accordingly. Therefore a prediction for the log number of IMDB votes was equal to:  
+* the intercept value, `r round(modelC$coefficients$estimate[1], 3)`,    
+* plus `r round(subset(modelC$coefficients, term == "cast_scores", select = estimate), 3)` log IMDB votes for each point score for the cast members,  
+It should be noted that the influence of cast votes and the log was not significant.
 
-It should be noted that the influence of cast votes and the log of director experience was not significant.
+## Model Two: Simple Linear Regression
+```{r modelTwo_analysis}
+runmodelTwo <- function() {
+  homoscedasticity <- FALSE
+  out <- c()
+  while(homoscedasticity == FALSE) {
+    mData <- process(mdb2, stage = "a", y = "box_office_log", outliers = out)
+    m <- slr(mData$full, y = "box_office_log") 
+    modelTwo <- regressionAnalysis(mod = m, mName = "Model Two", yVar  = 'box_office_log',
+                                 yLab = "Log Daily Box Office") 
+    if (modelTwo$tests$homoscedasticity$p > .05) {
+      homoscedasticity <- TRUE
+      save(modelTwo, file = '../data/modelTwo.Rdata')
+    } else {
+      out <- c(out, modelTwo$tests$influential)
+    }
+  }
+  return(modelTwo)
+}
+
+if (rerun == TRUE) {
+  modelTwo <- runmodelTwo()
+  rerun <- FALSE
+} else {
+  load(file = '../data/modelTwo.Rdata')
+}
+
+```
+
+### Model Overview
+A simple linear regression was calculated to predict the log of box office revenue based upon the log of the number of IMDB votes. A significant regression equation was found (F(`r modelTwo$glance$df`,`r modelTwo$glance[1,4]`) = `r round(modelTwo$glance[1,5], 3)`, p < .001), with an $R^2$ of `r round(modelTwo$glance[1,8], 3)`. The prediction equation is as follows:   
+
+$y_i$ = `r round(modelTwo$coefficients$estimate[1], 2)` 
++ `r round(modelTwo$coefficients$estimate[2], 2)`$x_1$
++ $\epsilon$    
+
+where:  
+$x_1$ is `r modelTwo$coefficients$term[2]` 
+
+`r kfigr::figr(label = "modelTwo_comparison", prefix = TRUE, link = TRUE, type="Table")`: Best performing simple linear regression on log of box office revenue 
+```{r modelTwo_comparison}
+knitr::kable(head(modelTwo$anova, 5), digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")  
+```
+
+### Model Diagnostics
+#### Linearity
+The linearity of the predictor with the log of  box office is illustrated in `r kfigr::figr(label = "modelTwo_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
+
+```{r modelTwo_linearity}
+modelTwo$plots$linearity[[1]]
+```
+`r kfigr::figr(label = "modelTwo_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Two linearity plot
+
+`r modelTwo$comment$linearity`
+
+#### Homoscedasticity
+The following plot (`r kfigr::figr(label = "modelTwo_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")`) of the residuals versus the fitted values provides a graphic indication of the distribution of residual variances. 
+```{r modelTwo_homoscedasticity}
+modelTwo$plots$res_fitted
+```
+`r kfigr::figr(label = "modelTwo_homoscedasticity", prefix = TRUE, link = TRUE, type="Figure")` Model Two homoscedasticity plot
+
+`r modelTwo$comments$homoscedasticity`
+
+#### Residuals
+The histogram and the normal Q-Q plot in `r kfigr::figr(label = "modelTwo_residuals", prefix = TRUE, link = TRUE, type="Figure")` illustrate the distribution of residuals.
+
+```{r modelTwo_residuals}
+gridExtra::grid.arrange(modelTwo$plots$res_hist, modelTwo$plots$res_qq, ncol = 2)
+
+```
+`r kfigr::figr(label = "modelTwo_residuals", prefix = TRUE, link = TRUE, type="Figure")` Model Two residuals plot
+
+`r modelTwo$comments$normality`
+  
+#### Outliers
+```{r modelTwo_outliers}
+gridExtra::grid.arrange(modelTwo$plots$res_leverage, modelTwo$plots$cooks, ncol = 2)
+```
+`r kfigr::figr(label = "modelTwo_outliers", prefix = TRUE, link = TRUE, type="Figure")` Model Two Outliers
+
+`r modelTwo$comments$outliers` A case-wise review of the influential points did not reveal any data quality issues; therefore, the influential points were not removed from the model. 
 
 ## Model Summary
-The purpose of this section was to develop a model that would be able to predict "box office success". Given the signficant right skew in box office revenue, the log of box office revenue became the proxy for box office success. Therefore, two regression models were fit in this section.  Model One, the simple linear regression model (F(`r modelOne$glance[1,3]`, `r modelOne$glance[1,4]`) = `r round(modelOne$glance[1,5],2)`, p < .001) showed that the log number of IMDB votes was the best predictor of the log of box office revenue.  Designated log IMDB votes as the response variable, Model Two (F(`r modelA$glance[1,3]`, `r modelA$glance[1,4]`) = `r round(modelA$glance[1,5], 2)`, p < .001) was selected from among four multiregression linear models employing forward selection and backward elimination algorithms. Next, the models will be used to predict the number of log IMDB votes and the log box office for a randomly selected film.
+The purpose of this section was to develop models that would predict "box office success". Therefore, two regression models were fit in this section: Model One (F(`r modelC$glance[1,3]`, `r modelC$glance[1,4]`) = `r round(modelC$glance[1,5], 2)`, p < .001) was selected from among four multiregression linear models employing forward selection and backward elimination algorithms. Model Two, a simple linear regression model (F(`r modelTwo$glance[1,3]`, `r modelTwo$glance[1,4]`) = `r round(modelTwo$glance[1,5],2)`, p < .001) predicts log box office revenue based upon the log IMDB votes.
+
+Next, the models will be used to predict the number of log IMDB votes and the log box office for a randomly selected film.
 
 
 * * *

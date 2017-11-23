@@ -28,25 +28,44 @@ process <- function(data, stage = "a", y, outliers = NULL) {
              'thtr_rel_year',	'thtr_rel_day',	'dvd_rel_year',
              'dvd_rel_month',	'dvd_rel_day',	'scores',	'scores_log',
              'votes_per_day_scores',	'votes_per_day_scores_log',
-             'daily_box_office', "box_office", 'actor1', 'actor2',
+             "box_office", 'actor1', 'actor2',
              'actor3', 'actor4', 'actor5', 'director', 'studio')
 
-  omitM <- c( 'thtr_days',	'thtr_days_log', 'imdb_num_votes',
-             'cast_experience',	'imdb_rating', 'votes_per_day', 'critics_score',
-             'audience_score',	 'thtr_rel_date', 'votes_per_day_log',
-             'thtr_days', 'daily_log_box_office_est', 'cast_experience_log',
-             'thtr_days_log', 'runtime','imdb_rating', 'best_pic_nom',
-             'best_dir_win', 'best_pic_win' , 'director_experience',
-             'best_actor_win', 'best_actress_win', 'thtr_rel_season',
-             'daily_box_office_log', 'critics_rating',
-             'audience_rating', 'top200_box')
-  keep <- c("daily_box_office_log", "audience_score", "imdb_rating",
+  omitC <- c('votes_per_day', 'votes_per_day_log', 'box_office',
+             'box_office_log', 'imdb_num_votes', 'thtr_days', 'thtr_days_log')
+
+  omitM <- c('title', 'title_type', 'runtime', 'cast_dir_exp',
+             'cast_dir_exp_log', 'imdb_url', 'rt_url', 'studio', 'director',
+             'actor1', 'actor2', 'actor3', 'actor4', 'actor5',
+             'thtr_rel_date', 'thtr_rel_year', 'thtr_rel_season',
+             'thtr_rel_day', 'thtr_days', 'thtr_days_log',
+             'dvd_rel_year', 'dvd_rel_month', 'dvd_rel_day', 'cast_dir_scores',
+             'cast_dir_scores_log', 'cast_dir_votes', 'imdb_num_votes',
+             'imdb_rating', 'cast_exp_dir_scores', 'critics_rating',
+             'audience_rating', 'critics_score', 'audience_score',
+             'best_pic_nom', 'best_pic_win', 'best_actor_win',
+             'best_actress_win', 'best_dir_win', 'top200_box',
+             'cast_exp_dir_votes', 'cast_exp_dir_votes_log', 'cast_experience',
+             'cast_scores_dir_exp', 'director_scores_log', 'cast_scores_dir_votes',
+             'cast_scores_dir_votes_log', 'cast_votes', 'cast_votes_dir_exp',
+             'cast_votes_dir_scores', 'cast_votes_dir_scores_log',
+             'cast_votes_log', 'director_experience', 'director_experience_log',
+             'director_votes', 'director_votes_log', 'votes_per_day',
+             'votes_per_day_log', 'box_office', 'box_office_log',
+             'cast_scores_dir_exp_log',
+             'cast_votes_dir_exp_log', 'cast_scores_log', 'cast_exp_dir_scores_log',
+             'cast_dir_votes_log', 'director_scores', 'cast_experience_log')
+
+
+  keep <- c("box_office_log", "audience_score", "imdb_rating",
              "imdb_num_votes_log", "votes_per_day",
             "votes_per_day_log")
 
   omit <- switch(stage,
                  a = omitA,
+                 c = c(omitA, omitC),
                  m = c(omitA, omitM))
+
 
   d <- data
   # Remove outliers
@@ -59,8 +78,8 @@ process <- function(data, stage = "a", y, outliers = NULL) {
   }
 
   # Gather features requested by the data stage
-  if (stage %in% c("a", "m")) {
-    d <- d[, !(names(d) %in% omit)]
+  if (stage %in% c("a", "c", "m")) {
+    d <- d[, (!(names(d) %in% omit))]
   } else {
     d <- d[, (names(d) %in% keep)]
   }

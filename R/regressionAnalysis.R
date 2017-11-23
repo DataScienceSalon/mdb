@@ -263,8 +263,7 @@ regressionAnalysis <- function(mod, mName, yVar, yLab, full = TRUE) {
                                              "Variance inflation factors were computed for each predictor in ",
                                              " the model.  The maximum VIF of ", round(maxVif,1),
                                              " exceeded the threshold of 4. As such, the correlation among the  ",
-                                             "predictors would require further consideration.  ",
-                                             "The multicollinearity assumption was not met for this model.  ")
+                                             "predictors would require further consideration.  ")
       }
     }
 

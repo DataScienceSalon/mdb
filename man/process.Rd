@@ -29,6 +29,7 @@ dependent variables and set with the response variable.
 \seealso{
 Other movies functions: \code{\link{associate}},
   \code{\link{backwardElimination}}, \code{\link{back}},
+  \code{\link{challenger}},
   \code{\link{comparePredictions}},
   \code{\link{correlate}}, \code{\link{createDependent}},
   \code{\link{evalForwardModel}}, \code{\link{forward}},

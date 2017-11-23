@@ -6,18 +6,37 @@ The exploratory data analysis comprised both a univariate and bivariate examinat
 
 ## Bivariate Analysis
 ### Dependent Variable
-As mentioned above, the first objective was to identify an available variable that would proxy for box office success. Correlation tests were conducted between the quantitative variables and the log of daily box office revenue. The variables most highly correlated with log of daily box office revenue are summarized in
-`r kfigr::figr(label = "correlation1", prefix = TRUE, link = TRUE, type="Table")`.
+As mentioned above, the first objective was to identify an available variable that would proxy for box office success. 
 
-`r kfigr::figr(label = "correlation1", prefix = TRUE, link = TRUE, type="Table")`: Variables most highly correlated with the log daily box office revenue
+`r kfigr::figr(label = "correlation1", prefix = TRUE, link = TRUE, type="Table")`: Variables most highly correlated with the log  box office revenue
 ```{r correlation1}
-mData <- process(train, stage = "a", y = c("daily_box_office_log"))
-cData <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log Daily Box Office", plot = FALSE)
-knitr::kable(head(cData$tests, 10), digits = 2) %>%
+mData <- process(mdb2, stage = "a", y = "box_office_log")
+rLogBoxOffice <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log Box Office", plot = TRUE)
+knitr::kable(head(rLogBoxOffice$tests, 10), digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-In the next section, a simple linear regression model was used to determine the parameters required to predict the daily box office proxy variable.
+Pearson product-moment correlation coefficients were computed to determine which of the available variables most highly correlated with the log of box office revenue. `r kfigr::figr(label = "correlation1", prefix = TRUE, link = TRUE, type="Table")` reveals the  log number of IMDB votes, r = `r rLogBoxOffice$tests$Correlation[1]`, n = `r nrow(mData$numeric)`, p = `r rLogBoxOffice$tests[1,5]` as having the highest correlation with log box office revenue.  A scatterplot summarizes the results (`r kfigr::figr(label = "scatterplot", prefix = TRUE, link = TRUE, type="Figure")`) Overall, there was a strong, positive correlation between the log number of IMDB votes and the log box office.
 
+```{r scatterplot}
+plotData <- data.frame(y = mData$dependent, x = mData$numeric$imdb_num_votes_log)
+plotScatter(data = plotData, xLab = "Log IMDB Votes", yLab = "Log Box Office")
+```
+`r kfigr::figr(label = "scatterplot", prefix = TRUE, link = TRUE, type="Figure")`: Log Box Office vs. Log IMDB Votes
+
+### Predictors
+Having designated the log number of IMDB votes as the dependent variable, an analysis was conducted on the training set to determine the correlations between available predictors and log IMDB votes.
+
+`r kfigr::figr(label = "correlations", prefix = TRUE, link = TRUE, type="Table")`: Predictor correlations with log IMDB votes
+```{r correlations}
+mData <- process(train, stage = "a", y = "imdb_num_votes_log")
+rLogIMDBVotes  <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log IMDB Votes", plot = FALSE)
+knitr::kable(head(rLogIMDBVotes$tests, 10), digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+`r kfigr::figr(label = "correlations", prefix = TRUE, link = TRUE, type="Table")` summarizes the results of several Pearson product-moment correlation tests. Indicators of cast popularity in terms of votes and scores were the most highly correlated predictors of log IMDB votes. The relatively high correlation with runtime was unexpected.
+
+The next section describes two linear models: (1) a multiregression model to predict log IMDB votes, and (2) a simple linear regression model to predict log box office revenue based upon the log of IMDB votes. 
 
 * * *
+  

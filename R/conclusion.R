@@ -49,9 +49,10 @@ conclusion <- function(slr, mlr, data) {
 
 
   # Simulate Cast Votes data and compute imdb votes
+  csCoef <- as.numeric(subset(mlr$coefficients, term == "cast_scores", select = estimate))
   d <- data.frame(scores = exp(seq(1, 8, by = .001 )))
   d <- d %>% mutate(votes = mlr$coefficients$estimate[1] +
-                    mlr$coefficients$estimate[2] * scores)
+                    csCoef * scores)
   d <- d %>% mutate(dbol = slr$coefficients$estimate[1] +
                       slr$coefficients$estimate[2] * votes,
                     dbo = 2^dbol)

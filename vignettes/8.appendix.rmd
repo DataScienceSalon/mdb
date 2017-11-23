@@ -60,6 +60,179 @@ gridExtra::grid.arrange(edaUni$bestPicNom$plot, edaUni$bestPicWin$plot, ncol = 2
 ```
 `r kfigr::figr(label = "a_best_picture", prefix = TRUE, link = TRUE, type="Figure")`: Best picture nominations and wins
 
+
+
+### Cast & Director Experience
+This derived variable measured the relative experience of a given cast and was defined as the sum of the observations for the cast associated with each film.
+
+`r kfigr::figr(label = "a_cast_dir_experience_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast & Director experience summary statistics
+```{r a_cast_dir_experience_stats}
+knitr::kable(edaUni$castDirExp$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_dir_experience_dist}
+gridExtra::grid.arrange(edaUni$castDirExp$hist, edaUni$castDirExp$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_dir_experience_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director experience histogram and QQ Plot
+
+```{r a_cast_dir_experience_box, fig.height=4}
+edaUni$castDirExp$box
+```
+`r kfigr::figr(label = "a_cast_dir_experience_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director experience boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_dir_experience_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castDirExp$central`
+
+**Dispersion**: `r edaUni$castDirExp$disp`
+
+**Shape of Distribution**:  `r edaUni$castDirExp$skew` `r edaUni$castDirExp$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_dir_experience_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_dir_experience_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castDirExp$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castDirExp$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+### Cast & Director Experience (Log)
+This variable is a log transformation of the cast experience variable
+
+`r kfigr::figr(label = "a_cast_dir_experience_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast & Director experience summary statistics
+```{r a_cast_dir_experience_log_stats}
+knitr::kable(edaUni$castDirExpLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_dir_experience_log_dist}
+gridExtra::grid.arrange(edaUni$castDirExpLog$hist, edaUni$castDirExpLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_dir_experience_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director experience histogram and QQ Plot
+
+```{r a_cast_dir_experience_log_box, fig.height=4}
+edaUni$castDirExpLog$box
+```
+`r kfigr::figr(label = "a_cast_dir_experience_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director experience boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_dir_experience_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castDirExpLog$central`
+
+**Dispersion**: `r edaUni$castDirExpLog$disp`
+
+**Shape of Distribution**:  `r edaUni$castDirExpLog$skew` `r edaUni$castDirExpLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_dir_experience_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_dir_experience_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castDirExpLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castDirExpLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+
+
+### Cast & Director Scores
+This derived variable measured the relative scores of a given cast and was defined as the sum of the observations for the cast associated with each film.
+
+`r kfigr::figr(label = "a_cast_dir_scores_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast & Director scores summary statistics
+```{r a_cast_dir_scores_stats}
+knitr::kable(edaUni$castDirScores$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_dir_scores_dist}
+gridExtra::grid.arrange(edaUni$castDirScores$hist, edaUni$castDirScores$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_dir_scores_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director scores histogram and QQ Plot
+
+```{r a_cast_dir_scores_box, fig.height=4}
+edaUni$castDirScores$box
+```
+`r kfigr::figr(label = "a_cast_dir_scores_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director scores boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_dir_scores_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castDirScores$central`
+
+**Dispersion**: `r edaUni$castDirScores$disp`
+
+**Shape of Distribution**:  `r edaUni$castDirScores$skew` `r edaUni$castDirScores$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_dir_scores_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_dir_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castDirScores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castDirScores$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+### Cast & Director Scores (Log)
+This variable is a log transformation of the cast scores variable
+
+`r kfigr::figr(label = "a_cast_dir_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast & Director scores summary statistics
+```{r a_cast_dir_scores_log_stats}
+knitr::kable(edaUni$castDirScoresLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_dir_scores_log_dist}
+gridExtra::grid.arrange(edaUni$castDirScoresLog$hist, edaUni$castDirScoresLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_dir_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director scores histogram and QQ Plot
+
+```{r a_cast_dir_scores_log_box, fig.height=4}
+edaUni$castDirScoresLog$box
+```
+`r kfigr::figr(label = "a_cast_dir_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director scores boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_dir_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castDirScoresLog$central`
+
+**Dispersion**: `r edaUni$castDirScoresLog$disp`
+
+**Shape of Distribution**:  `r edaUni$castDirScoresLog$skew` `r edaUni$castDirScoresLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_dir_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_dir_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castDirScoresLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castDirScoresLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+
+
+
+### Cast & Director Votes
+This derived variable measured the relative votes of a given cast and was defined as the sum of the observations for the cast associated with each film.
+
+`r kfigr::figr(label = "a_cast_dir_votes_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast & Director votes summary statistics
+```{r a_cast_dir_votes_stats}
+knitr::kable(edaUni$castDirVotes$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_dir_votes_dist}
+gridExtra::grid.arrange(edaUni$castDirVotes$hist, edaUni$castDirVotes$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_dir_votes_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director votes histogram and QQ Plot
+
+```{r a_cast_dir_votes_box, fig.height=4}
+edaUni$castDirVotes$box
+```
+`r kfigr::figr(label = "a_cast_dir_votes_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director votes boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_dir_votes_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castDirVotes$central`
+
+**Dispersion**: `r edaUni$castDirVotes$disp`
+
+**Shape of Distribution**:  `r edaUni$castDirVotes$skew` `r edaUni$castDirVotes$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_dir_votes_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_dir_votes_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castDirVotes$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castDirVotes$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+### Cast & Director Votes (Log)
+This variable is a log transformation of the cast votes variable
+
+`r kfigr::figr(label = "a_cast_dir_votes_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast & Director votes summary statistics
+```{r a_cast_dir_votes_log_stats}
+knitr::kable(edaUni$castDirVotesLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_dir_votes_log_dist}
+gridExtra::grid.arrange(edaUni$castDirVotesLog$hist, edaUni$castDirVotesLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_dir_votes_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director votes histogram and QQ Plot
+
+```{r a_cast_dir_votes_log_box, fig.height=4}
+edaUni$castDirVotesLog$box
+```
+`r kfigr::figr(label = "a_cast_dir_votes_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast & Director votes boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_dir_votes_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castDirVotesLog$central`
+
+**Dispersion**: `r edaUni$castDirVotesLog$disp`
+
+**Shape of Distribution**:  `r edaUni$castDirVotesLog$skew` `r edaUni$castDirVotesLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_dir_votes_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_dir_votes_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castDirVotesLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castDirVotesLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+
+
+
+
 ### Cast Experience
 This derived variable measured the relative experience of a given cast and was defined as the sum of the observations for the cast associated with each film.
 
@@ -113,6 +286,296 @@ edaUni$castExperienceLog$box
 **Shape of Distribution**:  `r edaUni$castExperienceLog$skew` `r edaUni$castExperienceLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_experience_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_experience_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castExperienceLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castExperienceLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+
+
+### Cast Experience & Director Scores
+This derived variable measured the relative experience & director scores  of a given cast and was defined as the sum of the observations for the cast associated with each film.
+
+`r kfigr::figr(label = "a_cast_exp_dir_scores_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast experience & director scores  summary statistics
+```{r a_cast_exp_dir_scores_stats}
+knitr::kable(edaUni$castExpDirScores$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_exp_dir_scores_dist}
+gridExtra::grid.arrange(edaUni$castExpDirScores$hist, edaUni$castExpDirScores$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_exp_dir_scores_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast experience & director scores  histogram and QQ Plot
+
+```{r a_cast_exp_dir_scores_box, fig.height=4}
+edaUni$castExpDirScores$box
+```
+`r kfigr::figr(label = "a_cast_exp_dir_scores_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast experience & director scores  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_exp_dir_scores_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castExpDirScores$central`
+
+**Dispersion**: `r edaUni$castExpDirScores$disp`
+
+**Shape of Distribution**:  `r edaUni$castExpDirScores$skew` `r edaUni$castExpDirScores$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_exp_dir_scores_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_exp_dir_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castExpDirScores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castExpDirScores$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+### Cast Experience & Director Scores (Log)
+This variable is a log transformation of the cast experience & director scores  variable
+
+`r kfigr::figr(label = "a_cast_exp_dir_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast experience & director scores  summary statistics
+```{r a_cast_exp_dir_scores_log_stats}
+knitr::kable(edaUni$castExpDirScoresLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_exp_dir_scores_log_dist}
+gridExtra::grid.arrange(edaUni$castExpDirScoresLog$hist, edaUni$castExpDirScoresLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_exp_dir_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast experience & director scores  histogram and QQ Plot
+
+```{r a_cast_exp_dir_scores_log_box, fig.height=4}
+edaUni$castExpDirScoresLog$box
+```
+`r kfigr::figr(label = "a_cast_exp_dir_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast experience & director scores  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_exp_dir_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castExpDirScoresLog$central`
+
+**Dispersion**: `r edaUni$castExpDirScoresLog$disp`
+
+**Shape of Distribution**:  `r edaUni$castExpDirScoresLog$skew` `r edaUni$castExpDirScoresLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_exp_dir_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_exp_dir_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castExpDirScoresLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castExpDirScoresLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+
+
+
+### Cast Experience & Director Votes
+This derived variable measured the relative experience & director votes  of a given cast and was defined as the sum of the observations for the cast associated with each film.
+
+`r kfigr::figr(label = "a_cast_exp_dir_votes_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast experience & director votes  summary statistics
+```{r a_cast_exp_dir_votes_stats}
+knitr::kable(edaUni$castExpDirVotes$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_exp_dir_votes_dist}
+gridExtra::grid.arrange(edaUni$castExpDirVotes$hist, edaUni$castExpDirVotes$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_exp_dir_votes_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast experience & director votes  histogram and QQ Plot
+
+```{r a_cast_exp_dir_votes_box, fig.height=4}
+edaUni$castExpDirVotes$box
+```
+`r kfigr::figr(label = "a_cast_exp_dir_votes_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast experience & director votes  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_exp_dir_votes_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castExpDirVotes$central`
+
+**Dispersion**: `r edaUni$castExpDirVotes$disp`
+
+**Shape of Distribution**:  `r edaUni$castExpDirVotes$skew` `r edaUni$castExpDirVotes$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_exp_dir_votes_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_exp_dir_votes_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castExpDirVotes$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castExpDirVotes$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+### Cast Experience & Director Votes (Log)
+This variable is a log transformation of the cast experience & director votes  variable
+
+`r kfigr::figr(label = "a_cast_exp_dir_votes_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast experience & director votes  summary statistics
+```{r a_cast_exp_dir_votes_log_stats}
+knitr::kable(edaUni$castExpDirVotesLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_exp_dir_votes_log_dist}
+gridExtra::grid.arrange(edaUni$castExpDirVotesLog$hist, edaUni$castExpDirVotesLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_exp_dir_votes_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast experience & director votes  histogram and QQ Plot
+
+```{r a_cast_exp_dir_votes_log_box, fig.height=4}
+edaUni$castExpDirVotesLog$box
+```
+`r kfigr::figr(label = "a_cast_exp_dir_votes_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast experience & director votes  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_exp_dir_votes_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castExpDirVotesLog$central`
+
+**Dispersion**: `r edaUni$castExpDirVotesLog$disp`
+
+**Shape of Distribution**:  `r edaUni$castExpDirVotesLog$skew` `r edaUni$castExpDirVotesLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_exp_dir_votes_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_exp_dir_votes_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castExpDirVotesLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castExpDirVotesLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+
+
+
+### Cast Scores & Director Experience
+This derived variable measured the relative experience & director experience  of a given cast and was defined as the sum of the observations for the cast associated with each film.
+
+`r kfigr::figr(label = "a_cast_scores_dir_exp_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast scores & director experience  summary statistics
+```{r a_cast_scores_dir_exp_stats}
+knitr::kable(edaUni$castScoresDirExp$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_scores_dir_exp_dist}
+gridExtra::grid.arrange(edaUni$castScoresDirExp$hist, edaUni$castScoresDirExp$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_scores_dir_exp_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast scores & director experience  histogram and QQ Plot
+
+```{r a_cast_scores_dir_exp_box, fig.height=4}
+edaUni$castScoresDirExp$box
+```
+`r kfigr::figr(label = "a_cast_scores_dir_exp_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast scores & director experience  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_scores_dir_exp_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castScoresDirExp$central`
+
+**Dispersion**: `r edaUni$castScoresDirExp$disp`
+
+**Shape of Distribution**:  `r edaUni$castScoresDirExp$skew` `r edaUni$castScoresDirExp$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_scores_dir_exp_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_scores_dir_exp_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castScoresDirExp$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castScoresDirExp$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+### Cast Scores & Director Experience (Log)
+This variable is a log transformation of the cast experience & director experience  variable
+
+`r kfigr::figr(label = "a_cast_scores_dir_exp_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast scores & director experience  summary statistics
+```{r a_cast_scores_dir_exp_log_stats}
+knitr::kable(edaUni$castScoresDirExpLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_scores_dir_exp_log_dist}
+gridExtra::grid.arrange(edaUni$castScoresDirExpLog$hist, edaUni$castScoresDirExpLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_scores_dir_exp_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast scores & director experience  histogram and QQ Plot
+
+```{r a_cast_scores_dir_exp_log_box, fig.height=4}
+edaUni$castScoresDirExpLog$box
+```
+`r kfigr::figr(label = "a_cast_scores_dir_exp_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast scores & director experience  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_scores_dir_exp_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castScoresDirExpLog$central`
+
+**Dispersion**: `r edaUni$castScoresDirExpLog$disp`
+
+**Shape of Distribution**:  `r edaUni$castScoresDirExpLog$skew` `r edaUni$castScoresDirExpLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_scores_dir_exp_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_scores_dir_exp_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castScoresDirExpLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castScoresDirExpLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+
+
+### Cast Scores & Director Votes
+This derived variable measured the relative votes & director votes  of a given cast and was defined as the sum of the observations for the cast associated with each film.
+
+`r kfigr::figr(label = "a_cast_scores_dir_votes_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast scores & director votes  summary statistics
+```{r a_cast_scores_dir_votes_stats}
+knitr::kable(edaUni$castScoresDirVotes$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_scores_dir_votes_dist}
+gridExtra::grid.arrange(edaUni$castScoresDirVotes$hist, edaUni$castScoresDirVotes$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_scores_dir_votes_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast scores & director votes  histogram and QQ Plot
+
+```{r a_cast_scores_dir_votes_box, fig.height=4}
+edaUni$castScoresDirVotes$box
+```
+`r kfigr::figr(label = "a_cast_scores_dir_votes_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast scores & director votes  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_scores_dir_votes_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castScoresDirVotes$central`
+
+**Dispersion**: `r edaUni$castScoresDirVotes$disp`
+
+**Shape of Distribution**:  `r edaUni$castScoresDirVotes$skew` `r edaUni$castScoresDirVotes$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_scores_dir_votes_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_scores_dir_votes_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castScoresDirVotes$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castScoresDirVotes$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+### Cast Scores & Director Votes (Log)
+This variable is a log transformation of the cast votes & director votes  variable
+
+`r kfigr::figr(label = "a_cast_scores_dir_votes_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast scores & director votes  summary statistics
+```{r a_cast_scores_dir_votes_log_stats}
+knitr::kable(edaUni$castScoresDirVotesLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_scores_dir_votes_log_dist}
+gridExtra::grid.arrange(edaUni$castScoresDirVotesLog$hist, edaUni$castScoresDirVotesLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_scores_dir_votes_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast scores & director votes  histogram and QQ Plot
+
+```{r a_cast_scores_dir_votes_log_box, fig.height=4}
+edaUni$castScoresDirVotesLog$box
+```
+`r kfigr::figr(label = "a_cast_scores_dir_votes_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast scores & director votes  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_scores_dir_votes_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castScoresDirVotesLog$central`
+
+**Dispersion**: `r edaUni$castScoresDirVotesLog$disp`
+
+**Shape of Distribution**:  `r edaUni$castScoresDirVotesLog$skew` `r edaUni$castScoresDirVotesLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_scores_dir_votes_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_scores_dir_votes_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castScoresDirVotesLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castScoresDirVotesLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+
+
+
+
+### Cast Votes & Director Experience
+This derived variable measured the relative experience & director experience  of a given cast and was defined as the sum of the observations for the cast associated with each film.
+
+`r kfigr::figr(label = "a_cast_votes_dir_exp_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast votes & director experience  summary statistics
+```{r a_cast_votes_dir_exp_stats}
+knitr::kable(edaUni$castVotesDirExp$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_votes_dir_exp_dist}
+gridExtra::grid.arrange(edaUni$castVotesDirExp$hist, edaUni$castVotesDirExp$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_votes_dir_exp_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast votes & director experience  histogram and QQ Plot
+
+```{r a_cast_votes_dir_exp_box, fig.height=4}
+edaUni$castVotesDirExp$box
+```
+`r kfigr::figr(label = "a_cast_votes_dir_exp_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast votes & director experience  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_votes_dir_exp_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castVotesDirExp$central`
+
+**Dispersion**: `r edaUni$castVotesDirExp$disp`
+
+**Shape of Distribution**:  `r edaUni$castVotesDirExp$skew` `r edaUni$castVotesDirExp$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_votes_dir_exp_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_votes_dir_exp_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castVotesDirExp$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castVotesDirExp$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+### Cast Votes & Director Experience (Log)
+This variable is a log transformation of the cast votes & director experience  variable
+
+`r kfigr::figr(label = "a_cast_votes_dir_exp_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast votes & director experience  summary statistics
+```{r a_cast_votes_dir_exp_log_stats}
+knitr::kable(edaUni$castVotesDirExpLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_votes_dir_exp_log_dist}
+gridExtra::grid.arrange(edaUni$castVotesDirExpLog$hist, edaUni$castVotesDirExpLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_votes_dir_exp_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast votes & director experience  histogram and QQ Plot
+
+```{r a_cast_votes_dir_exp_log_box, fig.height=4}
+edaUni$castVotesDirExpLog$box
+```
+`r kfigr::figr(label = "a_cast_votes_dir_exp_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast votes & director experience  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_votes_dir_exp_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castVotesDirExpLog$central`
+
+**Dispersion**: `r edaUni$castVotesDirExpLog$disp`
+
+**Shape of Distribution**:  `r edaUni$castVotesDirExpLog$skew` `r edaUni$castVotesDirExpLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_votes_dir_exp_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_votes_dir_exp_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castVotesDirExpLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castVotesDirExpLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+
+
+
+
+
 
 
 ### Cast Scores
@@ -224,6 +687,70 @@ edaUni$castVotesLog$box
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_votes_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castVotesLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castVotesLog$out`
 
+
+
+
+### Cast Votes & Director Scores
+This derived variable measured the relative votes & director scores  of a given cast and was defined as the sum of the observations for the cast associated with each film.
+
+`r kfigr::figr(label = "a_cast_votes_dir_scores_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast votes & director scores  summary statistics
+```{r a_cast_votes_dir_scores_stats}
+knitr::kable(edaUni$castExpDirScores$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_votes_dir_scores_dist}
+gridExtra::grid.arrange(edaUni$castExpDirScores$hist, edaUni$castExpDirScores$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_votes_dir_scores_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast votes & director scores  histogram and QQ Plot
+
+```{r a_cast_votes_dir_scores_box, fig.height=4}
+edaUni$castExpDirScores$box
+```
+`r kfigr::figr(label = "a_cast_votes_dir_scores_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast votes & director scores  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_votes_dir_scores_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castExpDirScores$central`
+
+**Dispersion**: `r edaUni$castExpDirScores$disp`
+
+**Shape of Distribution**:  `r edaUni$castExpDirScores$skew` `r edaUni$castExpDirScores$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_votes_dir_scores_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_votes_dir_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castExpDirScores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castExpDirScores$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+### Cast Votes & Director Scores (Log)
+This variable is a log transformation of the cast votes & director scores  variable
+
+`r kfigr::figr(label = "a_cast_votes_dir_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Cast votes & director scores  summary statistics
+```{r a_cast_votes_dir_scores_log_stats}
+knitr::kable(edaUni$castExpDirScoresLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_cast_votes_dir_scores_log_dist}
+gridExtra::grid.arrange(edaUni$castExpDirScoresLog$hist, edaUni$castExpDirScoresLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_cast_votes_dir_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Cast votes & director scores  histogram and QQ Plot
+
+```{r a_cast_votes_dir_scores_log_box, fig.height=4}
+edaUni$castExpDirScoresLog$box
+```
+`r kfigr::figr(label = "a_cast_votes_dir_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Cast votes & director scores  boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_cast_votes_dir_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$castExpDirScoresLog$central`
+
+**Dispersion**: `r edaUni$castExpDirScoresLog$disp`
+
+**Shape of Distribution**:  `r edaUni$castExpDirScoresLog$skew` `r edaUni$castExpDirScoresLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_cast_votes_dir_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_cast_votes_dir_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$castExpDirScoresLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$castExpDirScoresLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+
+
+
+
+
+
+
 ### Critics Scores
 This variable captured the critics scores for each film
 
@@ -252,58 +779,58 @@ edaUni$criticsScores$box
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_critics_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$criticsScores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$criticsScores$out`
 
 ### Daily Box Office
-Total lifetime daily box office revenue was obtained for a subset of 100 randomly selected films from the movie data set. This is an analysis of daily box office revenue for this random sampling.
+Total lifetime  box office revenue was obtained for a subset of 100 randomly selected films from the movie data set. This is an analysis of  box office revenue for this random sampling.
 
-`r kfigr::figr(label = "a_daily_box_office_stats", prefix = TRUE, link = TRUE, type="Table")`: Box office revenue summary statistics
-```{r a_daily_box_office_stats}
-knitr::kable(edaUni$dailyBoxOffice$stats, digits = 2) %>%
+`r kfigr::figr(label = "a_box_office_stats", prefix = TRUE, link = TRUE, type="Table")`: Box office revenue summary statistics
+```{r a_box_office_stats}
+knitr::kable(edaUni$boxOffice$stats, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-```{r a_daily_box_office_dist}
-gridExtra::grid.arrange(edaUni$dailyBoxOffice$hist, edaUni$dailyBoxOffice$qq, ncol = 2)
+```{r a_box_office_dist}
+gridExtra::grid.arrange(edaUni$boxOffice$hist, edaUni$boxOffice$qq, ncol = 2)
 ```
-`r kfigr::figr(label = "a_daily_box_office_dist", prefix = TRUE, link = TRUE, type="Figure")`: Box office revenue histogram and QQ Plot
+`r kfigr::figr(label = "a_box_office_dist", prefix = TRUE, link = TRUE, type="Figure")`: Box office revenue histogram and QQ Plot
 
-```{r a_daily_box_office_box, fig.height=4}
-edaUni$dailyBoxOffice$box
+```{r a_box_office_box, fig.height=4}
+edaUni$boxOffice$box
 ```
-`r kfigr::figr(label = "a_daily_box_office_box", prefix = TRUE, link = TRUE, type="Figure")`: Box office revenue boxplot
+`r kfigr::figr(label = "a_box_office_box", prefix = TRUE, link = TRUE, type="Figure")`: Box office revenue boxplot
 
-**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_daily_box_office_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$dailyBoxOffice$central`
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_box_office_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$boxOffice$central`
 
-**Dispersion**: `r edaUni$dailyBoxOffice$disp`
+**Dispersion**: `r edaUni$boxOffice$disp`
 
-**Shape of Distribution**:  `r edaUni$dailyBoxOffice$skew` `r edaUni$dailyBoxOffice$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_daily_box_office_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs significantly from normality.
+**Shape of Distribution**:  `r edaUni$boxOffice$skew` `r edaUni$boxOffice$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_box_office_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs significantly from normality.
 
-**Outliers**: The boxplot in `r kfigr::figr(label = "a_daily_box_office_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$dailyBoxOffice$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$dailyBoxOffice$out`
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_box_office_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$boxOffice$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$boxOffice$out`
 
 ### Daily Box Office (Log)
-This is a log transformation of the daily box office variable.
+This is a log transformation of the  box office variable.
 
-`r kfigr::figr(label = "a_daily_box_office_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log daily box office revenue summary statistics
-```{r a_daily_box_office_log_stats}
-knitr::kable(edaUni$dailyBoxOfficeLog$stats, digits = 2) %>%
+`r kfigr::figr(label = "a_box_office_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log  box office revenue summary statistics
+```{r a_box_office_log_stats}
+knitr::kable(edaUni$boxOfficeLog$stats, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-```{r a_daily_box_office_log_dist}
-gridExtra::grid.arrange(edaUni$dailyBoxOfficeLog$hist, edaUni$dailyBoxOfficeLog$qq, ncol = 2)
+```{r a_box_office_log_dist}
+gridExtra::grid.arrange(edaUni$boxOfficeLog$hist, edaUni$boxOfficeLog$qq, ncol = 2)
 ```
-`r kfigr::figr(label = "a_daily_box_office_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log daily box office revenue histogram and QQ Plot
+`r kfigr::figr(label = "a_box_office_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log  box office revenue histogram and QQ Plot
 
-```{r a_daily_box_office_log_box, fig.height=4}
-edaUni$dailyBoxOfficeLog$box
+```{r a_box_office_log_box, fig.height=4}
+edaUni$boxOfficeLog$box
 ```
-`r kfigr::figr(label = "a_daily_box_office_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log daily box office revenue boxplot
+`r kfigr::figr(label = "a_box_office_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log  box office revenue boxplot
 
-**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_daily_box_office_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$dailyBoxOfficeLog$central`
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_box_office_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$boxOfficeLog$central`
 
-**Dispersion**: `r edaUni$dailyBoxOfficeLog$disp`
+**Dispersion**: `r edaUni$boxOfficeLog$disp`
 
-**Shape of Distribution**:  `r edaUni$dailyBoxOfficeLog$skew` `r edaUni$dailyBoxOfficeLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_daily_box_office_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that approximates normality.
+**Shape of Distribution**:  `r edaUni$boxOfficeLog$skew` `r edaUni$boxOfficeLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_box_office_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that approximates normality.
 
-**Outliers**: The boxplot in `r kfigr::figr(label = "a_daily_box_office_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$dailyBoxOfficeLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$dailyBoxOfficeLog$out`
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_box_office_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$boxOfficeLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$boxOfficeLog$out`
 
 #### Director Experience
 This derived variable measured the relative experience of a given director and was defined as the sum of the observations for the director associated with each film.
@@ -358,6 +885,124 @@ edaUni$directorExperienceLog$box
 **Shape of Distribution**:  `r edaUni$directorExperienceLog$skew` `r edaUni$directorExperienceLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_director_experience_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveal a distribution which departs significantly from normality.
 
 **Outliers**: The boxplot in `r kfigr::figr(label = "a_director_experience_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$directorExperienceLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$directorExperienceLog$out` Given the proximity of the outliers to the 1.5xIQR, no effort was made to remove them.
+
+### Director Scores
+This variable captured the total number of scores allocated to each director member for a film.
+
+`r kfigr::figr(label = "a_director_scores_stats", prefix = TRUE, link = TRUE, type="Table")`: Director scores summary statistics
+```{r a_director_scores_stats}
+knitr::kable(edaUni$directorScores$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_director_scores_dist}
+gridExtra::grid.arrange(edaUni$directorScores$hist, edaUni$directorScores$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_director_scores_dist", prefix = TRUE, link = TRUE, type="Figure")`: Director scores histogram and QQ Plot
+
+```{r a_director_scores_box, fig.height=4}
+edaUni$directorScores$box
+```
+`r kfigr::figr(label = "a_director_scores_box", prefix = TRUE, link = TRUE, type="Figure")`: Director scores boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_director_scores_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$directorScores$central`
+
+**Dispersion**: `r edaUni$directorScores$disp`
+
+**Shape of Distribution**:  `r edaUni$directorScores$skew` `r edaUni$directorScores$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_director_scores_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_director_scores_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$directorScores$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$directorScores$out`
+
+### Director Scores (Log)
+This is a log transformation of the director scores variable.
+
+`r kfigr::figr(label = "a_director_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log director scores summary statistics
+```{r a_director_scores_log_stats}
+knitr::kable(edaUni$directorScoresLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_director_scores_log_dist}
+gridExtra::grid.arrange(edaUni$directorScoresLog$hist, edaUni$directorScoresLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_director_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log director scores histogram and QQ Plot
+
+```{r a_director_scores_log_box, fig.height=4}
+edaUni$directorScoresLog$box
+```
+`r kfigr::figr(label = "a_director_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log director scores boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_director_scores_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$directorScoresLog$central`
+
+**Dispersion**: `r edaUni$directorScoresLog$disp`
+
+**Shape of Distribution**:  `r edaUni$directorScoresLog$skew` `r edaUni$directorScoresLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_director_scores_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that approximates normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_director_scores_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$directorScoresLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$directorScoresLog$out`
+
+
+
+
+
+
+
+### Director Votes
+This variable captured the total number of votes allocated to each director member for a film.
+
+`r kfigr::figr(label = "a_director_votes_stats", prefix = TRUE, link = TRUE, type="Table")`: Director votes summary statistics
+```{r a_director_votes_stats}
+knitr::kable(edaUni$directorVotes$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_director_votes_dist}
+gridExtra::grid.arrange(edaUni$directorVotes$hist, edaUni$directorVotes$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_director_votes_dist", prefix = TRUE, link = TRUE, type="Figure")`: Director votes histogram and QQ Plot
+
+```{r a_director_votes_box, fig.height=4}
+edaUni$directorVotes$box
+```
+`r kfigr::figr(label = "a_director_votes_box", prefix = TRUE, link = TRUE, type="Figure")`: Director votes boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_director_votes_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$directorVotes$central`
+
+**Dispersion**: `r edaUni$directorVotes$disp`
+
+**Shape of Distribution**:  `r edaUni$directorVotes$skew` `r edaUni$directorVotes$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_director_votes_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that departs significantly from normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_director_votes_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$directorVotes$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$directorVotes$out`
+
+### Director Votes (Log)
+This is a log transformation of the director votes variable.
+
+`r kfigr::figr(label = "a_director_votes_log_stats", prefix = TRUE, link = TRUE, type="Table")`: Log director votes summary statistics
+```{r a_director_votes_log_stats}
+knitr::kable(edaUni$directorVotesLog$stats, digits = 2) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+
+```{r a_director_votes_log_dist}
+gridExtra::grid.arrange(edaUni$directorVotesLog$hist, edaUni$directorVotesLog$qq, ncol = 2)
+```
+`r kfigr::figr(label = "a_director_votes_log_dist", prefix = TRUE, link = TRUE, type="Figure")`: Log director votes histogram and QQ Plot
+
+```{r a_director_votes_log_box, fig.height=4}
+edaUni$directorVotesLog$box
+```
+`r kfigr::figr(label = "a_director_votes_log_box", prefix = TRUE, link = TRUE, type="Figure")`: Log director votes boxplot
+
+**Central Tendency**: The summary statistics (`r kfigr::figr(label = "a_director_votes_log_stats", prefix = TRUE, link = TRUE, type="Table")`) `r edaUni$directorVotesLog$central`
+
+**Dispersion**: `r edaUni$directorVotesLog$disp`
+
+**Shape of Distribution**:  `r edaUni$directorVotesLog$skew` `r edaUni$directorVotesLog$kurt` The histogram and QQ plot in `r kfigr::figr(label = "a_director_votes_log_dist", prefix = TRUE, link = TRUE, type="Figure")` reveals a left skewed distribution that approximates normality.
+
+**Outliers**: The boxplot in `r kfigr::figr(label = "a_director_votes_log_box", prefix = TRUE, link = TRUE, type="Figure")`, which graphically depicts the median, the IQR, and maximum and minimum values, suggested that `r ifelse(nrow(edaUni$directorVotesLog$outliers) == 0, "no", " ")` outliers were extant. `r edaUni$directorVotesLog$out`
+
+
+
+
 
 ### Genre
 The drama genre represented a plurality of the releases in the sample, followed by comedy action & adventure then mystery & suspense. The top four genres account for nearly `r round(sum(head(edaUni$genre$stats %>% arrange(desc(Proportion)) %>% select(Proportion), 4)) * 100, -1)`% of the films in the sample.
@@ -636,12 +1281,6 @@ edaUni$votesPerDayLog$box
 ## Appendix C: Bivariate Analysis
 ## Appendix D: Multivariate Analysis
 ## Appendix E: Modeling
-**Model Coefficients**
-`r kfigr::figr(label = "a_modelA_coefficients", prefix = TRUE, link = TRUE, type="Table")` Model Alpha Coefficients
-```{r modelA_coefficients}
-knitr::kable(modelA$summary$coefficients, digits = 3) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
 ## Appendix F: Prediction
 ## Appendix G: Source Code
 # References

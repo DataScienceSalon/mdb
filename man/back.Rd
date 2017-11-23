@@ -17,6 +17,7 @@ back(data, y, alpha = 0.05)
 \seealso{
 Other movies functions: \code{\link{associate}},
   \code{\link{backwardElimination}},
+  \code{\link{challenger}},
   \code{\link{comparePredictions}},
   \code{\link{correlate}}, \code{\link{createDependent}},
   \code{\link{evalForwardModel}}, \code{\link{forward}},

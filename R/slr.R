@@ -17,7 +17,7 @@
 slr <- function(data, y) {
 
   # Select quantitative predictors
-  omit <- c("box_office", "daily_box_office", y)
+  omit <- c("box_office", "box_office", y)
   nums <- sapply(data, is.numeric)
   d <- data[, nums]
   p <- colnames(d)
@@ -28,7 +28,7 @@ slr <- function(data, y) {
     m <- list()
     f <-  formula(paste(y, " ~ ", paste(x, collapse=" + ")))
     m[["model"]] <- lm(f, data)
-    a <- regressionAnalysis(mod = m, mName = x, yVar = "daily_box_office_log",
+    a <- regressionAnalysis(mod = m, mName = x, yVar = "box_office_log",
                        yLab = "Log of Daily Box Office", full = FALSE)
     a$glance
   }))

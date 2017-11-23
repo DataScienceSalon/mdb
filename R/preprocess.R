@@ -6,12 +6,13 @@
 #' \code{preprocess} Performs preprocessing of data for analysis
 #'
 #' @param movies Data frame containing the movies data set
-#' @param mdb2 Data set of 100 randomly selected observations from the movies data set, in which total daily box office revenue was added.
+#' @param fin1 Data set containing movie financial information
+#' @param fin2 Data set containing movie financial information
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
 #' @family movies functions
 #' @export
-preprocess <- function(movies, mdb2) {
+preprocess <- function(movies, fin1, fin2) {
 
   #---------------------------------------------------------------------------#
   #                        Extract Variables of Interest                      #
@@ -22,8 +23,10 @@ preprocess <- function(movies, mdb2) {
 
   #---------------------------------------------------------------------------#
   #     Remove TV Movies (out of scope) and NC-17 (too few observations)      #
+  #     and films released prior to launch of Rottentomatoes                  #
   #---------------------------------------------------------------------------#
-  mdb <-  mdb %>% filter(title_type != "TV Movie" & mpaa_rating != "NC-17")
+  mdb <-  mdb %>% filter(title_type != "TV Movie" & mpaa_rating != "NC-17"
+                         & thtr_rel_year > 1989)
   mdb$mpaa_rating <- factor(mdb$mpaa_rating)
 
   #---------------------------------------------------------------------------#
@@ -94,8 +97,24 @@ preprocess <- function(movies, mdb2) {
   #                       Add Box Office Information                          #
   #---------------------------------------------------------------------------#
   keep <- c("title", "box_office")
-  md <- mdb2[, names(mdb2) %in% keep]
-  mdb <- merge(mdb, md, all.x = TRUE)
+  f1 <- fin1[, names(fin1) %in% keep]
+  keep <- c("Movie", "Domestic")
+  f2 <- fin2[, names(fin2) %in% keep]
+  colnames(f2) <- c("title", "box_office")
+  fin <- rbind(f1, f2)
+  fin <- fin[!duplicated(fin$title),]
+  fin <- fin %>% filter((round(box_office, 0) > 0) &  !is.na(box_office))
+  mdb <- merge(mdb, fin, all.x = TRUE)
+  mdb <- mdb %>% mutate(box_office_log = log2(box_office))
+
+  #---------------------------------------------------------------------------#
+  #                        Create Director Scores                             #
+  #---------------------------------------------------------------------------#
+  directorScores <- mdb %>% group_by(director) %>%
+    summarize(director_scores = sum(((10 * imdb_rating) + audience_score)))
+  mdb <- left_join(mdb, directorScores)
+  mdb <- mdb %>% mutate(director_scores = round(director_scores - (10 * imdb_rating) + audience_score, 0))
+  mdb <- mdb %>% mutate(director_scores_log = ifelse(director_scores == 0, 0, log2(director_scores)))
 
 
   #---------------------------------------------------------------------------#
@@ -141,6 +160,14 @@ preprocess <- function(movies, mdb2) {
   drops <- c("scores1", "scores2", "scores3", "scores3", "scores4", "scores5")
   mdb <- mdb[,!(names(mdb) %in% drops)]
 
+  #---------------------------------------------------------------------------#
+  #                        Create Director Votes                              #
+  #---------------------------------------------------------------------------#
+  directorVotes <- mdb %>% group_by(director) %>%
+    summarize(director_votes = sum(imdb_num_votes))
+  mdb <- left_join(mdb, directorVotes)
+  mdb <- mdb %>% mutate(director_votes = round(director_votes - imdb_num_votes, 0))
+  mdb <- mdb %>% mutate(director_votes_log = ifelse(director_votes == 0, 0, log2(director_votes)))
 
   #---------------------------------------------------------------------------#
   #                           Create Cast Vote                                #
@@ -186,7 +213,8 @@ preprocess <- function(movies, mdb2) {
   directorExperience <- mdb %>% group_by(director) %>%
     summarize(director_experience = n())
   mdb <- left_join(mdb, directorExperience)
-  mdb <- mdb %>% mutate(director_experience_log = log2(director_experience))
+  mdb <- mdb %>% mutate(director_experience_log =
+                          ifelse(director_experience == 0, 0, log2(director_experience)))
 
   #---------------------------------------------------------------------------#
   #                        Create Cast Experience                             #
@@ -215,13 +243,32 @@ preprocess <- function(movies, mdb2) {
   mdb <- mdb[,!(names(mdb) %in% drops)]
 
   #---------------------------------------------------------------------------#
-  #                      Add new variables to mdb2                            #
+  #                      Create Interaction Variables                         #
   #---------------------------------------------------------------------------#
-  mdb <- mdb %>% mutate(daily_box_office = box_office / thtr_days,
-                        daily_box_office_log = log2(daily_box_office))
-  keep <- c("title", "daily_box_office", "daily_box_office_log", "imdb_num_votes_log")
-  md <- mdb[, names(mdb) %in% keep]
-  mdb2 <- merge(mdb2, md, all.x = TRUE)
+  mdb <- mdb %>% mutate(cast_dir_exp = round(cast_experience * director_experience, 0),
+                        cast_dir_exp_log = ifelse(cast_dir_exp == 0, 0, log2(cast_dir_exp)),
+                        cast_dir_scores= round(cast_scores * director_scores, 0),
+                        cast_dir_scores_log = ifelse(cast_dir_scores == 0, 0, log2(cast_dir_scores)),
+                        cast_dir_votes = round(cast_votes * director_votes, 0),
+                        cast_dir_votes_log = ifelse(cast_dir_votes == 0, 0, log2(cast_dir_votes)),
+                        cast_exp_dir_scores= round(cast_experience * director_scores, 0),
+                        cast_exp_dir_scores_log = ifelse(cast_exp_dir_scores == 0, 0, log2(cast_exp_dir_scores)),
+                        cast_exp_dir_votes = round(cast_experience * director_votes, 0),
+                        cast_exp_dir_votes_log = ifelse(cast_exp_dir_votes == 0, 0, log2(cast_exp_dir_votes)),
+                        cast_scores_dir_exp = round(cast_scores * director_experience, 0),
+                        cast_scores_dir_exp_log = ifelse(cast_scores_dir_exp == 0, 0, log2(cast_scores_dir_exp)),
+                        cast_scores_dir_votes = round(cast_scores * director_votes, 0),
+                        cast_scores_dir_votes_log = ifelse(cast_scores_dir_votes == 0, 0, log2(cast_scores_dir_votes)),
+                        cast_votes_dir_exp = round(cast_votes * director_experience, 0),
+                        cast_votes_dir_exp_log = ifelse(cast_votes_dir_exp == 0, 0, log2(cast_votes_dir_exp)),
+                        cast_votes_dir_scores = round(cast_votes * director_scores, 0),
+                        cast_votes_dir_scores_log = ifelse(cast_votes_dir_scores == 0, 0, log2(cast_votes_dir_scores)))
+
+
+  #---------------------------------------------------------------------------#
+  #                      Create mdb2 from complete cases                      #
+  #---------------------------------------------------------------------------#
+  mdb2 <- mdb[complete.cases(mdb), ]
 
   #---------------------------------------------------------------------------#
   #                 Split Data into Training and Test Sets                    #
@@ -230,19 +277,20 @@ preprocess <- function(movies, mdb2) {
   genres <- unique(mdb$genre)
   mpaa <- unique(mdb$mpaa_rating)
 
-  # Ensure that the test set contains observations that include box office variables
-  titles <- mdb$title %in% mdb2$title
-  titles <- mdb[titles, ]$title
+  # Ensure that the test set contains complete cases
   representative <- FALSE
-  seed <- 232
+  seed <- unclass(Sys.time())
+  set.seed(seed)
   while(representative == FALSE) {
     set.seed(seed)
     idx <- sample(1:nrow(mdb), nrow(mdb) * .8)
     train <- mdb[idx, ]
     test <- mdb[-idx, ]
-    if ((setequal(genres, unique(train$genre)) &
-         setequal(mpaa, unique(train$mpaa_rating))) &
-        nrow(test %>% filter(title %in% titles)) > 0) {
+    if (setequal(genres, unique(train$genre)) &
+        setequal(mpaa, unique(train$mpaa_rating)) &
+        setequal(genres, unique(test$genre)) &
+        setequal(mpaa, unique(test$mpaa_rating)) &
+        nrow(test %>% filter(title %in% mdb2$title)) > 0) {
       representative <- TRUE
     } else {
       seed <- seed + sample(1:100, 1)
@@ -253,7 +301,8 @@ preprocess <- function(movies, mdb2) {
   #         Designate one cases from training set for prediction              #
   #---------------------------------------------------------------------------#
   cases <- train[complete.cases(train),]
-  set.seed(259)
+  seed <- unclass(Sys.time())
+  set.seed(seed)
   case <- cases[sample(1:nrow(cases), 1), ]
   train <- train %>% filter(title != case$title)
   mdb2 <- mdb2 %>% filter(title != case$title)

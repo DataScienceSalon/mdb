@@ -4,12 +4,14 @@
 \alias{preprocess}
 \title{preprocess}
 \usage{
-preprocess(movies, mdb2)
+preprocess(movies, fin1, fin2)
 }
 \arguments{
 \item{movies}{Data frame containing the movies data set}
 
-\item{mdb2}{Data set of 100 randomly selected observations from the movies data set, in which total daily box office revenue was added.}
+\item{fin1}{Data set containing movie financial information}
+
+\item{fin2}{Data set containing movie financial information}
 }
 \description{
 \code{preprocess} Performs preprocessing of data for analysis
@@ -17,6 +19,7 @@ preprocess(movies, mdb2)
 \seealso{
 Other movies functions: \code{\link{associate}},
   \code{\link{backwardElimination}}, \code{\link{back}},
+  \code{\link{challenger}},
   \code{\link{comparePredictions}},
   \code{\link{correlate}}, \code{\link{createDependent}},
   \code{\link{evalForwardModel}}, \code{\link{forward}},

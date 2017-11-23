@@ -25,9 +25,10 @@ List containing a contingency table and a stacked bar plot.
 showing frequencies and proportions
 }
 \seealso{
-Other visualization functions: \code{\link{plotBox}},
-  \code{\link{plotCooks}}, \code{\link{plotCorr}},
-  \code{\link{plotHist}}, \code{\link{plotLinear}},
+Other visualization functions: \code{\link{plotBar}},
+  \code{\link{plotBox}}, \code{\link{plotCooks}},
+  \code{\link{plotCorr}}, \code{\link{plotHist}},
+  \code{\link{plotLinear}}, \code{\link{plotLine}},
   \code{\link{plotQQ}}, \code{\link{plotResAll}},
   \code{\link{plotResFit}}, \code{\link{plotResLeverage}},
   \code{\link{plotResQQ}}, \code{\link{plotScatter}}

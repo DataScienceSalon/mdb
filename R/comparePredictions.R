@@ -38,7 +38,7 @@ comparePredictions <- function(mods, test) {
                     MSE = mean(d$SQRE),
                     RMSE =  sqrt(mean(d$SQRE)))
     pa <- data.frame(x = (nrow(test %>% filter(imdb_num_votes_log > p$fit[,2] & imdb_num_votes_log < p$fit[,3])) /
-             nrow(test)) * 100)
+                            nrow(test)) * 100)
     colnames(pa) <- c("% Accuracy")
     r <- cbind(m$glance,a, pa)
     r[, c(1,2,5,8,9,11,12,13,14,15, 16)]

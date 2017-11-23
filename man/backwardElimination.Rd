@@ -14,7 +14,8 @@ with the highest adjusted r-squared is retained.
 }
 \seealso{
 Other movies functions: \code{\link{associate}},
-  \code{\link{back}}, \code{\link{comparePredictions}},
+  \code{\link{back}}, \code{\link{challenger}},
+  \code{\link{comparePredictions}},
   \code{\link{correlate}}, \code{\link{createDependent}},
   \code{\link{evalForwardModel}}, \code{\link{forward}},
   \code{\link{prediction}}, \code{\link{preprocess}},

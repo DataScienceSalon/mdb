@@ -1,10 +1,10 @@
 # Part 6: Prediction
 ```{r prediction}
 # Obtain complete cases with box office information
-revenue <- prediction(mod = modelOne$mod, mName = "Model One", case = case, unit = "dollars per day")
+revenue <- prediction(mod = modelTwo$mod, mName = "Model One", case = case, unit = "dollars")
 votes <- prediction(mod = modelA$mod, mName = "Model Alpha", case = case, unit = "IMDB votes")
 case$imdb_num_votes_log <- votes$yHat
-revenue2 <- prediction(mod =modelOne$mod, mName = "Model One", case = case, unit = "dollars per day")
+revenue2 <- prediction(mod =modelTwo$mod, mName = "Model One", case = case, unit = "dollars")
 
 ```
 

@@ -23,10 +23,11 @@ List containing a summary statistics and QQ plot
 of summary statistics.
 }
 \seealso{
-Other visualization functions: \code{\link{plotBox}},
-  \code{\link{plotCooks}}, \code{\link{plotCorr}},
-  \code{\link{plotFreqProp}}, \code{\link{plotHist}},
-  \code{\link{plotLinear}}, \code{\link{plotResAll}},
+Other visualization functions: \code{\link{plotBar}},
+  \code{\link{plotBox}}, \code{\link{plotCooks}},
+  \code{\link{plotCorr}}, \code{\link{plotFreqProp}},
+  \code{\link{plotHist}}, \code{\link{plotLinear}},
+  \code{\link{plotLine}}, \code{\link{plotResAll}},
   \code{\link{plotResFit}}, \code{\link{plotResLeverage}},
   \code{\link{plotResQQ}}, \code{\link{plotScatter}}
 }

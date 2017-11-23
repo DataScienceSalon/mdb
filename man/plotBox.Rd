@@ -24,9 +24,10 @@ List containing a contingency table and a stacked bar plot.
 \code{plotBox} Renders a single or grouped box plot.
 }
 \seealso{
-Other visualization functions: \code{\link{plotCooks}},
-  \code{\link{plotCorr}}, \code{\link{plotFreqProp}},
-  \code{\link{plotHist}}, \code{\link{plotLinear}},
+Other visualization functions: \code{\link{plotBar}},
+  \code{\link{plotCooks}}, \code{\link{plotCorr}},
+  \code{\link{plotFreqProp}}, \code{\link{plotHist}},
+  \code{\link{plotLinear}}, \code{\link{plotLine}},
   \code{\link{plotQQ}}, \code{\link{plotResAll}},
   \code{\link{plotResFit}}, \code{\link{plotResLeverage}},
   \code{\link{plotResQQ}}, \code{\link{plotScatter}}

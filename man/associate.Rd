@@ -20,7 +20,8 @@ ANOVA tests of independence
 }
 \seealso{
 Other movies functions: \code{\link{backwardElimination}},
-  \code{\link{back}}, \code{\link{comparePredictions}},
+  \code{\link{back}}, \code{\link{challenger}},
+  \code{\link{comparePredictions}},
   \code{\link{correlate}}, \code{\link{createDependent}},
   \code{\link{evalForwardModel}}, \code{\link{forward}},
   \code{\link{prediction}}, \code{\link{preprocess}},
