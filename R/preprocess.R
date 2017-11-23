@@ -274,7 +274,7 @@ preprocess <- function(movies, fin1, fin2) {
   #                 Split Data into Training and Test Sets                    #
   #---------------------------------------------------------------------------#
   # Ensure sample has all genres and MPAA ratings.
-  genres <- unique(mdb$genre)
+  genres <- unique(movies$genre)
   mpaa <- unique(mdb$mpaa_rating)
 
   # Ensure that the test set contains complete cases
