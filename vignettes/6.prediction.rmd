@@ -4,7 +4,7 @@
 revenue <- prediction(mod = modelTwo$mod, mName = "Model One", case = case, unit = "dollars")
 votes <- prediction(mod = modelA$mod, mName = "Model Alpha", case = case, unit = "IMDB votes")
 case$imdb_num_votes_log <- votes$yHat
-revenue2 <- prediction(mod =modelTwo$mod, mName = "Model One", case = case, unit = "dollars")
+revenue2 <- prediction(mod =modelTwo$mod, mName = "Model One", case = case, unit = "dollars", actual = FALSE)
 
 ```
 

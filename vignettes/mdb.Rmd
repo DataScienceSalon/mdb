@@ -102,5 +102,8 @@ edaUni <- univariate(mdb = train)
 ```{r model, child = '5.model.rmd'}
 ```
 
+```{r model, child = '6.prediction.rmd'}
+```
+
 
 # References

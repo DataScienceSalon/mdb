@@ -4,7 +4,7 @@
 \alias{prediction}
 \title{prediction}
 \usage{
-prediction(mod, mName, case, unit, conf = 0.9)
+prediction(mod, mName, case, unit, conf = 0.9, actual = TRUE)
 }
 \arguments{
 \item{mod}{Linear regression model}
@@ -16,6 +16,8 @@ prediction(mod, mName, case, unit, conf = 0.9)
 \item{unit}{Character string indicating the unit for the value being predicted (w/o log)}
 
 \item{conf}{Numeric indicator (0 to 1) of the confidence level for the prediction interval.}
+
+\item{actual}{Logical indicating whether the dependent variable is actual or predicted.}
 }
 \value{
 

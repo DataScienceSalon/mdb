@@ -100,6 +100,7 @@ The linearity of each predictor with the log number of IMDB votes is illustrated
 library(gridExtra)
 n <- length(modelA$plots$linearity)
 nCol <- floor(sqrt(n))
+do.call("grid.arrange", c(modelA$plots$linearity, ncol=nCol))
 ```
 `r kfigr::figr(label = "modelA_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Alpha linearity plots
 
@@ -187,6 +188,7 @@ The linearity of each predictor with the log number of IMDB votes is illustrated
 ```{r modelB_linearity, fig.height=10}
 n <- length(modelB$plots$linearity)
 nCol <- floor(sqrt(n))
+do.call("grid.arrange", c(modelB$plots$linearity, ncol=nCol))
 ```
 `r kfigr::figr(label = "modelB_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Beta linearity plots
 
@@ -286,6 +288,7 @@ The linearity of each predictor with the log number of IMDB votes is illustrated
 ```{r modelC_linearity, fig.height=10}
 n <- length(modelC$plots$linearity)
 nCol <- floor(sqrt(n))
+do.call("grid.arrange", c(modelC$plots$linearity, ncol=nCol))
 ```
 `r kfigr::figr(label = "modelC_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Gamma linearity plots
 
@@ -387,6 +390,7 @@ The linearity of each predictor with the log number of IMDB votes is illustrated
 ```{r modelD_linearity, fig.height=10}
 n <- length(modelD$plots$linearity)
 nCol <- floor(sqrt(n))
+do.call("grid.arrange", c(modelD$plots$linearity, ncol=nCol))
 ```
 `r kfigr::figr(label = "modelD_linearity", prefix = TRUE, link = TRUE, type="Figure")` Model Delta linearity plots
 
@@ -469,75 +473,80 @@ accuracy <- comparePredictions(mods = mods, test = test)
 knitr::kable(accuracy, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-There were no significant differences in MAPE, MSE, and RMSE between the models.  The negative MPE indicated that all models were biased with over predictions. The models *with* the influence points had slightly greater prediction accuracy though the models without the outliers had higher adjusted coefficients of determination. Given the lack of justification for excluding the influential points, models Beta and Delta were ruled out. Though models Alpha and Gamma performed identically, Alpha was selected as the most parsimonious model since two predictors accounted for  `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[,7]) * 100, 1)`% of total variation and `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[1:6,7]) * 100, 1)`% of variation allocated to terms. 
+There were no significant differences in MAPE, MSE, and RMSE between the models.  The negative MPE indicated that all models were biased with over predictions. The models *with* the influence points had slightly greater prediction accuracy, despite having lower adjusted coefficients of determination. It is also worth noting that the forward selection and backward elimination models performed identically, given the treatment of influential points. The lack of justification for excluding the influential points, ruled out models Beta and Delta. Though models Alpha and Gamma performed identically, Alpha was selected as the most parsimonious model since two predictors accounted for  `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[,7]) * 100, 1)`% of total variation and `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[1:(nrow(modelA$anova) - 1),7]) * 100, 1)`% of variation allocated to terms. 
 
 ### Model Two: Final Multiregression Model
 The final prediction equation was defined as follows:
 $y_i$ =
-`r modelC$coefficients$estimate[1]`
-+ `r round(modelC$coefficients$estimate[2], 3)`$x_1$
-+ `r round(modelC$coefficients$estimate[3], 3)`$x_2$
-+ `r round(modelC$coefficients$estimate[4], 3)`$x_3$
-+ `r round(modelC$coefficients$estimate[5], 3)`$x_4$
-+ `r round(modelC$coefficients$estimate[6], 3)`$x_5$
-+ `r round(modelC$coefficients$estimate[7], 3)`$x_6$
-+ `r round(modelC$coefficients$estimate[8], 3)`$x_7$
-+ `r round(modelC$coefficients$estimate[9], 3)`$x_8$
-+ `r round(modelC$coefficients$estimate[10], 3)`$x_9$
-+ `r round(modelC$coefficients$estimate[11], 3)`$x_{10}$
-+ `r round(modelC$coefficients$estimate[12], 3)`$x_{11}$
-+ `r round(modelC$coefficients$estimate[13], 3)`$x_{12}$
-+ `r round(modelC$coefficients$estimate[14], 3)`$x_{13}$
-+ `r round(modelC$coefficients$estimate[15], 3)`$x_{14}$
-+ `r round(modelC$coefficients$estimate[16], 3)`$x_{15}$
-+ `r round(modelC$coefficients$estimate[17], 3)`$x_{16}$
+`r modelA$coefficients$estimate[1]`
++ `r round(modelA$coefficients$estimate[2], 3)`$x_1$
++ `r round(modelA$coefficients$estimate[3], 3)`$x_2$
++ `r round(modelA$coefficients$estimate[4], 3)`$x_3$
++ `r round(modelA$coefficients$estimate[5], 3)`$x_4$
++ `r round(modelA$coefficients$estimate[6], 3)`$x_5$
++ `r round(modelA$coefficients$estimate[7], 3)`$x_6$
++ `r round(modelA$coefficients$estimate[8], 3)`$x_7$
++ `r round(modelA$coefficients$estimate[9], 3)`$x_8$
++ `r round(modelA$coefficients$estimate[10], 3)`$x_9$
++ `r round(modelA$coefficients$estimate[11], 3)`$x_{10}$
++ `r round(modelA$coefficients$estimate[12], 3)`$x_{11}$
++ `r round(modelA$coefficients$estimate[13], 3)`$x_{12}$
++ `r round(modelA$coefficients$estimate[14], 3)`$x_{13}$
++ `r round(modelA$coefficients$estimate[15], 3)`$x_{14}$
++ `r round(modelA$coefficients$estimate[16], 3)`$x_{15}$
++ `r round(modelA$coefficients$estimate[17], 3)`$x_{16}$
 + $\epsilon$
 
 where:
-$x_1$ is `r modelC$coefficients$term[2]`   
-$x_2$ is `r modelC$coefficients$term[3]`   
-$x_3$ is `r modelC$coefficients$term[4]`   
-$x_4$ is `r modelC$coefficients$term[5]`   
-$x_5$ is `r modelC$coefficients$term[6]`   
-$x_6$ is `r modelC$coefficients$term[7]`   
-$x_7$ is `r modelC$coefficients$term[8]`   
-$x_8$ is `r modelC$coefficients$term[9]`   
-$x_9$ is `r modelC$coefficients$term[10]`   
-$x_{10}$ is `r modelC$coefficients$term[11]`   
-$x_{11}$ is `r modelC$coefficients$term[12]`   
-$x_{12}$ is `r modelC$coefficients$term[13]`   
-$x_{13}$ is `r modelC$coefficients$term[14]`   
-$x_{14}$ is `r modelC$coefficients$term[15]`   
-$x_{15}$ is `r modelC$coefficients$term[16]`   
-$x_{16}$ is `r modelC$coefficients$term[17]`   
+$x_1$ is `r modelA$coefficients$term[2]`   
+$x_2$ is `r modelA$coefficients$term[3]`   
+$x_3$ is `r modelA$coefficients$term[4]`   
+$x_4$ is `r modelA$coefficients$term[5]`   
+$x_5$ is `r modelA$coefficients$term[6]`   
+$x_6$ is `r modelA$coefficients$term[7]`   
+$x_7$ is `r modelA$coefficients$term[8]`   
+$x_8$ is `r modelA$coefficients$term[9]`   
+$x_9$ is `r modelA$coefficients$term[10]`   
+$x_{10}$ is `r modelA$coefficients$term[11]`   
+$x_{11}$ is `r modelA$coefficients$term[12]`   
+$x_{12}$ is `r modelA$coefficients$term[13]`   
+$x_{13}$ is `r modelA$coefficients$term[14]`   
+$x_{14}$ is `r modelA$coefficients$term[15]`   
+$x_{15}$ is `r modelA$coefficients$term[16]`   
+$x_{16}$ is `r modelA$coefficients$term[17]`   
 
 
-The genre, MPAA rating and month of release variables were code 0 or 1 in accordance with the genre, MPAA rating and month of release for each observation.
+
+The genre and MPAA rating variables were code 0 or 1 in accordance with the genre and MPAA rating each observation.
 
 #### Analysis of Variance
-`r kfigr::figr(label = "modelC_anova", prefix = TRUE, link = TRUE, type="Figure")` summarizes the analysis of variance.
-```{r modelC_anova}
-a <- modelC$anova
+`r kfigr::figr(label = "modelA_anova", prefix = TRUE, link = TRUE, type="Figure")` summarizes the analysis of variance.
+```{r modelA_anova}
+a <- modelA$anova
 knitr::kable(a, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-`r kfigr::figr(label = "modelC_anova", prefix = TRUE, link = TRUE, type="Figure")` Model Alpha analysis of variance
+`r kfigr::figr(label = "modelA_anova", prefix = TRUE, link = TRUE, type="Figure")` Model Alpha analysis of variance
 
-`r modelC$comments$anova`
+`r modelA$comments$anova`
 
 #### Interpretation of Coefficients
-Although there were *only* `r nrow(modelC$build)` variables, there were some `r nrow(modelC$coefficients)` coefficients, a consequence of the number of levels in the categorical variables. The coefficients estimates are identified in `r kfigr::figr(label = "modelC_coef", prefix = TRUE, link = TRUE, type="Table")`.
+Although there were *only* `r nrow(modelA$build)` variables, there were some `r nrow(modelA$coefficients)` coefficients, a consequence of the number of levels in the categorical variables. The coefficients estimates are identified in `r kfigr::figr(label = "modelA_coef", prefix = TRUE, link = TRUE, type="Table")`.
 
-`r kfigr::figr(label = "modelC_coef", prefix = TRUE, link = TRUE, type="Table")`: Model Alpha Coefficients
-```{r modelC_coef}
-knitr::kable(modelC$coefficients, digits = 3) %>%
+`r kfigr::figr(label = "modelA_coef", prefix = TRUE, link = TRUE, type="Table")`: Model Alpha Coefficients
+```{r modelA_coef}
+knitr::kable(modelA$coefficients, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-The intercept estimate, `r round(modelC$coefficients$estimate[1], 3)` , is the regression estimate for the mean log number of IMDB votes for a G-rated action and adventure film, with zeros for all of the other variables.  The other coefficient estimates adjust the estimate accordingly. Therefore a prediction for the log number of IMDB votes was equal to:  
-* the intercept value, `r round(modelC$coefficients$estimate[1], 3)`,    
-* plus `r round(subset(modelC$coefficients, term == "cast_scores", select = estimate), 3)` log IMDB votes for each point score for the cast members,  
-It should be noted that the influence of cast votes and the log was not significant.
+The intercept estimate, `r round(modelA$coefficients$estimate[1], 3)` , is the regression estimate for the mean log number of IMDB votes for a G-rated action and adventure film, with zeros for all of the other variables.  The other coefficient estimates adjust the estimate accordingly. Therefore a prediction for the log number of IMDB votes was equal to:  
+
+* the intercept value, `r round(modelA$coefficients$estimate[1], 3)`,    
+* plus a value associated with the genre of the film,   
+* plus `r round(subset(modelA$coefficients, term == "cast_scores", select = estimate), 3)` log IMDB votes for each point score for the cast members.
+* plus `r round(subset(modelA$coefficients, term == "runtime_log", select = estimate), 3)` log IMDB votes for each minute of runtime,      
+* plus a value associated with the MPAA rating for the film,     
+* plus a value associated with the month of theatrical release.  
 
 ## Model Two: Simple Linear Regression
 ```{r modelTwo_analysis}
@@ -624,7 +633,7 @@ gridExtra::grid.arrange(modelTwo$plots$res_leverage, modelTwo$plots$cooks, ncol 
 `r modelTwo$comments$outliers` A case-wise review of the influential points did not reveal any data quality issues; therefore, the influential points were not removed from the model. 
 
 ## Model Summary
-The purpose of this section was to develop models that would predict "box office success". Therefore, two regression models were fit in this section: Model One (F(`r modelC$glance[1,3]`, `r modelC$glance[1,4]`) = `r round(modelC$glance[1,5], 2)`, p < .001) was selected from among four multiregression linear models employing forward selection and backward elimination algorithms. Model Two, a simple linear regression model (F(`r modelTwo$glance[1,3]`, `r modelTwo$glance[1,4]`) = `r round(modelTwo$glance[1,5],2)`, p < .001) predicts log box office revenue based upon the log IMDB votes.
+The purpose of this section was to develop models that would predict "box office success". Therefore, two regression models were fit in this section: Model One (F(`r modelA$glance[1,3]`, `r modelA$glance[1,4]`) = `r round(modelA$glance[1,5], 2)`, p < .001), predicted the log number of IMDB votes, the proxy for box office success.   Model Two, a simple linear regression model (F(`r modelTwo$glance[1,3]`, `r modelTwo$glance[1,4]`) = `r round(modelTwo$glance[1,5],2)`, p < .001) predicted log box office revenue based upon the log IMDB votes.
 
 Next, the models will be used to predict the number of log IMDB votes and the log box office for a randomly selected film.
 
