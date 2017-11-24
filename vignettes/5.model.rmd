@@ -62,15 +62,20 @@ For this model, a forward selection procedure was undertaken based upon the full
 
 `r kfigr::figr(label = "model_a_build", prefix = TRUE, link = TRUE, type="Table")`: Model Alpha forward selection process
 ```{r model_a_build, results = "html"}
-# Obtain Data
-mData <- process(train, stage = "m", y = "imdb_num_votes_log")  
-
-# Perform forward selection
-m <- forward(data = mData$full, y = "imdb_num_votes_log")
-
-# Conduct regression analysis
-modelA <- regressionAnalysis(mod = m, mName = "Model Alpha", yVar  = 'imdb_num_votes_log',
-                               yLab = "Log IMDB Votes")
+if (rerun == TRUE) {
+  # Obtain Data
+  mData <- process(train, stage = "m", y = "imdb_num_votes_log")  
+  
+  # Perform forward selection
+  m <- forward(data = mData$full, y = "imdb_num_votes_log")
+  
+  # Conduct regression analysis
+  modelA <- regressionAnalysis(mod = m, mName = "Model Alpha", yVar  = 'imdb_num_votes_log',
+                                 yLab = "Log IMDB Votes")
+  save(modelA, file = "../data/modelA.Rdata")
+} else {
+  load("../data/modelA.Rdata")
+}
 
 # Report regression steps
 knitr::kable(modelA$build, digits = 2) %>%
@@ -153,16 +158,20 @@ This was also a forward selecion model; however, it was based upon the full mode
 
 `r kfigr::figr(label = "model_b_build", prefix = TRUE, link = TRUE, type="Table")`: Model Beta forward selection process
 ```{r model_b_build, results = "html"}
-# Obtain Data
-mData <- process(train, stage = "m", "imdb_num_votes_log", outliers = modelA$tests$influential)  
-
-# Perform forward selection
-m <- forward(mData$full, y = "imdb_num_votes_log")
-
-# Conduct regression analysis
-modelB <- regressionAnalysis(m, mName = "Model Beta", yVar  = 'imdb_num_votes_log',
-                               yLab = "Log IMDB Votes")
-
+if (rerun == TRUE) {
+  # Obtain Data
+  mData <- process(train, stage = "m", "imdb_num_votes_log", outliers = modelA$tests$influential)  
+  
+  # Perform forward selection
+  m <- forward(mData$full, y = "imdb_num_votes_log")
+  
+  # Conduct regression analysis
+  modelB <- regressionAnalysis(m, mName = "Model Beta", yVar  = 'imdb_num_votes_log',
+                                 yLab = "Log IMDB Votes")
+  save(modelB, file = "../data/modelB.Rdata")
+} else {
+  load(file = "../data/modelB.Rdata")
+}
 # Report regression stesp
 knitr::kable(modelB$build, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
@@ -243,16 +252,20 @@ For this model, a backward elimination procedure was undertaken based upon the f
 
 `r kfigr::figr(label = "model_c_build", prefix = TRUE, link = TRUE, type="Table")`: Model Gamma
 ```{r model_c_build, results = "html"}
+if (rerun == TRUE) {
 # Obtain Data
-mData <- process(train, stage = "m", "imdb_num_votes_log")  
-
-# Perform forward selection
-m <- back(mData$full, y = "imdb_num_votes_log", alpha = 0.05)
-
-# Conduct regression analysis
-modelC <- regressionAnalysis(m, mName = "Model Gamma", yVar  = 'imdb_num_votes_log',
-                               yLab = "Log IMDB Votes")
-
+  mData <- process(train, stage = "m", "imdb_num_votes_log")  
+  
+  # Perform forward selection
+  m <- back(mData$full, y = "imdb_num_votes_log", alpha = 0.05)
+  
+  # Conduct regression analysis
+  modelC <- regressionAnalysis(m, mName = "Model Gamma", yVar  = 'imdb_num_votes_log',
+                                 yLab = "Log IMDB Votes")
+  save(modelC, file = "../data/modelC.Rdata")
+} else {
+  load(file = "../data/modelC.Rdata")
+}
 # Report regression stesp
 knitr::kable(modelC$build, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
@@ -342,16 +355,21 @@ This was also a backward elimination model; however, it was based upon the full 
 
 `r kfigr::figr(label = "model_d_build", prefix = TRUE, link = TRUE, type="Table")`: Model Delta
 ```{r model_d_build, results = "html"}
-# Obtain Data
-mData <- process(train, stage = "m", "imdb_num_votes_log", outliers = modelC$tests$influential)  
 
-# Perform forward selection
-m <- back(mData$full, y = "imdb_num_votes_log", alpha = 0.05)
-
-# Conduct regression analysis
-modelD <- regressionAnalysis(m, mName = "Model Delta", yVar  = 'imdb_num_votes_log',
-                               yLab = "Log IMDB Votes")
-
+if (rerun == TRUE) {
+  # Obtain Data
+  mData <- process(train, stage = "m", "imdb_num_votes_log", outliers = modelC$tests$influential)  
+  
+  # Perform forward selection
+  m <- back(mData$full, y = "imdb_num_votes_log", alpha = 0.05)
+  
+  # Conduct regression analysis
+  modelD <- regressionAnalysis(m, mName = "Model Delta", yVar  = 'imdb_num_votes_log',
+                                 yLab = "Log IMDB Votes")
+  save(modelD, file = "../data/modelD.Rdata")
+} else {
+  load(file = "../data/modelD.Rdata")
+}
 # Report regression stesp
 knitr::kable(modelD$build, digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
@@ -473,7 +491,7 @@ accuracy <- comparePredictions(mods = mods, test = test)
 knitr::kable(accuracy, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-There were no significant differences in MAPE, MSE, and RMSE between the models.  The negative MPE indicated that all models were biased with over predictions. The models *with* the influence points had slightly greater prediction accuracy, despite having lower adjusted coefficients of determination. It is also worth noting that the forward selection and backward elimination models performed identically, given the treatment of influential points. The lack of justification for excluding the influential points, ruled out models Beta and Delta. Though models Alpha and Gamma performed identically, Alpha was selected as the most parsimonious model since two predictors accounted for  `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[,7]) * 100, 1)`% of total variation and `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[1:(nrow(modelA$anova) - 1),7]) * 100, 1)`% of variation allocated to terms. 
+There were no significant differences in MAPE, MSE, and RMSE between the models.  The negative MPE indicated that all models were biased with over predictions. The lack of justification for excluding the influential points, ruled out models Beta and Delta. Model Alpha produced the best prediction accuracy, the lowest error rates, with the fewest predictors. Two of the predictors accounted for  `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[,7]) * 100, 1)`% of total variation and `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[1:(nrow(modelA$anova) - 1),7]) * 100, 1)`% of variation allocated to terms. As such Model Alpha was considered the most parsimonious model and would advance to the prediction stage. 
 
 ### Model Two: Final Multiregression Model
 The final prediction equation was defined as follows:
@@ -544,9 +562,8 @@ The intercept estimate, `r round(modelA$coefficients$estimate[1], 3)` , is the r
 * the intercept value, `r round(modelA$coefficients$estimate[1], 3)`,    
 * plus a value associated with the genre of the film,   
 * plus `r round(subset(modelA$coefficients, term == "cast_scores", select = estimate), 3)` log IMDB votes for each point score for the cast members.
-* plus `r round(subset(modelA$coefficients, term == "runtime_log", select = estimate), 3)` log IMDB votes for each minute of runtime,      
-* plus a value associated with the MPAA rating for the film,     
-* plus a value associated with the month of theatrical release.  
+* plus `r round(subset(modelA$coefficients, term == "runtime_log", select = estimate), 3)` log IMDB votes for each log minute of runtime,      
+* plus a value associated with the MPAA rating for the film.     
 
 ## Model Two: Simple Linear Regression
 ```{r modelTwo_analysis}

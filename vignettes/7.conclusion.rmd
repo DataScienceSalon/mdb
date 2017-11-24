@@ -44,7 +44,7 @@ knitr::kable(rLogBoxOffice$tests[obs, ], digits = 2) %>%
 `r kfigr::figr(label = "votes", prefix = TRUE, link = TRUE, type="Table")` reveals a correlation of r = `r rLogBoxOffice$tests$Correlation[1]`, n = `r nrow(mData$numeric)`, p = `r rLogBoxOffice$tests[1,5]` for the log number of IMDB votes. Note that movie runtime emerged as a better predictor of (log) box office revenue than critics score, imdb rating and audience scores. In fact they were **negatively** correlated with (log)  box office revenue. This was not expected. 
 
 ## Genre
-The multiregression analysis showed that genre accounts for `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7) / sum(modelA$anova[1:(nrow(modelA$anova),7]-1) * 100, 2)`% of the variance attributed to the terms. `r kfigr::figr(label = "genres", prefix = TRUE, link = TRUE, type="Figure")` reveals (log) IMDB votes and (log)  box office by genre, with all other values (except the intercept) set to zero.
+The multiregression analysis showed that genre accounts for `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7) / sum(modelA$anova[1:(nrow(modelA$anova)-1),7]) * 100, 2)`% of the variance attributed to the terms. `r kfigr::figr(label = "genres", prefix = TRUE, link = TRUE, type="Figure")` reveals (log) IMDB votes and (log)  box office by genre, with all other values (except the intercept) set to zero.
 
 ```{r genres}
 gridExtra::grid.arrange(gridExtra::arrangeGrob(conclusions$genre$plots[[1]],

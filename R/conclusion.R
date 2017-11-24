@@ -7,7 +7,7 @@
 #'
 #' @param slr The model object for the simple linear regresssion
 #' @param mlr The model object for the multiregression
-#' @param deta <- Data frame containing training data
+#' @param data Data frame containing training data
 #'
 #' @return List containing data frames of summary statistics
 #'
