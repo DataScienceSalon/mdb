@@ -9,7 +9,7 @@
 #' @return Data frame accuracy results for each variable added
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 challenger <- function() {
 

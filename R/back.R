@@ -13,7 +13,7 @@
 #' with the highest adjusted r-squared is retained.
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 backwardElimination <- function(data, y, predictors) {
 
@@ -43,7 +43,7 @@ backwardElimination <- function(data, y, predictors) {
 #' @param y Character string containing the name of the response variable
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 back <- function(data, y, alpha = 0.05) {
 

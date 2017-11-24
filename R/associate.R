@@ -12,7 +12,7 @@
 #' @param yLab Character string containing label for the response variable
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 associate <- function(x, y, yLab = NULL) {
 

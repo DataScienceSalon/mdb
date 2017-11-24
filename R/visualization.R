@@ -115,7 +115,8 @@ plotHist <- function(data, xLab = NULL, yLab, plotTitle = NULL) {
                    axis.title.x = ggplot2::element_blank(),
                    axis.ticks.x = ggplot2::element_blank()) +
     ggplot2::ggtitle(plotTitle) +
-    ggplot2::ylab(yLab)
+    ggplot2::ylab(yLab) +
+    ggplot2::scale_x_continuous(labels = scales::comma)
 
   return(hist)
 }

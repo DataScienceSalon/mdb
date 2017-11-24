@@ -14,7 +14,7 @@
 #' @return analysis List containing summary statistics, plots and intepretation text.
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 univariateQuant <- function(data, yLab, units = NULL) {
 

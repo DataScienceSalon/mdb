@@ -8,7 +8,7 @@
 #' @param mdb Data frame containing movie information
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 univariate <- function(mdb) {
 

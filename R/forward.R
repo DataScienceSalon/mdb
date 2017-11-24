@@ -19,7 +19,7 @@
 #' @return Single row data frame containing the variable and adjusted R2 for the best model evaluated
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 evalForwardModel <- function(data, model, y, remaining) {
 
@@ -53,7 +53,7 @@ evalForwardModel <- function(data, model, y, remaining) {
 #' @param y Character string containing the name of the response variable
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 forward <- function(data, y) {
 

@@ -10,7 +10,7 @@
 #' @param fin2 Data set containing movie financial information
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 preprocess <- function(movies, fin1, fin2) {
 

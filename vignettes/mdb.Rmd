@@ -49,6 +49,7 @@ source("../R/conclusion.R")
 source("../R/correlate.R")
 source("../R/createDependent.R")
 source("../R/forward.R")
+source("../R/intro.R")
 source("../R/prediction.R")
 source("../R/preprocess.R")
 source("../R/process.R")
@@ -61,54 +62,8 @@ source("../R/visualization.R")
 ```
 
 
-```{r restore-data}
-fin1 <- openxlsx::read.xlsx(xlsxFile = "../data/sample.xlsx")
-fin2 <- openxlsx::read.xlsx(xlsxFile = "../data/financials.xlsx")
-save(fin1, file = "../data/fin1.Rdata")
-save(fin2, file = "../data/fin2.Rdata")
+```{r model, child = '1.intro.rmd'}
 ```
 
-
-```{r load-data}
-rerun <- TRUE
-load("../data/movies.Rdata")
-load("../data/fin1.Rdata")
-load("../data/fin2.Rdata")
-```
-
-```{r preprocess}
-# dataSets  <- preprocess(movies, fin1, fin2)
-# train <- dataSets$train
-# test <- dataSets$test
-# case <- dataSets$case
-# mdb2 <- dataSets$mdb2
-# save(train, file = "../data/train.RData")
-# save(test, file = "../data/test.RData")
-# save(case, file = "../data/case.RData")
-# save(mdb2, file = "../data/mdb2.RData")
-# rerun <- TRUE
-```
-
-
-```{r univariate}
-load("../data/train.Rdata")
-load("../data/test.Rdata")
-load("../data/case.Rdata")
-load("../data/mdb2.Rdata")
-edaUni <- univariate(mdb = train)
-```
-
-
-```{r model, child = '4.eda.rmd'}
-```
-
-```{r model, child = '5.model.rmd'}
-```
-
-```{r model, child = '6.prediction.rmd'}
-```
-
-```{r model, child = '7.conclusion.rmd'}
-```
 
 # References

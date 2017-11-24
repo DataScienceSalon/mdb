@@ -14,7 +14,7 @@
 #' @return analysis plots, summary statistics, test results and interpretive text
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 regressionAnalysis <- function(mod, mName, yVar, yLab, full = TRUE) {
 

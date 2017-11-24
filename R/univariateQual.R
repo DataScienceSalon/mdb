@@ -15,7 +15,7 @@
 #'  2. Frequency Proportion Barplot
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 univariateQual <- function(data, xLab) {
 

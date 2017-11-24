@@ -12,7 +12,7 @@
 #' @return Data frame with regression summary statistics for each model
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 comparePredictions <- function(mods, test) {
 

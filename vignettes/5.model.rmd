@@ -276,7 +276,7 @@ The model therefore retained the following variables:
 `r kfigr::figr(label = "modelC_variables", prefix = TRUE, link = TRUE, type="Table")` Model Gamma Variables
 ```{r modelC_variables}
 vars <- openxlsx::read.xlsx(xlsxFile = "../data/features.xlsx")
-vars <- vars %>% filter(Variable %in% m$selected) %>% select(Variable, Description)
+vars <- vars %>% filter(Variable %in% modelC$anova$Term) %>% select(Variable, Description)
 knitr::kable(vars, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
@@ -380,7 +380,7 @@ The model therefore retained the following variables:
 `r kfigr::figr(label = "modelD_variables", prefix = TRUE, link = TRUE, type="Table")` Model Delta Variables
 ```{r modelD_variables}
 vars <- openxlsx::read.xlsx(xlsxFile = "../data/features.xlsx")
-vars <- vars %>% filter(Variable %in% m$selected) %>% select(Variable, Description)
+vars <- vars %>% filter(Variable %in% modelD$anova$Term) %>% select(Variable, Description)
 knitr::kable(vars, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```

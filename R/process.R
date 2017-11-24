@@ -19,7 +19,7 @@
 #' variable.
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 process <- function(data, stage = "a", y, outliers = NULL) {
 

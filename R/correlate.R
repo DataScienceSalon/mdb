@@ -13,7 +13,7 @@
 #' @param plot Logical indicating whether to include a correlation plot
 #'
 #' @author John James, \email{jjames@@datasciencesalon.org}
-#' @family movies functions
+#' @family regression functions
 #' @export
 correlate <- function(x, y, yLab = NULL, plot = FALSE) {
 

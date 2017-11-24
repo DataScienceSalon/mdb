@@ -1,62 +1,73 @@
 # Part 7: Conclusion
 ```{r conclusion}
 conclusions <- conclusion(slr = modelTwo, mlr = modelA, data = train)
-genre <- conclusions$genre$data$genreDBO
-genre <- genre %>% mutate(pct = round((boxOffice - mean(boxOffice)) / mean(boxOffice) * 100, 1))
-scores <- conclusions$scores$data$scoresDBO
+
+genrePlots <- conclusions$genre$plots
+castPlots <- conclusions$cast$plots
+runtimePlots <- conclusions$runtime$plots
+
+genreData <- conclusions$genre$data %>% arrange(desc(pctChgRevenue))
+castData <- conclusions$cast$data %>% arrange(desc(pctChgRevenue))
+runtimeData <- conclusions$runtime$data %>% arrange(desc(pctChgRevenue))
+
+
 ```
 
-The purpose of this analysis was to determine the factors that make a movie popular, in terms of box office success. More to the point, the aim was to generate insight that would inform the decisions studio executives must make at project inception or in the early stages of a film project. That said, features of interest were those that were *knowable* by studio executives at or near project outset. As such, variables such as critics scores/ratings, audience scores/ratings, IMDB rating, academy awards, and box office success, were only considered as possible dependent variables to predict, but not as independent variables. Instead, new features that characterized actor and director experience and popularity from a historical point of view, were created. Given the available data, three key observations, relating to indicators and predictors of movie success, emerged as noteworthy.
+The purpose of this analysis was to determine the factors that make a movie popular, in terms of box office success. More to the point, the aim was to generate insight that would inform the decisions studio executives must make at project inception or in the early stages of a film project. That said, features of interest were those that were *knowable* by studio executives at or near project outset. As such, variables such as critics scores/ratings, audience scores/ratings, IMDB rating, academy awards, and box office success, were only considered as possible dependent variables to predict, but not as independent variables. Instead, new features that characterized actor and director experience and popularity from a historical point of view, were created. 
+
+To relate the available data to box office revenue, box office figures were obtained for approximately 250 random samples from the original data and correlation tests indicated that the log of IMDB votes was the most highly correlated variable with the log of box office revenue. Two regression models were trained: (1) a multiple regression model which predicted the log of IMDB votes, based upon available and derived data as described above, and (2) a simple linear regression model which predicted the log of box office revenue based upon the predicted log IMDB votes. Based upon this analysis and the available data, three key observations emerged as noteworthy.
 
 ## Cast 
-Casting is certainly one of the most important decisions a studio executive or casting director must make and the selection process, one would suspect, is quite complex with a variety of factors influencing the decision.  This analysis has revealed the box office value of empirically determining actor popularity, based upon ratings such as those provided by IMDB and Rottentomatoes, and using that information to maximize *total* cast popularity, given other considerations. For this analysis, actor popularity was derived from a composite total score equal to 10 x the IMDB rating plus the audience score, total film score was apportioned among the five credited actors as follows:  
+Casting is certainly one of the most important decisions a studio executive or casting director must make and the selection process, one would suspect, is quite complex with a variety of factors influencing the decision.  This analysis has revealed the box office value of empirically determining actor popularity, based upon ratings such as those provided by IMDB and Rottentomatoes, and using that information to maximize *total* cast popularity, given other considerations. For this analysis, actor popularity was derived from a composite total score for a film, equal to 10 x the IMDB rating plus the audience score.  For each film, the total film score was apportioned among the five credited actors as follows:  
 * Actor 1: 40%  
 * Actor 2: 30%  
 * Actor 3: 15%  
 * Actor 4: 10%  
 * Actor 5: 5%  
 
-Scores were maintained for each actor and the cast score was the sum of the actor scores for that film. The cast score was the sum of the scores of each actor earned prior to the current project.  This measure accounted for `r round(modelA$anova %>% filter(Term == 'cast_scores') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'cast_scores') %>% select(7) / sum(modelA$anova[1:(nrow(modelA$anova)-1),7]) * 100, 2)`% of the variance attributed to the terms. 
+Scores were computed for each actor and the cast score was the sum of the actor scores for that film. This measure accounted for `r round(modelA$anova %>% filter(Term == 'cast_scores') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'cast_scores') %>% select(7) / sum(modelA$anova[1:(nrow(modelA$anova)-1),7]) * 100, 2)`% of the variance attributed to the terms. 
 
-`r kfigr::figr(label = "scores", prefix = TRUE, link = TRUE, type="Figure")` illustrates the effect of cast scores on the log of IMDB votes, and  box office revenue. 
+`r kfigr::figr(label = "cast", prefix = TRUE, link = TRUE, type="Figure")` illustrates the effect of cast scores on IMDB votes, and  box office revenue. 
 
-```{r castScores}
-gridExtra::grid.arrange(gridExtra::arrangeGrob(conclusions$scores$plots[[1]],
-                                               conclusions$scores$plots[[2]], ncol = 2),
-                         nrow = 1)
-                    
+```{r cast, fig.height=10}
+library(gridExtra)
+n <- length(castPlots)
+nCol <- floor(sqrt(n))
+do.call("grid.arrange", c(castPlots, ncol=nCol))
 ```
-`r kfigr::figr(label = "scores", prefix = TRUE, link = TRUE, type="Figure")`: Cast Scores Analysis
+`r kfigr::figr(label = "cast", prefix = TRUE, link = TRUE, type="Figure")`: Impact of cast scores on box office 
 
-The (log) number of IMDB votes grows linearly with cast scores; however,  box office grows at an increasing rate as cast popularity increases. A one fold increase in cast scores from 500 to 1000 produces a `r round(min(subset(scores, scores > 1000, select = dbo)) / min(subset(scores, scores > 500, select = dbo)) - 1, 0)` fold increase in box office revenue potential. 
-However, doubling cast scores to 2000 points produces a `r round(min(subset(scores, scores > 2000, select = dbo)) / min(subset(scores, scores > 1000, select = dbo)) - 1, 0)` fold increase in revenue potential. The return on the investment in cast is substantial.
+As shown in the top two charts in `r kfigr::figr(label = "cast", prefix = TRUE, link = TRUE, type="Figure")`, the logs of IMDB votes and box office grow linearly with cast scores; but they have an accelerated effect on IMDB votes and box office revenue on the linear scale. A one percent change in cast scores results in a `r round(exp(modelA$coefficients[12,2] - 1) * 100, 0)`% change in IMDB votes and a `r round(max(castData$pctChgRevenue) / max(castData$pctChgScore) * 100`% change in box office revenue. Introducing such analytics to the casting process could result in significant gains at the box office.
 
-
-## Votes
-Revenue data was obtained for a random sample of films from the original sample and a simple linear regression model was trained to determine which of the available features was most highly correlated with (log) ** box office revenue. The log number of IMDB votes emerged as the most highly correlated with box office success, by far.  
-
-`r kfigr::figr(label = "votes", prefix = TRUE, link = TRUE, type="Table")`: Predictors of box office revenue
-```{r votes}
-obs <- c(1, 3, 10, 11, 18, 19)
-knitr::kable(rLogBoxOffice$tests[obs, ], digits = 2) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-`r kfigr::figr(label = "votes", prefix = TRUE, link = TRUE, type="Table")` reveals a correlation of r = `r rLogBoxOffice$tests$Correlation[1]`, n = `r nrow(mData$numeric)`, p = `r rLogBoxOffice$tests[1,5]` for the log number of IMDB votes. Note that movie runtime emerged as a better predictor of (log) box office revenue than critics score, imdb rating and audience scores. In fact they were **negatively** correlated with (log)  box office revenue. This was not expected. 
 
 ## Genre
-The multiregression analysis showed that genre accounts for `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7) / sum(modelA$anova[1:(nrow(modelA$anova)-1),7]) * 100, 2)`% of the variance attributed to the terms. `r kfigr::figr(label = "genres", prefix = TRUE, link = TRUE, type="Figure")` reveals (log) IMDB votes and (log)  box office by genre, with all other values (except the intercept) set to zero.
+The multiregression analysis showed that genre accounts for `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7) / sum(modelA$anova[1:(nrow(modelA$anova)-1),7]) * 100, 2)`% of the variance attributed to the terms. `r kfigr::figr(label = "genres", prefix = TRUE, link = TRUE, type="Figure")` illuminates the effect of genre on IMDB votes and box office revenue.  
 
-```{r genres}
-gridExtra::grid.arrange(gridExtra::arrangeGrob(conclusions$genre$plots[[1]],
-                                               conclusions$genre$plots[[2]], ncol = 2),
-                         nrow = 1)
-
+```{r genres, fig.height=10}
+library(gridExtra)
+n <- length(genrePlots)
+nCol <- floor(sqrt(n))
+do.call("grid.arrange", c(genrePlots, ncol=nCol))
 ```
 `r kfigr::figr(label = "genres", prefix = TRUE, link = TRUE, type="Figure")`: Genre Analysis
 
-In order of influence, science fiction and fantasy films are the most popular, followed by "other", then action and adventure. The effect on the (log) number of votes was linear by genre; however, the revenue effect was nearly exponential. All else equal, science fiction & fantasy and action and adventure films have a revenue potential `r genre$pct[1]`%, and `r genre$pct[3]`% greater than the mean, respectively. 
+Science fiction fantasy, action & adventure, and horror are the top three box office earners according to this analysis.  Using comedy as the reference level, science fiction and fantasy earns `r round(genreData$pctChgVotes[1], 0)`% more IMDB votes than comedy and `r round(genreData$pctChgRevenue[1], 0)`% more revenue, all other factors constant. Action and adventure receives `r round(genreData$pctChgVotes[2], 0)`%  and `r round(genreData$pctChgRevenue[2], 0)`% more IMDB votes and box office revenue than comedy, respectively. Similarly, horrors produce `r round(genreData$pctChgVotes[3], 0)`%  and `r round(genreData$pctChgRevenue[3], 0)`%  more IMDB votes and box office revenue than comedy, respectively. So sayeth, the numbers.
 
+## Runtime
+Runtime, or its log transformation accounting for just `r modelA$anova[modelA$anova$Term == "runtime_log", 7]`% of the variance in the model, repeatedly emerged as a signficant predictor of IMDB votes. In fact, relative to the other factors its impact was substantial. A one percent change in runtime resulted in a  `r round(exp(modelA$coefficients[13,2] - 1) * 100, 0)`% change in the number of IMDB votes and a `r round(max(runtimeData$pctChgRevenue) / max(runtimeData$pctChgRuntime), 0)`% change in revenue.
 
+```{r runtime, fig.height=10}
+library(gridExtra)
+n <- length(runtimePlots)
+nCol <- floor(sqrt(n))
+do.call("grid.arrange", c(runtimePlots, ncol=nCol))
+```
+`r kfigr::figr(label = "runtime", prefix = TRUE, link = TRUE, type="Figure")`: Impact of runtime on box office 
+
+What emerged is that runtime was likely a proxy for a variety of hidden factors such as production budget. High budget films tend to attract the best producers, directors, actors and crew. So, runtime is less a predictor of box office success, but an indicator. 
+
+## Future Study
+Future studies would benefit from significantly more depth and breadth of data. An adequate volume of data would refine predictions vis-a-vis actor / director experience and popularity.  Expanding the feature set to include production budget, genre vis-a-vis demographic data, historical box office revenue, social media information, and topic data would provide for a more sophisticated model with greater generalizability. 
 
 
 * * *

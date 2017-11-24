@@ -64,6 +64,15 @@ conclusion <- function(slr, mlr, data) {
              logVotes * slrEstLogVotes,
            votes = exp(mean(logVotes + (1/2 * mseMlr))),
            boxOffice = exp(mean(logBoxOffice + (1/2 * mseMlr))))
+  refVotes <- as.numeric(genre %>% filter(Genre == "Comedy") %>% select(votes))
+  refBoxOffice <- as.numeric(genre %>% filter(Genre == "Comedy") %>% select(boxOffice))
+
+  genre <- genre %>% mutate(pctChgVotes = (votes - refVotes) / refVotes * 100)
+  genre <- genre %>% mutate(pctChgRevenue = (boxOffice - refBoxOffice) / refBoxOffice * 100)
+
+
+
+  # Extract Data
   gvLog <- genre %>% select(Genre, logVotes)
   gbLog <- genre %>% select(Genre, logBoxOffice)
   gv <- genre %>% select(Genre, votes)
@@ -79,19 +88,14 @@ conclusion <- function(slr, mlr, data) {
                  plotTitle = 'IMDB Votes vs. Genre')
   gbp <- plotBar(data = gb, xLab = 'Genre', yLab = 'Box Office',
                  plotTitle = 'Box Office vs. Genre')
-  genre <- list()
-  data <- list()
+  genreAnalysis <- list()
   plots <- list()
-  data[['gvLog']] <- gvLog
-  data[['gbLog']] <- gbLog
-  data[['gv']] <- gv
-  data[['gb']] <- gb
   plots[['gvLogp']] <- gvLogp
   plots[['gbLogp']] <- gbLogp
   plots[['gvp']] <- gvp
   plots[['gbp']] <- gbp
-  genre[['data']] <- data
-  genre[['plots']] <- plots
+  genreAnalysis[['data']] <- genre
+  genreAnalysis[['plots']] <- plots
 
 
   #---------------------------------------------------------------------------#
@@ -99,7 +103,7 @@ conclusion <- function(slr, mlr, data) {
   #---------------------------------------------------------------------------#
 
   d <- data.frame(scores = seq(1, 1000, by = 10 ))
-  scores <- d %>%
+  cast <- d %>%
     mutate(logVotes = mlrEstIntercept +
                 mlrEstGenre +
                 mlrEstScores * scores +
@@ -110,11 +114,16 @@ conclusion <- function(slr, mlr, data) {
               votes = exp(logVotes),
               boxOffice = exp(logBoxOffice))
 
+  # Calculate percent change
+  cast <- cast %>% mutate(pctChgScore = (scores - min(scores)) / min(scores) * 100)
+  cast <- cast %>% mutate(pctChgVotes = (votes - min(votes)) / min(votes) * 100)
+  cast <- cast %>% mutate(pctChgRevenue = (boxOffice - min(boxOffice)) / min(boxOffice) * 100)
+
   # Extract Data
-  svLog <- scores %>% select(scores, logVotes)
-  sbLog <- scores %>% select(scores, logBoxOffice)
-  sv <- scores %>% select(scores, votes)
-  sb <- scores %>% select(scores, boxOffice)
+  svLog <- cast %>% select(scores, logVotes)
+  sbLog <- cast %>% select(scores, logBoxOffice)
+  sv <- cast %>% select(scores, votes)
+  sb <- cast %>% select(scores, boxOffice)
 
   # Render Plots
   svLogp <- plotLine(data = svLog, xLab = 'Cast Scores', yLab = 'Log IMDB Votes',
@@ -127,22 +136,14 @@ conclusion <- function(slr, mlr, data) {
   sbp <- plotLine(data = sb, xLab = 'Cast Scores ', yLab = 'Box Office',
                   plotTitle = 'Box Office vs. Cast Scores')
 
-  scores <- list()
-  data <- list()
+  castAnalysis <- list()
   plots <- list()
-  data[['svLog']] <- svLog
-  data[['sbLog']] <- sbLog
-  data[['sv']] <- sv
-  data[['sb']] <- sb
   plots[['svLogp']] <- svLogp
   plots[['sbLogp']] <- sbLogp
   plots[['svp']] <- svp
   plots[['sbp']] <- sbp
-  senre[['data']] <- data
-  senre[['plots']] <- plots
-  analysis <- list()
-  analysis[['genre']] <- genre
-  analysis[['scores']] <- scores
+  castAnalysis[['data']] <- cast
+  castAnalysis[['plots']] <- plots
 
   #---------------------------------------------------------------------------#
   #                        Prepare Run Time Analysis                          #
@@ -161,6 +162,12 @@ conclusion <- function(slr, mlr, data) {
            votes = exp(logVotes),
            boxOffice = exp(logBoxOffice))
 
+  # Calculate percent change
+  runtime <- runtime %>% mutate(pctChgRuntime = (runtime - min(runtime)) / min(runtime) * 100)
+  runtime <- runtime %>% mutate(pctChgVotes = (votes - min(votes)) / min(votes) * 100)
+  runtime <- runtime %>% mutate(pctChgRevenue = (boxOffice - min(boxOffice)) / min(boxOffice) * 100)
+
+
   # Extract Data
   rtvLog <- runtime %>% select(runtime, logVotes)
   rtbLog <- runtime %>% select(runtime, logBoxOffice)
@@ -178,22 +185,20 @@ conclusion <- function(slr, mlr, data) {
   rtbp <- plotLine(data = rtb, xLab = 'Log Runtime', yLab = 'Box Office',
                   plotTitle = 'Box Office vs. Runtime')
 
-  runtime <- list()
-  data <- list()
+  runtimeAnalysis <- list()
   plots <- list()
-  data[['rtvLog']] <- rtvLog
-  data[['rtbLog']] <- rtbLog
-  data[['rtv']] <- rtv
-  data[['rtb']] <- rtb
   plots[['rtvLogp']] <- rtvLogp
   plots[['rtbLogp']] <- rtbLogp
   plots[['rtvp']] <- rtvp
   plots[['rtbp']] <- rtbp
-  senre[['data']] <- data
-  senre[['plots']] <- plots
+  runtimeAnalysis[['data']] <- runtime
+  runtimeAnalysis[['plots']] <- plots
+
   analysis <- list()
-  analysis[['genre']] <- genre
-  analysis[['runtime']] <- runtime
+  analysis[['genre']] <- genreAnalysis
+  analysis[['cast']] <- castAnalysis
+  analysis[['runtime']] <- runtimeAnalysis
+
 
   return(analysis)
 
