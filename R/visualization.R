@@ -520,7 +520,9 @@ plotLine <- function(data, xLab = NULL, yLab, plotTitle = NULL) {
     ggplot2::theme(text = ggplot2::element_text(family="Open Sans"),
                    legend.position = "right") +
     ggplot2::ggtitle(plotTitle) +
-    ggplot2::labs(y = yLab, x = xLab)
+    ggplot2::labs(y = yLab, x = xLab) +
+    ggplot2::scale_x_continuous(labels = scales::comma) +
+    ggplot2::scale_y_continuous(labels = scales::comma)
 
   return(lp)
 }
@@ -565,7 +567,9 @@ plotBar <- function(data, yLab, xLab, plotTitle = NULL) {
     ggplot2::scale_fill_manual(values = myPal(length(data[[1]]))) +
     ggplot2::ggtitle(plotTitle) +
     ggplot2::ylab(yLab) +
-    ggplot2::labs(fill = xLab)
+    ggplot2::labs(fill = xLab) +
+    ggplot2::scale_y_continuous(labels = scales::comma)
+
 
   return(barPlot)
 }

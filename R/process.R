@@ -30,6 +30,8 @@ process <- function(data, stage = "a", y, outliers = NULL) {
              'votes_per_day_scores',	'votes_per_day_scores_log',
              "box_office", 'actor1', 'actor2',
              'actor3', 'actor4', 'actor5', 'director', 'studio')
+  omitB <- c('votes_per_day_log', 'imdb_num_votes', 'box_office_log',
+             'votes_per_day')
 
   omitC <- c('votes_per_day', 'votes_per_day_log', 'box_office',
              'box_office_log', 'imdb_num_votes', 'thtr_days', 'thtr_days_log')
@@ -63,8 +65,9 @@ process <- function(data, stage = "a", y, outliers = NULL) {
 
   omit <- switch(stage,
                  a = omitA,
-                 c = c(omitA, omitC),
-                 m = c(omitA, omitM))
+                 b = c(omitA, omitB),
+                 c = c(omitA, omitB, omitC),
+                 m = c(omitA, omitB, omitC, omitM))
 
 
   d <- data
@@ -78,7 +81,7 @@ process <- function(data, stage = "a", y, outliers = NULL) {
   }
 
   # Gather features requested by the data stage
-  if (stage %in% c("a", "c", "m")) {
+  if (stage %in% c("a","b", "c", "m")) {
     d <- d[, (!(names(d) %in% omit))]
   } else {
     d <- d[, (names(d) %in% keep)]

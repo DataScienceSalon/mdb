@@ -55,7 +55,7 @@ preprocess <- function(movies, fin1, fin2) {
   #---------------------------------------------------------------------------#
 
   mdb <- mdb %>% mutate(
-    imdb_num_votes_log = log2(imdb_num_votes),
+    imdb_num_votes_log = log(imdb_num_votes),
     thtr_rel_season = ifelse(thtr_rel_month %in% c(3:5), "Spring",
                              ifelse(thtr_rel_month %in% c(6:8), "Summer",
                                     ifelse(thtr_rel_month %in% c(9:11), "Fall",
@@ -85,13 +85,13 @@ preprocess <- function(movies, fin1, fin2) {
   #---------------------------------------------------------------------------#
   #                         Create log of runtime                             #
   #---------------------------------------------------------------------------#
-  mdb <- mdb %>% mutate(runtime_log = log2(runtime))
+  mdb <- mdb %>% mutate(runtime_log = log(runtime))
 
   #---------------------------------------------------------------------------#
   #                         Add Votes per Day                                 #
   #---------------------------------------------------------------------------#
   mdb <- mdb %>% mutate(votes_per_day = (imdb_num_votes / thtr_days),
-                        votes_per_day_log = log2(votes_per_day))
+                        votes_per_day_log = log(votes_per_day))
 
   #---------------------------------------------------------------------------#
   #                       Add Box Office Information                          #
@@ -105,7 +105,7 @@ preprocess <- function(movies, fin1, fin2) {
   fin <- fin[!duplicated(fin$title),]
   fin <- fin %>% filter((round(box_office, 0) > 0) &  !is.na(box_office))
   mdb <- merge(mdb, fin, all.x = TRUE)
-  mdb <- mdb %>% mutate(box_office_log = log2(box_office))
+  mdb <- mdb %>% mutate(box_office_log = log(box_office))
 
   #---------------------------------------------------------------------------#
   #                        Create Director Scores                             #
@@ -114,7 +114,7 @@ preprocess <- function(movies, fin1, fin2) {
     summarize(director_scores = sum(((10 * imdb_rating) + audience_score)))
   mdb <- left_join(mdb, directorScores)
   mdb <- mdb %>% mutate(director_scores = round(director_scores - (10 * imdb_rating) + audience_score, 0))
-  mdb <- mdb %>% mutate(director_scores_log = ifelse(director_scores == 0, 0, log2(director_scores)))
+  mdb <- mdb %>% mutate(director_scores_log = ifelse(director_scores == 0, 0, log(director_scores)))
 
 
   #---------------------------------------------------------------------------#
@@ -156,7 +156,7 @@ preprocess <- function(movies, fin1, fin2) {
   mdb <- mdb %>% mutate(cast_scores = scores1 + scores2 + scores3 + scores4 + scores5)
   mdb <- mdb %>% mutate(cast_scores = cast_scores - ((10 * imdb_rating) + audience_score))
   mdb <- mdb %>% mutate(cast_scores_log =
-                          ifelse(cast_scores > 0, log2(cast_scores), 0))
+                          ifelse(cast_scores > 0, log(cast_scores), 0))
   drops <- c("scores1", "scores2", "scores3", "scores3", "scores4", "scores5")
   mdb <- mdb[,!(names(mdb) %in% drops)]
 
@@ -167,7 +167,7 @@ preprocess <- function(movies, fin1, fin2) {
     summarize(director_votes = sum(imdb_num_votes))
   mdb <- left_join(mdb, directorVotes)
   mdb <- mdb %>% mutate(director_votes = round(director_votes - imdb_num_votes, 0))
-  mdb <- mdb %>% mutate(director_votes_log = ifelse(director_votes == 0, 0, log2(director_votes)))
+  mdb <- mdb %>% mutate(director_votes_log = ifelse(director_votes == 0, 0, log(director_votes)))
 
   #---------------------------------------------------------------------------#
   #                           Create Cast Vote                                #
@@ -203,7 +203,7 @@ preprocess <- function(movies, fin1, fin2) {
   mdb <- mdb %>% mutate(cast_votes = votes1 + votes2 + votes3 + votes4 + votes5)
   mdb <- mdb %>% mutate(cast_votes = cast_votes - imdb_num_votes)
   mdb <- mdb %>% mutate(cast_votes_log =
-                          ifelse(cast_votes > 0, log2(cast_votes), 0))
+                          ifelse(cast_votes > 0, log(cast_votes), 0))
   drops <- c("votes1", "votes2", "votes3", "votes3", "votes4", "votes5")
   mdb <- mdb[,!(names(mdb) %in% drops)]
 
@@ -214,7 +214,7 @@ preprocess <- function(movies, fin1, fin2) {
     summarize(director_experience = n())
   mdb <- left_join(mdb, directorExperience)
   mdb <- mdb %>% mutate(director_experience_log =
-                          ifelse(director_experience == 0, 0, log2(director_experience)))
+                          ifelse(director_experience == 0, 0, log(director_experience)))
 
   #---------------------------------------------------------------------------#
   #                        Create Cast Experience                             #
@@ -238,7 +238,7 @@ preprocess <- function(movies, fin1, fin2) {
   names(mdb)[names(mdb) == "cast_experience"] <- "ce5"
   mdb <- mdb %>% mutate(cast_experience = ce1 + ce2 + ce3 + ce4 + ce5)
   mdb <- mdb %>% mutate(cast_experience_log =
-                          ifelse(cast_experience > 0, log2(cast_experience), 0))
+                          ifelse(cast_experience > 0, log(cast_experience), 0))
   drops <- c("ce1", "ce2", "ce3", "ce3", "ce4", "ce5")
   mdb <- mdb[,!(names(mdb) %in% drops)]
 
@@ -246,23 +246,23 @@ preprocess <- function(movies, fin1, fin2) {
   #                      Create Interaction Variables                         #
   #---------------------------------------------------------------------------#
   mdb <- mdb %>% mutate(cast_dir_exp = round(cast_experience * director_experience, 0),
-                        cast_dir_exp_log = ifelse(cast_dir_exp == 0, 0, log2(cast_dir_exp)),
+                        cast_dir_exp_log = ifelse(cast_dir_exp == 0, 0, log(cast_dir_exp)),
                         cast_dir_scores= round(cast_scores * director_scores, 0),
-                        cast_dir_scores_log = ifelse(cast_dir_scores == 0, 0, log2(cast_dir_scores)),
+                        cast_dir_scores_log = ifelse(cast_dir_scores == 0, 0, log(cast_dir_scores)),
                         cast_dir_votes = round(cast_votes * director_votes, 0),
-                        cast_dir_votes_log = ifelse(cast_dir_votes == 0, 0, log2(cast_dir_votes)),
+                        cast_dir_votes_log = ifelse(cast_dir_votes == 0, 0, log(cast_dir_votes)),
                         cast_exp_dir_scores= round(cast_experience * director_scores, 0),
-                        cast_exp_dir_scores_log = ifelse(cast_exp_dir_scores == 0, 0, log2(cast_exp_dir_scores)),
+                        cast_exp_dir_scores_log = ifelse(cast_exp_dir_scores == 0, 0, log(cast_exp_dir_scores)),
                         cast_exp_dir_votes = round(cast_experience * director_votes, 0),
-                        cast_exp_dir_votes_log = ifelse(cast_exp_dir_votes == 0, 0, log2(cast_exp_dir_votes)),
+                        cast_exp_dir_votes_log = ifelse(cast_exp_dir_votes == 0, 0, log(cast_exp_dir_votes)),
                         cast_scores_dir_exp = round(cast_scores * director_experience, 0),
-                        cast_scores_dir_exp_log = ifelse(cast_scores_dir_exp == 0, 0, log2(cast_scores_dir_exp)),
+                        cast_scores_dir_exp_log = ifelse(cast_scores_dir_exp == 0, 0, log(cast_scores_dir_exp)),
                         cast_scores_dir_votes = round(cast_scores * director_votes, 0),
-                        cast_scores_dir_votes_log = ifelse(cast_scores_dir_votes == 0, 0, log2(cast_scores_dir_votes)),
+                        cast_scores_dir_votes_log = ifelse(cast_scores_dir_votes == 0, 0, log(cast_scores_dir_votes)),
                         cast_votes_dir_exp = round(cast_votes * director_experience, 0),
-                        cast_votes_dir_exp_log = ifelse(cast_votes_dir_exp == 0, 0, log2(cast_votes_dir_exp)),
+                        cast_votes_dir_exp_log = ifelse(cast_votes_dir_exp == 0, 0, log(cast_votes_dir_exp)),
                         cast_votes_dir_scores = round(cast_votes * director_scores, 0),
-                        cast_votes_dir_scores_log = ifelse(cast_votes_dir_scores == 0, 0, log2(cast_votes_dir_scores)))
+                        cast_votes_dir_scores_log = ifelse(cast_votes_dir_scores == 0, 0, log(cast_votes_dir_scores)))
 
 
   #---------------------------------------------------------------------------#

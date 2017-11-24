@@ -70,7 +70,7 @@ save(fin2, file = "../data/fin2.Rdata")
 
 
 ```{r load-data}
-rerun <- FALSE
+rerun <- TRUE
 load("../data/movies.Rdata")
 load("../data/fin1.Rdata")
 load("../data/fin2.Rdata")

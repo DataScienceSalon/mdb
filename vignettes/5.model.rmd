@@ -491,7 +491,7 @@ accuracy <- comparePredictions(mods = mods, test = test)
 knitr::kable(accuracy, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-There were no significant differences in MAPE, MSE, and RMSE between the models.  The negative MPE indicated that all models were biased with over predictions. The lack of justification for excluding the influential points, ruled out models Beta and Delta. Model Alpha produced the best prediction accuracy, the lowest error rates, with the fewest predictors. Two of the predictors accounted for  `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[,7]) * 100, 1)`% of total variation and `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[1:(nrow(modelA$anova) - 1),7]) * 100, 1)`% of variation allocated to terms. As such Model Alpha was considered the most parsimonious model and would advance to the prediction stage. 
+There were no significant differences in MAPE, MSE, and RMSE between the models.  The negative MPE indicated that all models were biased with over predictions. The lack of justification for excluding the influential points, ruled out models Beta and Delta. Model Alpha was selected as the most parsimonious mode since two of the predictors accounted for  `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[,7]) * 100, 1)`% of total variation and `r round(sum(modelA$anova[1:2,7]) / sum(modelA$anova[1:(nrow(modelA$anova) - 1),7]) * 100, 1)`% of variation allocated to terms. As such Model Alpha would advance to the prediction stage. 
 
 ### Model Two: Final Multiregression Model
 The final prediction equation was defined as follows:
@@ -513,6 +513,17 @@ $y_i$ =
 + `r round(modelA$coefficients$estimate[15], 3)`$x_{14}$
 + `r round(modelA$coefficients$estimate[16], 3)`$x_{15}$
 + `r round(modelA$coefficients$estimate[17], 3)`$x_{16}$
++ `r round(modelA$coefficients$estimate[18], 3)`$x_{17}$
++ `r round(modelA$coefficients$estimate[19], 3)`$x_{18}$
++ `r round(modelA$coefficients$estimate[20], 3)`$x_{19}$
++ `r round(modelA$coefficients$estimate[21], 3)`$x_{20}$
++ `r round(modelA$coefficients$estimate[22], 3)`$x_{21}$
++ `r round(modelA$coefficients$estimate[23], 3)`$x_{22}$
++ `r round(modelA$coefficients$estimate[24], 3)`$x_{23}$
++ `r round(modelA$coefficients$estimate[25], 3)`$x_{24}$
++ `r round(modelA$coefficients$estimate[26], 3)`$x_{25}$
++ `r round(modelA$coefficients$estimate[27], 3)`$x_{26}$
++ `r round(modelA$coefficients$estimate[28], 3)`$x_{27}$
 + $\epsilon$
 
 where:
@@ -532,6 +543,17 @@ $x_{13}$ is `r modelA$coefficients$term[14]`
 $x_{14}$ is `r modelA$coefficients$term[15]`   
 $x_{15}$ is `r modelA$coefficients$term[16]`   
 $x_{16}$ is `r modelA$coefficients$term[17]`   
+$x_{17}$ is `r modelA$coefficients$term[18]`   
+$x_{18}$ is `r modelA$coefficients$term[19]`   
+$x_{19}$ is `r modelA$coefficients$term[20]`   
+$x_{10}$ is `r modelA$coefficients$term[21]`   
+$x_{21}$ is `r modelA$coefficients$term[22]`   
+$x_{22}$ is `r modelA$coefficients$term[23]`   
+$x_{23}$ is `r modelA$coefficients$term[24]`   
+$x_{24}$ is `r modelA$coefficients$term[25]`   
+$x_{25}$ is `r modelA$coefficients$term[26]`   
+$x_{26}$ is `r modelA$coefficients$term[27]`   
+$x_{27}$ is `r modelA$coefficients$term[28]`   
 
 
 
@@ -561,9 +583,10 @@ The intercept estimate, `r round(modelA$coefficients$estimate[1], 3)` , is the r
 
 * the intercept value, `r round(modelA$coefficients$estimate[1], 3)`,    
 * plus a value associated with the genre of the film,   
-* plus `r round(subset(modelA$coefficients, term == "cast_scores", select = estimate), 3)` log IMDB votes for each point score for the cast members.
-* plus `r round(subset(modelA$coefficients, term == "runtime_log", select = estimate), 3)` log IMDB votes for each log minute of runtime,      
-* plus a value associated with the MPAA rating for the film.     
+* plus `r round(subset(modelA$coefficients, term == "cast_scores", select = estimate), 3)` percent change in IMDB votes for each percent change in the point scores for the cast members.
+* plus `r round(subset(modelA$coefficients, term == "runtime_log", select = estimate), 3)` percent change in IMDB votes for each percent change in runtime,      
+* plus a percent change associated with the MPAA rating for the film.     
+* plus a percent change associated with the month of theatrical release.      
 
 ## Model Two: Simple Linear Regression
 ```{r modelTwo_analysis}
