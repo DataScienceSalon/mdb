@@ -1,31 +1,35 @@
 ```{r restore-data}
-# fin1 <- openxlsx::read.xlsx(xlsxFile = "../data/sample.xlsx")
-# fin2 <- openxlsx::read.xlsx(xlsxFile = "../data/financials.xlsx")
-# genres <- openxlsx::read.xlsx(xlsxFile = "../data/genres.xlsx")
-# save(fin1, file = "../data/fin1.Rdata")
-# save(fin2, file = "../data/fin2.Rdata")
-# save(genres, file = "../data/genres.Rdata")
+if (rerun == TRUE) {
+  fin1 <- openxlsx::read.xlsx(xlsxFile = "../data/sample.xlsx")
+  fin2 <- openxlsx::read.xlsx(xlsxFile = "../data/financials.xlsx")
+  genres <- openxlsx::read.xlsx(xlsxFile = "../data/genres.xlsx")
+  save(fin1, file = "../data/fin1.Rdata")
+  save(fin2, file = "../data/fin2.Rdata")
+  save(genres, file = "../data/genres.Rdata")
+}
 ```
 
 
 ```{r load-data}
-rerun <- FALSE
 load("../data/movies.Rdata")
 load("../data/fin1.Rdata")
 load("../data/fin2.Rdata")
 ```
 
 ```{r preprocess}
-# dataSets  <- preprocess(movies, fin1, fin2)
-# train <- dataSets$train
-# test <- dataSets$test
-# case <- dataSets$case
-# mdb2 <- dataSets$mdb2
-# save(train, file = "../data/train.RData")
-# save(test, file = "../data/test.RData")
-# save(case, file = "../data/case.RData")
-# save(mdb2, file = "../data/mdb2.RData")
-# rerun <- TRUE
+if (rerun == TRUE) {
+  dataSets  <- preprocess(movies, fin1, fin2)
+  train <- dataSets$train
+  test <- dataSets$test
+  case <- dataSets$case
+  mdb2 <- dataSets$mdb2
+  actorScores <- dataSets$actorScores
+  save(train, file = "../data/train.RData")
+  save(test, file = "../data/test.RData")
+  save(case, file = "../data/case.RData")
+  save(mdb2, file = "../data/mdb2.RData")
+  save(actorScores, file = "../data/actorScores.RData")
+}
 ```
 
 ```{r reload-data}
@@ -44,7 +48,7 @@ The data were comprised of audience and critics opinions, actor, director, and s
 Launched in October 1990 by Col Needham, the Internet Movie Database (abbreviated IMDb) is an online database of film information, audience and critics ratings, plot summaries and reviews.  As of November 2017, the site contained over 4.6 million titles, 8.2 million personalities, and hosts 80 million registered users [@Wikipedia].  Rottentomatoes.com, so named from the practice of audiences throwing rotten tomatoes when disapproving of a poor stage performance, was launched officially in April 2000 by Berkeley student, Senh Duong. It provides audience and critics ratings  for some 26 million users worldwide [@Flixter]. Box Office Mojo was founded in 1999 tracks box office information and publishes it on its site [@Fritz2008]. The Numbers website, provided by Nash Information Services, compiles statistics for the movie industry [@Services2014].
 
 ## Generalizability & Causality
-The data was **randomly sampled** from available IMDb and Rotten Tomatoes website apis, and so the inference *should* be generalizable to the population. However, a priori minimum sample size calculation was conducted over the proportions of films by genre. Frequency counts by genre were obtained for 6 million movies from the IMDb website [@IMDbstats2015].
+The data were **randomly sampled** from available IMDb and Rotten Tomatoes website apis, and so the inference *should* be generalizable to the population. However, a priori minimum sample size calculation was conducted,  assuming 80% power and a significance level of .05, over the proportions of films by genre. Frequency counts by genre were obtained for 6 million movies from the IMDb website [@IMDbstats2015].
 
 `r kfigr::figr(label = "sampleSize", prefix = TRUE, link = TRUE, type="Table")`: Sample size analysis of proportions by genre
 ```{r sampleSize}
@@ -100,6 +104,6 @@ knitr::kable(codebook, align = 'l') %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center") 
 ```
 
-Lastly, the data was split into a training set (80%) and a test set (20%). The following exploratory data analysis and modeling was performed on the training set.
+Lastly, the data were split into a training set (80%) and a test set (20%). The following exploratory data analysis and modeling was performed on the training set.
 
 * * *

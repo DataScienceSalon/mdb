@@ -51,6 +51,7 @@ source("../R/createDependent.R")
 source("../R/forward.R")
 source("../R/intro.R")
 source("../R/prediction.R")
+source("../R/prepareData.R")
 source("../R/preprocess.R")
 source("../R/process.R")
 source("../R/regressionAnalysis.R")
@@ -62,9 +63,11 @@ source("../R/univariateQuant.R")
 source("../R/visualization.R")
 ```
 
-
-```{r model, child = '4.eda.rmd'}
+```{r rerun}
+rerun <- FALSE
 ```
 
+```{r model, child = '7.conclusion.rmd'}
+```
 
 # References

@@ -59,7 +59,7 @@ conclusion <- function(slr, mlr, data) {
              coefs[coefs$term == Genre, 2] +
              mlrEstScores * muCastScores +
              mlrEstRuntime * muRunTimeLog +
-             mlrEstMPAA + mlrEstMonth,
+             mlrEstMPAA,
            logBoxOffice = slrEstIntercept +
              logVotes * slrEstLogVotes,
            votes = exp(mean(logVotes + (1/2 * mseMlr))),
@@ -108,16 +108,15 @@ conclusion <- function(slr, mlr, data) {
                 mlrEstGenre +
                 mlrEstScores * scores +
                 mlrEstRuntime * muRunTimeLog +
-                mlrEstMPAA + mlrEstMonth,
+                mlrEstMPAA,
               logBoxOffice = slrEstIntercept +
                 logVotes * slrEstLogVotes,
-              votes = exp(logVotes),
-              boxOffice = exp(logBoxOffice))
+              votes = exp(mlrEstScores * scores + (1/2 * mlr$glance$RMSE^2)),
+              boxOffice = exp(slrEstLogVotes * logVotes + (1/2 * slr$glance$RMSE^2)))
 
   # Calculate percent change
-  cast <- cast %>% mutate(pctChgScore = (scores - min(scores)) / min(scores) * 100)
-  cast <- cast %>% mutate(pctChgVotes = (votes - min(votes)) / min(votes) * 100)
-  cast <- cast %>% mutate(pctChgRevenue = (boxOffice - min(boxOffice)) / min(boxOffice) * 100)
+  pctChgVotes <- mlrEstScores * 100
+  pctChgRevenue <-  slrEstLogVotes
 
   # Extract Data
   svLog <- cast %>% select(scores, logVotes)
@@ -138,12 +137,16 @@ conclusion <- function(slr, mlr, data) {
 
   castAnalysis <- list()
   plots <- list()
+  pctChg <- list()
   plots[['svLogp']] <- svLogp
   plots[['sbLogp']] <- sbLogp
   plots[['svp']] <- svp
   plots[['sbp']] <- sbp
+  pctChg[['votes']] <- pctChgVotes
+  pctChg[['revenue']] <- pctChgRevenue
   castAnalysis[['data']] <- cast
   castAnalysis[['plots']] <- plots
+  castAnalysis[['pctChg']] <- pctChg
 
   #---------------------------------------------------------------------------#
   #                        Prepare Run Time Analysis                          #
@@ -155,17 +158,16 @@ conclusion <- function(slr, mlr, data) {
              mlrEstGenre +
              mlrEstScores * muCastScores +
              mlrEstRuntime * runTimeLog +
-             mlrEstMPAA + mlrEstMonth,
+             mlrEstMPAA,
            logBoxOffice = slrEstIntercept +
              logVotes * slrEstLogVotes,
            runtime = exp(runTimeLog),
-           votes = exp(logVotes),
-           boxOffice = exp(logBoxOffice))
+           votes = exp(mlrEstRuntime * runTimeLog + (1/2 * mlr$glance$RMSE^2)),
+           boxOffice = exp(slrEstLogVotes * logVotes + (1/2 * slr$glance$RMSE^2)))
 
   # Calculate percent change
-  runtime <- runtime %>% mutate(pctChgRuntime = (runtime - min(runtime)) / min(runtime) * 100)
-  runtime <- runtime %>% mutate(pctChgVotes = (votes - min(votes)) / min(votes) * 100)
-  runtime <- runtime %>% mutate(pctChgRevenue = (boxOffice - min(boxOffice)) / min(boxOffice) * 100)
+  pctChgVotes <- mlrEstRuntime
+  pctChgRevenue <- slrEstLogVotes
 
 
   # Extract Data
@@ -176,23 +178,27 @@ conclusion <- function(slr, mlr, data) {
 
   # Render Plots
   rtvLogp <- plotLine(data = rtvLog, xLab = 'Runtime', yLab = 'Log IMDB Votes',
-                     plotTitle = 'Log IMDB Votes vs. Runtime')
+                     plotTitle = 'Log IMDB Votes vs. Log Runtime')
   rtbLogp <- plotLine(data = rtbLog, xLab = 'Runtime', yLab = 'Log Box Office',
-                     plotTitle = 'Log Box Office vs. Runtime')
+                     plotTitle = 'Log Box Office vs. Log Runtime')
 
   rtvp <- plotLine(data = rtv, xLab = 'Runtime', yLab = 'IMDB Votes',
                   plotTitle = 'IMDB Votes vs. Runtime')
-  rtbp <- plotLine(data = rtb, xLab = 'Log Runtime', yLab = 'Box Office',
+  rtbp <- plotLine(data = rtb, xLab = 'Runtime', yLab = 'Box Office',
                   plotTitle = 'Box Office vs. Runtime')
 
   runtimeAnalysis <- list()
   plots <- list()
+  pctChg <- list()
   plots[['rtvLogp']] <- rtvLogp
   plots[['rtbLogp']] <- rtbLogp
   plots[['rtvp']] <- rtvp
   plots[['rtbp']] <- rtbp
+  pctChg[['votes']] <- pctChgVotes
+  pctChg[['revenue']] <- pctChgRevenue
   runtimeAnalysis[['data']] <- runtime
   runtimeAnalysis[['plots']] <- plots
+  runtimeAnalysis[['pctChg']] <- pctChg
 
   analysis <- list()
   analysis[['genre']] <- genreAnalysis

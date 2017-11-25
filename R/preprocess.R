@@ -25,8 +25,7 @@ preprocess <- function(movies, fin1, fin2) {
   #     Remove TV Movies (out of scope) and NC-17 (too few observations)      #
   #     and films released prior to launch of Rottentomatoes                  #
   #---------------------------------------------------------------------------#
-  mdb <-  mdb %>% filter(title_type != "TV Movie" & mpaa_rating != "NC-17"
-                         & thtr_rel_year > 1989)
+  mdb <-  mdb %>% filter(title_type != "TV Movie" & mpaa_rating != "NC-17")
   mdb$mpaa_rating <- factor(mdb$mpaa_rating)
 
   #---------------------------------------------------------------------------#
@@ -159,6 +158,7 @@ preprocess <- function(movies, fin1, fin2) {
                           ifelse(cast_scores > 0, log(cast_scores), 0))
   drops <- c("scores1", "scores2", "scores3", "scores3", "scores4", "scores5")
   mdb <- mdb[,!(names(mdb) %in% drops)]
+  actorScores <- actors
 
   #---------------------------------------------------------------------------#
   #                        Create Director Votes                              #
@@ -273,29 +273,48 @@ preprocess <- function(movies, fin1, fin2) {
   #---------------------------------------------------------------------------#
   #                 Split Data into Training and Test Sets                    #
   #---------------------------------------------------------------------------#
-  # Ensure sample has all genres and MPAA ratings.
+  # Calculate size of training and test set
+  n <- nrow(mdb)
+  nTraining <- floor(n * .8)
+
+  # Ensure all genres and MPAA ratings are included in training set
   genres <- unique(movies$genre)
   mpaa <- unique(mdb$mpaa_rating)
 
-  # Ensure that the test set contains complete cases
+  # Ensure success/failure condition is  met on training set.
+  smallGenres <- c("Animation", "Art House & International", "Horror",
+                   "Musical & Performing Arts", "Other",
+                   "Science Fiction & Fantasy")
+  train1 <- mdb %>% filter(genre %in% smallGenres | mpaa_rating == "G")
+  remain <- mdb %>% filter(!(title %in% train1$title))
+  nTraining <- nTraining - nrow(train1)
+
   representative <- FALSE
   seed <- unclass(Sys.time())
   set.seed(seed)
+
   while(representative == FALSE) {
+    train <- data.frame()
     set.seed(seed)
-    idx <- sample(1:nrow(mdb), nrow(mdb) * .8)
-    train <- mdb[idx, ]
-    test <- mdb[-idx, ]
+    idx <- sample(1:nrow(remain), nTraining)
+    train2 <- remain[idx, ]
+    test <- remain[-idx, ]
+    train <- rbind(train1, train2)
+    minGenreTrain <- min(train %>% group_by(genre) %>% summarise(N = n()) %>%
+                           select(N))
+    minMPAATrain <- min(train %>% group_by(mpaa_rating) %>% summarise(N = n()) %>%
+                           select(N))
     if (setequal(genres, unique(train$genre)) &
         setequal(mpaa, unique(train$mpaa_rating)) &
-        setequal(genres, unique(test$genre)) &
-        setequal(mpaa, unique(test$mpaa_rating)) &
-        nrow(test %>% filter(title %in% mdb2$title)) > 0) {
+        (nrow(test %>% filter(title %in% mdb2$title)) > 0) &
+        minGenreTrain > 4 & minMPAATrain > 4) {
       representative <- TRUE
     } else {
       seed <- seed + sample(1:100, 1)
     }
   }
+
+  train <- rbind(train1, train2)
 
   #---------------------------------------------------------------------------#
   #         Designate one cases from training set for prediction              #
@@ -311,7 +330,8 @@ preprocess <- function(movies, fin1, fin2) {
     train = train,
     test = test,
     case = case,
-    mdb2 = mdb2
+    mdb2 = mdb2,
+    actorScores = actorScores
   )
 
 

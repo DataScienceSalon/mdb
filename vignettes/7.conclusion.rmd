@@ -1,5 +1,8 @@
 # Part 7: Conclusion
 ```{r conclusion}
+load('../data/modelTwo.Rdata')
+load('../data/modelA.Rdata')
+load('../data/train.Rdata')
 conclusions <- conclusion(slr = modelTwo, mlr = modelA, data = train)
 
 genrePlots <- conclusions$genre$plots
@@ -7,10 +10,8 @@ castPlots <- conclusions$cast$plots
 runtimePlots <- conclusions$runtime$plots
 
 genreData <- conclusions$genre$data %>% arrange(desc(pctChgRevenue))
-castData <- conclusions$cast$data %>% arrange(desc(pctChgRevenue))
-runtimeData <- conclusions$runtime$data %>% arrange(desc(pctChgRevenue))
-
-
+castPctChg <- conclusions$cast$pctChg
+rtPctChg <- conclusions$runtime$pctChg
 ```
 
 The purpose of this analysis was to determine the factors that make a movie popular, in terms of box office success. More to the point, the aim was to generate insight that would inform the decisions studio executives must make at project inception or in the early stages of a film project. That said, features of interest were those that were *knowable* by studio executives at or near project outset. As such, variables such as critics scores/ratings, audience scores/ratings, IMDB rating, academy awards, and box office success, were only considered as possible dependent variables to predict, but not as independent variables. Instead, new features that characterized actor and director experience and popularity from a historical point of view, were created. 
@@ -27,42 +28,42 @@ Casting is certainly one of the most important decisions a studio executive or c
 
 Scores were computed for each actor and the cast score was the sum of the actor scores for that film. This measure accounted for `r round(modelA$anova %>% filter(Term == 'cast_scores') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'cast_scores') %>% select(7) / sum(modelA$anova[1:(nrow(modelA$anova)-1),7]) * 100, 2)`% of the variance attributed to the terms. 
 
-`r kfigr::figr(label = "cast", prefix = TRUE, link = TRUE, type="Figure")` illustrates the effect of cast scores on IMDB votes, and  box office revenue. 
+`r kfigr::figr(label = "c_cast", prefix = TRUE, link = TRUE, type="Figure")` illustrates the effect of cast scores on IMDB votes, and  box office revenue. 
 
-```{r cast, fig.height=10}
+```{r c_cast, fig.height=10}
 library(gridExtra)
 n <- length(castPlots)
 nCol <- floor(sqrt(n))
 do.call("grid.arrange", c(castPlots, ncol=nCol))
 ```
-`r kfigr::figr(label = "cast", prefix = TRUE, link = TRUE, type="Figure")`: Impact of cast scores on box office 
+`r kfigr::figr(label = "c_cast", prefix = TRUE, link = TRUE, type="Figure")`: Impact of cast scores on box office 
 
-As shown in the top two charts in `r kfigr::figr(label = "cast", prefix = TRUE, link = TRUE, type="Figure")`, the logs of IMDB votes and box office grow linearly with cast scores; but they have an accelerated effect on IMDB votes and box office revenue on the linear scale. A one percent change in cast scores results in a `r round(exp(modelA$coefficients[12,2] - 1) * 100, 0)`% change in IMDB votes and a `r round(max(castData$pctChgRevenue) / max(castData$pctChgScore) * 100`% change in box office revenue. Introducing such analytics to the casting process could result in significant gains at the box office.
+As shown in the top two charts in `r kfigr::figr(label = "cast", prefix = TRUE, link = TRUE, type="Figure")`, the logs of IMDB votes and box office grow linearly with cast scores; but they have an accelerated effect on IMDB votes and box office revenue on the linear scale. A one percent change in cast scores results in a `r round(castPctChg$votes, 2)`% change in IMDB votes and a one percent change in IMDB votes leads to a `r round(castPctChg$revenue, 2)`% change in box office revenue. Introducing such analytics to the casting process could result in significant gains at the box office.
 
 
 ## Genre
-The multiregression analysis showed that genre accounts for `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7) / sum(modelA$anova[1:(nrow(modelA$anova)-1),7]) * 100, 2)`% of the variance attributed to the terms. `r kfigr::figr(label = "genres", prefix = TRUE, link = TRUE, type="Figure")` illuminates the effect of genre on IMDB votes and box office revenue.  
+The multiregression analysis showed that genre accounts for `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'genre') %>% select(7) / sum(modelA$anova[1:(nrow(modelA$anova)-1),7]) * 100, 2)`% of the variance attributed to the terms. `r kfigr::figr(label = "c_genres", prefix = TRUE, link = TRUE, type="Figure")` illuminates the effect of genre on IMDB votes and box office revenue.  
 
-```{r genres, fig.height=10}
+```{r c_genres, fig.height=10}
 library(gridExtra)
 n <- length(genrePlots)
 nCol <- floor(sqrt(n))
 do.call("grid.arrange", c(genrePlots, ncol=nCol))
 ```
-`r kfigr::figr(label = "genres", prefix = TRUE, link = TRUE, type="Figure")`: Genre Analysis
+`r kfigr::figr(label = "c_genres", prefix = TRUE, link = TRUE, type="Figure")`: Genre Analysis
 
-Science fiction fantasy, action & adventure, and horror are the top three box office earners according to this analysis.  Using comedy as the reference level, science fiction and fantasy earns `r round(genreData$pctChgVotes[1], 0)`% more IMDB votes than comedy and `r round(genreData$pctChgRevenue[1], 0)`% more revenue, all other factors constant. Action and adventure receives `r round(genreData$pctChgVotes[2], 0)`%  and `r round(genreData$pctChgRevenue[2], 0)`% more IMDB votes and box office revenue than comedy, respectively. Similarly, horrors produce `r round(genreData$pctChgVotes[3], 0)`%  and `r round(genreData$pctChgRevenue[3], 0)`%  more IMDB votes and box office revenue than comedy, respectively. So sayeth, the numbers.
+`r genreData$Genre[1]`, `r tolower(genreData$Genre[2])`, and `r tolower(genreData$Genre[3])` are the top three box office earners according to this analysis.  Using comedy as the reference level, `r tolower(genreData$Genre[1])` earns `r round(genreData$pctChgVotes[1], 0)`% more IMDB votes than comedy and `r round(genreData$pctChgRevenue[1], 0)`% more revenue, all other factors constant. `r tolower(genreData$Genre[2])` receives `r round(genreData$pctChgVotes[2], 0)`%  and `r round(genreData$pctChgRevenue[2], 0)`% more IMDB votes and box office revenue than comedy, respectively. Similarly, `r tolower(genreData$Genre[3])` produce `r round(genreData$pctChgVotes[3], 0)`%  and `r round(genreData$pctChgRevenue[3], 0)`%  more IMDB votes and box office revenue than comedy, respectively. So sayeth, the numbers.
 
 ## Runtime
-Runtime, or its log transformation accounting for just `r modelA$anova[modelA$anova$Term == "runtime_log", 7]`% of the variance in the model, repeatedly emerged as a signficant predictor of IMDB votes. In fact, relative to the other factors its impact was substantial. A one percent change in runtime resulted in a  `r round(exp(modelA$coefficients[13,2] - 1) * 100, 0)`% change in the number of IMDB votes and a `r round(max(runtimeData$pctChgRevenue) / max(runtimeData$pctChgRuntime), 0)`% change in revenue.
+Runtime, or its log transformation accounting for just `r modelA$anova[modelA$anova$Term == "runtime_log", 7]`% of the variance in the model, repeatedly emerged as a signficant predictor of IMDB votes. In fact, relative to the other factors its impact was substantial. A one percent change in runtime resulted in a  `r round(exp(modelA$coefficients[13,2] - 1) * 100, 0)`% change in the number of IMDB votes and in box office revenue.
 
-```{r runtime, fig.height=10}
+```{r c_runtime, fig.height=10}
 library(gridExtra)
 n <- length(runtimePlots)
 nCol <- floor(sqrt(n))
 do.call("grid.arrange", c(runtimePlots, ncol=nCol))
 ```
-`r kfigr::figr(label = "runtime", prefix = TRUE, link = TRUE, type="Figure")`: Impact of runtime on box office 
+`r kfigr::figr(label = "c_runtime", prefix = TRUE, link = TRUE, type="Figure")`: Impact of runtime on box office 
 
 What emerged is that runtime was likely a proxy for a variety of hidden factors such as production budget. High budget films tend to attract the best producers, directors, actors and crew. So, runtime is less a predictor of box office success, but an indicator. 
 

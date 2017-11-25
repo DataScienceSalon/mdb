@@ -6,8 +6,8 @@ load(file = '../data/genres.Rdata')
 edaUni <- univariate(mdb = train)
 ```
 
-# Part 4: Exploratory data analysis
-The exploratory data analysis comprised both a univariate and bivariate examination of the variables.
+# Part 4: Exploratory Data Analysis
+The exploratory data analysis comprised both a univariate and bivariate examination of the variables. 
 
 ## Univariate Analysis
 ### Best Director / Actor / Actress

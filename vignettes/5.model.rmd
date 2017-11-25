@@ -39,11 +39,11 @@ The forward selection process began with a null model then all variables were ad
 The backward elimination approach began with the full model. A regression analysis was performed and the least significant predictor (that with the highest p-value) was removed from the model.  This process repeated, removing only the most least significant predictor at each step, until all predictors had p-values below the designated $\alpha = .05$ threshold.   
 
 ### Full Model Selection
-The motivation for this analysis was provide insight to inform the decisions studio executives must make at the early stages of a film project. That said, the variables selected for the full model were those that are *"knowable"*  by studio executives before theatrical release. Consequently variables excluded from consideration as predictors consist of:  
-* variables not "knowable" at project inception. This would include film ratings, scores, academy awards, and box office results
-* variables that are redundant with other variables with higher correlations with the dependent variable.
-* categorical variables with levels containing fewer than 5 observations, such as the actor, director and studio variables
-* dvd release dates as dvd sales are out of the scope of this analysis.
+The motivation for this analysis was to provide insight to inform the decisions studio executives must make at the early stages of a film project. That said, the variables selected for the full model were those that are *"knowable"*  by studio executives before theatrical release. Consequently variables excluded from consideration as predictors consisted of:  
+* variables not "knowable" at project inception. This would include film ratings, scores, academy awards, and box office results  
+* variables that are redundant with other variables with higher correlations with the dependent variable   
+* categorical variables with levels containing fewer than 5 observations, such as the actor, director and studio variables   
+* dvd release dates as dvd sales are out of the scope of this analysis       
 
 As such, the full model is presented in `r kfigr::figr(label = "fullModel", prefix = TRUE, link = TRUE, type="Table")`.
 
@@ -513,17 +513,6 @@ $y_i$ =
 + `r round(modelA$coefficients$estimate[15], 3)`$x_{14}$
 + `r round(modelA$coefficients$estimate[16], 3)`$x_{15}$
 + `r round(modelA$coefficients$estimate[17], 3)`$x_{16}$
-+ `r round(modelA$coefficients$estimate[18], 3)`$x_{17}$
-+ `r round(modelA$coefficients$estimate[19], 3)`$x_{18}$
-+ `r round(modelA$coefficients$estimate[20], 3)`$x_{19}$
-+ `r round(modelA$coefficients$estimate[21], 3)`$x_{20}$
-+ `r round(modelA$coefficients$estimate[22], 3)`$x_{21}$
-+ `r round(modelA$coefficients$estimate[23], 3)`$x_{22}$
-+ `r round(modelA$coefficients$estimate[24], 3)`$x_{23}$
-+ `r round(modelA$coefficients$estimate[25], 3)`$x_{24}$
-+ `r round(modelA$coefficients$estimate[26], 3)`$x_{25}$
-+ `r round(modelA$coefficients$estimate[27], 3)`$x_{26}$
-+ `r round(modelA$coefficients$estimate[28], 3)`$x_{27}$
 + $\epsilon$
 
 where:
@@ -543,17 +532,6 @@ $x_{13}$ is `r modelA$coefficients$term[14]`
 $x_{14}$ is `r modelA$coefficients$term[15]`   
 $x_{15}$ is `r modelA$coefficients$term[16]`   
 $x_{16}$ is `r modelA$coefficients$term[17]`   
-$x_{17}$ is `r modelA$coefficients$term[18]`   
-$x_{18}$ is `r modelA$coefficients$term[19]`   
-$x_{19}$ is `r modelA$coefficients$term[20]`   
-$x_{10}$ is `r modelA$coefficients$term[21]`   
-$x_{21}$ is `r modelA$coefficients$term[22]`   
-$x_{22}$ is `r modelA$coefficients$term[23]`   
-$x_{23}$ is `r modelA$coefficients$term[24]`   
-$x_{24}$ is `r modelA$coefficients$term[25]`   
-$x_{25}$ is `r modelA$coefficients$term[26]`   
-$x_{26}$ is `r modelA$coefficients$term[27]`   
-$x_{27}$ is `r modelA$coefficients$term[28]`   
 
 
 
@@ -585,8 +563,7 @@ The intercept estimate, `r round(modelA$coefficients$estimate[1], 3)` , is the r
 * plus a value associated with the genre of the film,   
 * plus `r round(subset(modelA$coefficients, term == "cast_scores", select = estimate), 3)` percent change in IMDB votes for each percent change in the point scores for the cast members.
 * plus `r round(subset(modelA$coefficients, term == "runtime_log", select = estimate), 3)` percent change in IMDB votes for each percent change in runtime,      
-* plus a percent change associated with the MPAA rating for the film.     
-* plus a percent change associated with the month of theatrical release.      
+* plus a percent change associated with the MPAA rating for the film.      
 
 ## Model Two: Simple Linear Regression
 ```{r modelTwo_analysis}

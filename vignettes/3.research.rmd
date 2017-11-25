@@ -1,8 +1,14 @@
-# Part 3: Research question
-The underlying intent of this analysis was to determine the factors that most influence  box office success for a film. Since  box office revenue was not among the variables included in the raw data set, the first task was to determine which of the selected (or derived) variables would stand as a proxy for  box office success. As such the first research question is concretely stated as follows:
-> Which of the selected or derived variables is most highly associated / correlated with total lifetime  box office revenue
+# Part 3: Research Questions
+What factors make a movie popular? As mentioned, this analysis defines popularity by box office success and explores this question from the perspective of a studio executive at the nascient stages of a film's production. The purpose, therefore, is to render insight that might inform the key early decisions that most impact success at the box office.
 
-Once this proxy response variable was determined, the features that are most highly associated / correlated with this response variable were examined via the following research question.
-> Which features are most highly associated / correlated with the proxy response for  box office success
+As such, three research questions were engaged. The first task was to identify a response variable that would proxy for box office success. The first research question, therefore, is:  
+> Which of the available variables most highly correlates with box office revenue?  
+
+The variable most highly correlated with box office revenue would be the dependent variable to predict via multiple regression modeling. Therefore, the second research question is:  
+> What are the variables and regression parameters which most accurately predict the dependent variable?   
+
+The final research question extends the analysis to examine the impact of the variables identified in research question #2 to box office revenue.
+> What are the marginal relationships of the variables and regression parameters from above on box office revenue? 
+
 
 * * *

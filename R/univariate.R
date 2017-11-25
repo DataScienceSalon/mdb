@@ -206,7 +206,7 @@ univariate <- function(mdb) {
     audienceScores = audienceScores,
     votesPerDay = votesPerDay,
     votesPerDayLog = votesPerDayLog,
-    bBoxOffice = boxOffice,
+    boxOffice = boxOffice,
     boxOfficeLog = boxOfficeLog,
     outliers = outliers
   )

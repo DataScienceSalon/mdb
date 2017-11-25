@@ -9,10 +9,26 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Model Interpretation
-The final prediction equation was defined as follows:  
-$y_i$ = `r round(2.5, 2)` 
-+ `r round(3.232, 2)`$x_1$
-+ $\epsilon$    
+```{r model, child = '1.intro.rmd'}
+```
 
+```{r model, child = '2.data.rmd'}
+```
 
+```{r model, child = '3.research.rmd'}
+```
+
+```{r model, child = '4.eda.rmd'}
+```
+
+```{r model, child = '5.model.rmd'}
+```
+
+```{r model, child = '6.prediction.rmd'}
+```
+
+```{r model, child = '7.conclusion.rmd'}
+```
+
+```{r model, child = '8.appendix.rmd'}
+```
