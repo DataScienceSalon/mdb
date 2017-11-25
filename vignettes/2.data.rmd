@@ -1,8 +1,10 @@
 ```{r restore-data}
 # fin1 <- openxlsx::read.xlsx(xlsxFile = "../data/sample.xlsx")
 # fin2 <- openxlsx::read.xlsx(xlsxFile = "../data/financials.xlsx")
+# genres <- openxlsx::read.xlsx(xlsxFile = "../data/genres.xlsx")
 # save(fin1, file = "../data/fin1.Rdata")
 # save(fin2, file = "../data/fin2.Rdata")
+# save(genres, file = "../data/genres.Rdata")
 ```
 
 
@@ -26,65 +28,78 @@ load("../data/fin2.Rdata")
 # rerun <- TRUE
 ```
 
-
-
 ```{r reload-data}
 load("../data/train.Rdata")
 load("../data/test.Rdata")
 load("../data/case.Rdata")
 load("../data/mdb2.Rdata")
+all <- rbind(train, test)
 ```
 
 
 # Part 2: Data
-The data were comprised of audience and critics opinions, awards, studio, and actor information from Rotten Tomatoes, imdb, and BoxOfficeMojo.com for a random sample of 651 movies produced and released prior to 2016.
+The data were comprised of audience and critics opinions, actor, director, and studio information, as well as notable academy award nominations and winnings, for a random sample of 651 movies obtained from the IMDB.com, Rottentomatoes.com, and BoxOfficeMojo.com websites. To relate the available features to box office success, box office revenue was obtained for a random sample of `r length(complete.cases(all))` films from The Numbers website.
 
 ## Data Sources
-### Rotten Tomatoes
-Launched in August 1998 by Senh Duong, Rotten Tomatoes is an American review aggregation website for film and television.
+Launched in October 1990 by Col Needham, the Internet Movie Database (abbreviated IMDb) is an online database of film information, audience and critics ratings, plot summaries and reviews.  As of November 2017, the site contained over 4.6 million titles, 8.2 million personalities, and hosts 80 million registered users [@Wikipedia].  Rottentomatoes.com, so named from the practice of audiences throwing rotten tomatoes when disapproving of a poor stage performance, was launched officially in April 2000 by Berkeley student, Senh Duong. It provides audience and critics ratings  for some 26 million users worldwide [@Flixter]. Box Office Mojo was founded in 1999 tracks box office information and publishes it on its site [@Fritz2008]. The Numbers website, provided by Nash Information Services, compiles statistics for the movie industry [@Services2014].
 
-### IMDB
+## Generalizability & Causality
+The data was **randomly sampled** from available IMDb and Rotten Tomatoes website apis, and so the inference *should* be generalizable to the population. However, a priori minimum sample size calculation was conducted over the proportions of films by genre. Frequency counts by genre were obtained for 6 million movies from the IMDb website [@IMDbstats2015].
 
-## Generalizability
+`r kfigr::figr(label = "sampleSize", prefix = TRUE, link = TRUE, type="Table")`: Sample size analysis of proportions by genre
+```{r sampleSize}
+# Determine effect size
+genres <- openxlsx::read.xlsx(xlsxFile = '../data/genres.xlsx')
+ss <- sampleSize(movies, genres)
+knitr::kable(ss$genres, digits = 3) %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+```
+As indicated in `r kfigr::figr(label = "sampleSize", prefix = TRUE, link = TRUE, type="Table")`, the minimum required sample sizes were not met for most of the genres, according to the proportions obtained from IMDb. This could reduce generalizability of models that include genre as a predictor. Since this was an observational study, random assignment was not performed, as such **causality is not indicated by this analysis**.
+
 
 ## Data Preprocessing
-As a first step, variables such as website addresses and film titles were removed from the data set, then some 619 completed cases were extracted for downstream analysis. Since the focus was on theatrical releases, TV movies were excised from the data set. Next, three additional data sets were created:
-* Film Daily Box Office
-* Director Profiles
-* Actor Profiles
+As a first step, observations for TV movies were removed as they were out of the scope of this analysis. Lacking the minimum observations for this categorical level, NC-17 films were also removed from the data.  for lack Lacking a minimum of 5 observations for this categorical level, NC-17 films were removed. Log transformations were applied to the imdb_num_votes, runtime, and box_office variables. 
 
-**Film Daily Box Office**
-The overarching aim was to understand which factors most influenced  box office success for a film. Since  box office revenue was not among the features provided in the data set, the first preprocessing step was to identify (or create) a response variable that would correlate with  box office success. As such, total  box office was obtained from the BoxOfficeMojo.com site for a random sampling of some `r round(nrow(mdb2), -1)` films from the original sample. The first step in the bivariate analysis was to identify which of the provided variables (or variables derived from those provided) most correlated with  box office success.
+**Cast Scores Variable**
+A new variable was created to characterize the popularity of the cast for a film. Cast score was computed as follows:  
+$$cs_i = [\displaystyle\sum_{a=1}^5 \displaystyle\sum_{f_a=1}^n s_{f_a} * p_a] - s_i $$
+where:  
+$cs_i$ is the cast score for film $i$  
+$a$ is the variable containing the five credited actors   
+$f_a$ is the film in which actor was credited  
+$n$ is the number of films in which the actor was credited  
+$s_{f_a}$ is the total score for film $f_a$, computed as (10 * imdb_rating) + audience score  
+$p_a$ is the proportion of $s_{f_a}$ allocated to actor $a$ and is defined as:   
+Actor 1: .40 * $s_{f_a}$  
+Actor 1: .30 * $s_{f_a}$  
+Actor 1: .15 * $s_{f_a}$  
+Actor 1: .10 * $s_{f_a}$  
+Actor 1: .05 * $s_{f_a}$  
+$s_i$ is the total score for film $i$
 
-**Director / Actor Profiles:**
-The purpose of the director/actor profiles was to capture the experience and popularity of each director and actor. The experience variables were simply the total number of films in the sample in which the director or actor was listed in the original sample.  Popularity, in the director's case was the sum of the IMDB votes for the director's films.  Similarly, the popularity for an actor was the sum of the *allocated* IMDB votes for films in which the actor was listed as one of the top 5. Actors were allocated IMDB votes as follows:
-* 40% of total film IMDB votes for actor1
-* 30% of total film IMDB votes for actor2
-* 15% of total film IMDB votes for actor3
-* 10% of total film IMDB votes for actor4
-* 5% of total film IMDB votes for actor5
-These variables were then merged into the main sample data set.
+Essentially, actors are allocated a proportion of the total score for each film according to the proportions above. The cast score for film $i$ is the sum of the apportioned scores for each actor minus the total score for the current film.
 
-**Variables Added**
-A variable was created to capture the number of days between theatrical and dvd release. A composite score variable defined as 10 * IMDB Rating + critics score + audience_score was created and lastly, log transformations were applied to certain variables such as IMDB and cast votes. To sum, the following variables listed in `r kfigr::figr(label = "derived", prefix = TRUE, link = TRUE, type="Table")` were added to the data set.
-`r kfigr::figr(label = "derived", prefix = TRUE, link = TRUE, type="Table")`: Variables added to the data set
-```{r derived}
-raw <- openxlsx::read.xlsx(xlsxFile = "../data/features.xlsx")
-derived <- raw %>% filter(Source == "Derived") %>% select(Variable, Description) %>% arrange(Variable)
-knitr::kable(derived) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+**Variables Removed**  
+Qualitative variables with fewer than 5 observations per level were removed. This included:  
+* film title 
+* the url addresses  
+* studio, actor and director variables  
+
+Variables containing redundant or unrelated information were removed, such as :  
+* dvd release dates, theatre release year and day   
+* critics rating, redundant with critics score   
+* audience rating, redndant with audience score  
+
+The full resultant codebook for the data set is listed in `r kfigr::figr(label = "codebook", prefix = TRUE, link = TRUE, type="Table")`.
+
+`r kfigr::figr(label = "codebook", prefix = TRUE, link = TRUE, type="Table")`: Movie data set codebook
+```{r codebook}
+codebook <- openxlsx::read.xlsx("../data/features.xlsx", sheet = 1)
+codebook <- codebook %>% filter(final == "yes") %>% select(Type, Variable, Description) %>% arrange(Type, Variable)
+knitr::kable(codebook, align = 'l') %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center") 
 ```
 
-**Variables Removed**
-The following variables listed in `r kfigr::figr(label = "removed", prefix = TRUE, link = TRUE, type="Table")` were removed from the data set for the reasons listed below.
-`r kfigr::figr(label = "removed", prefix = TRUE, link = TRUE, type="Table")`: Variables removed from the data set
-```{r removed}
-raw <- openxlsx::read.xlsx(xlsxFile = "../data/features.xlsx")
-removed <- raw %>% filter(uni == "no") %>% select(Variable, Description, Rationale) %>% arrange(Variable)
-knitr::kable(removed) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
-```
-
-The full resultant codebook for the data set can be found in Appendix A
+Lastly, the data was split into a training set (80%) and a test set (20%). The following exploratory data analysis and modeling was performed on the training set.
 
 * * *

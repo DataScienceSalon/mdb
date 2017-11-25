@@ -22,7 +22,7 @@ intro <- function(data) {
                    plotTitle = 'Domestic Box Office ')
   p2 <- plotHist(domesticLog, xLab = "Domestic Box Office (Log)", yLab = "Frequency",
                    plotTitle = 'Domestic Box Office (Log)')
-  top5 <- data %>% arrange(desc(Domestic)) %>%  select(Movie, Domestic, Worldwide)
+  top5 <- data %>% arrange(desc(Domestic)) %>%  select(Movie, Domestic)
   top5 <- head(top5, 5)
 
   analysis <- list()

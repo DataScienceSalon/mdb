@@ -54,6 +54,7 @@ source("../R/prediction.R")
 source("../R/preprocess.R")
 source("../R/process.R")
 source("../R/regressionAnalysis.R")
+source("../R/sampleSize.R")
 source("../R/slr.R")
 source("../R/univariate.R")
 source("../R/univariateQual.R")
@@ -62,7 +63,7 @@ source("../R/visualization.R")
 ```
 
 
-```{r model, child = '1.intro.rmd'}
+```{r model, child = '4.eda.rmd'}
 ```
 
 

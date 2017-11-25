@@ -73,3 +73,32 @@ getPSampleSize <- function(p, conf = 0.95, me = 0.05) {
   return(ss)
 }
 
+
+#------------------------------------------------------------------------------#
+#            Estimate Sample Size Required for Continuous Outcomes             #
+#------------------------------------------------------------------------------#
+#' getCSampleSize
+#'
+#' \code{getCSampleSize} Computes the required sample size for a proportion, such
+#' that the population proportion is within a designated margin of error of the
+#' sample proportion with a designated level of confidence.
+#'
+#' @param e Numeric indicator of effect size
+#' @param p Numeric indicator of the target power
+#' @param me Numeric indicator of alpha level
+#'
+#' @return sampleSize Minimum required sample size
+#' @author John James, \email{jjames@@datasciencesalon.org}
+#' @family analysis functions
+#' @export
+getCSampleSize <- function(data, e, p = 0.80, me = 0.05) {
+
+  z1 <- qnorm(me/2, lower.tail = FALSE)   # Area under curve for the desired margin of error
+  z2 <- qnorm(p)                          # Area under curve associated with power
+  z <- z1 + z2                            # Effect size in standard errors
+  s <- sd(data)                           # Estimate for population standard deviation
+  n <- (z * s / e)^2                      # Sample size estimate
+
+  return(n)
+}
+
