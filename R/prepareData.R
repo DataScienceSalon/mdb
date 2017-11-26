@@ -33,7 +33,7 @@ prepareData <- function(cases, actors) {
   actors <- merge(actors, actorScores, by = 'actor')
   movieScores <- actors %>% group_by(title) %>% summarise(cast_scores = sum(scores)) %>%
     select(title, cast_scores)
-  cases <- merge(cases, movieScores, by = 'title')
+  cases <- merge(cases, movieScores, by = 'title', all.x = TRUE)
 
 
 

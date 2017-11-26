@@ -354,7 +354,8 @@ As mentioned above, the first objective was to identify an available variable th
 ```{r correlation1}
 mData <- process(mdb2, stage = "a", y = "box_office_log")
 rLogBoxOffice <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log Box Office", plot = FALSE)
-knitr::kable(head(rLogBoxOffice$tests, 10), digits = 2) %>%
+save(x = rLogBoxOffice, file = '../data/rLogBoxOffice.Rdata')
+knitr::kable(head(rLogBoxOffice$tests, 50), digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
@@ -373,6 +374,7 @@ Having designated the log number of IMDB votes as the dependent variable, an ana
 ```{r correlations}
 mData <- process(train, stage = "b", y = "imdb_num_votes_log")
 rLogIMDBVotes  <- correlate(x = mData$numeric, y = mData$dependent, yLab = "Log IMDB Votes", plot = FALSE)
+save(x = rLogIMDBVotes, file = '../data/rLogIMDBVotes.Rdata')
 knitr::kable(head(rLogIMDBVotes$tests, 10), digits = 2) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```

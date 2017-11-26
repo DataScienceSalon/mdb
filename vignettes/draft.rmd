@@ -32,3 +32,31 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r model, child = '8.appendix.rmd'}
 ```
+
+
+
+## Runtime: Proxy Variable
+Runtime, or its log transformation accounting for just `r modelA$anova[modelA$anova$Term == "runtime_log", 7]`% of the variance in the model, repeatedly emerged as a signficant predictor of IMDB votes. In fact, relative to the other factors its impact was substantial. A one percent change in runtime resulted in a  `r round(rtPctChg$rtVotes, 3)`% change in the number of IMDB votes, equating to a `r round(rtPctChg$rtRev, 3)`% change in box office revenue!
+
+```{r c_runtime}
+library(gridExtra)
+n <- length(runtimePlots)
+nCol <- max(floor(sqrt(n)), 2)
+do.call("grid.arrange", c(runtimePlots, ncol=nCol))
+```
+`r kfigr::figr(label = "c_runtime", prefix = TRUE, link = TRUE, type="Figure")`: Impact of runtime on box office 
+
+What emerged is that runtime was likely a proxy for a variety of hidden factors such as production budget. High budget films tend to attract the best producers, directors, actors and crew. So, runtime is less a predictor of box office success, but a proxy for  factors that were unavailable for this analysis. 
+
+## MPAA Ratings: `r mpaaData$mpaa[1]` (not PG)
+MPAA rating accounts for `r round(modelA$anova %>% filter(Term == 'mpaa') %>% select(7), 2)`% of total variance and  `r round(modelA$anova %>% filter(Term == 'mpaa') %>% select(7) / sum(modelA$anova[1:(nrow(modelA$anova)-1),7]) * 100, 2)`% of the variance attributed to the terms. `r kfigr::figr(label = "c_mpaa", prefix = TRUE, link = TRUE, type="Figure")` illuminates the effect of MPAA Rating on IMDB votes and box office revenue.  
+
+```{r c_mpaa, fig.height=10}
+library(gridExtra)
+n <- length(mpaaPlots)
+nCol <- max(floor(sqrt(n)), 2)
+do.call("grid.arrange", c(mpaaPlots, ncol=nCol))
+```
+`r kfigr::figr(label = "c_mpaa", prefix = TRUE, link = TRUE, type="Figure")`: MPAA Analysis
+
+The statistics in `r kfigr::figr(label = "c_mpaa", prefix = TRUE, link = TRUE, type="Figure")` assume an average number of cast scores and log of runtime, for an action and adventure film. `r mpaaData$mpaa[1]`, `r mpaaData$mpaa[2]`, and `r mpaaData$mpaa[3]` rated films are the top three box office earners according to this analysis.  Using rated G films as the reference, `r mpaaData$mpaa[1]` rated films earn `r round(mpaaData$pctChgMPAAVotes[1], 0)`% more IMDB votes than G rated films and `r round(mpaaData$pctChgMPAARev[1], 0)`% more revenue, all other factors constant. Rated `r mpaaData$mpaa[2]` films receive `r round(mpaaData$pctChgMPAAVotes[2], 0)`%  and `r round(mpaaData$pctChgMPAARev[2], 0)`% more IMDB votes and box office revenue than G rated films, respectively. On the other hand `r mpaaData$mpaa[4]` rated films are associated with `r abs(round(mpaaData$pctChgMPAAVotes[4], 0))`%  fewer IMDB votes and a reduction in revenue (relative to G rated films) of `r abs(round(mpaaData$pctChgMPAARev[2], 0))`%. `r mpaaData$mpaa[5]` films, attract `r abs(round(mpaaData$pctChgMPAAVotes[5], 0))`% fewer votes and earn `r abs(round(mpaaData$pctChgMPAARev[5], 0))`% less than G rated films at the box office.

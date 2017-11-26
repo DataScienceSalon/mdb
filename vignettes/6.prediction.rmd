@@ -1,11 +1,16 @@
 # Part 6: Prediction
 ```{r prediction}
 cases <- openxlsx::read.xlsx("../data/movies2016.xlsx")
+cases <- cases %>% filter(year == 2016)
 load(file = '../data/actorScores.RData')
+load(file = '../data/modelA.RData')
+load(file = '../data/modelTwo.RData')
 cases <- prepareData(cases,actorScores)
 votes <- prediction(mod = modelA$mod, cases = cases)
 cases$imdb_num_votes_log <- votes$predictions$`Predicted imdb_num_votes_log`
 revenue <- prediction(mod =modelTwo$mod, cases = cases)
+votes$predictions <- votes$predictions %>% arrange(.[[1]], desc(.[[2]]))
+revenue$predictions <- revenue$predictions %>% arrange(.[[1]], desc(.[[2]]))
 
 ```
 Ten films from 2016 were selected from teh BoxOfficeMojo.com website and two predictions were performed. The first used the multiple regression model to predict the log number of imdb votes. The second was a test of the simple linear regression of log imdb votes on log box office.
