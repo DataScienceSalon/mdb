@@ -24,12 +24,24 @@
 process <- function(data, stage = "a", y, outliers = NULL) {
 
   # Define data stages in terms of the variables to omit
-  omitA <- c('title',	'title_type',	'imdb_url',	'rt_url',
-             'thtr_rel_year',	'thtr_rel_day',	'dvd_rel_year',
-             'dvd_rel_month',	'dvd_rel_day',	'scores',	'scores_log',
-             'votes_per_day_scores',	'votes_per_day_scores_log',
-             "box_office", 'actor1', 'actor2',
-             'actor3', 'actor4', 'actor5', 'director', 'studio')
+  omitA <- c( 'actor1', 'actor2', 'actor3', 'actor4', 'actor5', "box_office",
+              'cast_dir_exp', 'cast_dir_exp_log', 'cast_dir_scores',
+              'cast_dir_scores_log', 'cast_dir_votes', 'cast_dir_votes_log',
+              'cast_exp_dir_scores', 'cast_exp_dir_scores_log',
+              'cast_exp_dir_votes', 'cast_exp_dir_votes_log',
+              'cast_experience_log', 'cast_scores_dir_exp',
+              'cast_scores_dir_exp_log', 'cast_scores_dir_votes',
+              'cast_scores_dir_votes_log', 'cast_scores_log',
+              'cast_votes_dir_exp', 'cast_votes_dir_exp_log',
+              'cast_votes_dir_scores', 'cast_votes_dir_scores_log',
+              'cast_votes_log', 'director_experience_log',
+              'director_scores_log', 'director_votes_log',
+              'dvd_rel_day', 'dvd_rel_month', 'dvd_rel_year',
+              'imdb_url', 'rt_url', 'scores', 'scores_log', 'thtr_days',
+              'thtr_days_log', 'thtr_rel_day', 'thtr_rel_year',
+              'title', 'title_type', 'votes_per_day', 'votes_per_day_log',
+              'votes_per_day_scores', 'votes_per_day_scores_log')
+
   omitB <- c('votes_per_day_log', 'imdb_num_votes', 'box_office_log',
              'votes_per_day')
 

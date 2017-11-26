@@ -5,15 +5,17 @@ load("../data/fin2.Rdata")
 introData <- intro(fin2)
 ```
 
-What features make for a popular film? For the purposes if this analysis, popular is defined strictly by box office success. Sampling over 5,000 movies, the mean domestic box office was approximately \$`r round(introData$stats$Mean,-2)`, with half earning approximately \$`r round(introData$stats$Median, -2)`,  The top 5 films observed (`r kfigr::figr(label = "top5films", prefix = TRUE, link = TRUE, type="Table")`) earned an average of \$`r round(mean(introData$top5$Domestic), -2)` worldwide!
+What features make for a popular film at the box office? The mean domestic box office, for a sample of over 5000 films, was approximately \$`r round(introData$stats$Mean,-2)`, with half earning approximately \$`r round(introData$stats$Median, -2)`,  The top 5 films observed (`r kfigr::figr(label = "top5films", prefix = TRUE, link = TRUE, type="Table")`) earned an average of \$`r round(mean(introData$top5$Domestic), -2)`!
 
+<div class = "col2-right">
 `r kfigr::figr(label = "top5films", prefix = TRUE, link = TRUE, type="Table")` Top 5 films at the box office
 ```{r top5films}
-knitr::kable(introData$top5, format.args = list(big.mark = ",")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
+knitr::kable(introData$top5, format.args = list(big.mark = ","), 'html') %>%
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = F, position = "float_right")
 ```
-
-What is it about these films that make them so successful? The analysis explores this question from the perspective of a studio executive at the nascient stages of a film's production. The purpose, therefore, is to render insight that might inform the key early decisions that most impact success at the box office.
-
+</div>
+<div class = "col2-left">
+What is it about these films that make them so successful? The analysis explores this question from the perspective of a studio executive at the nascent stages of a film's production. Applying linear regression techniques to data obtained the IMDb, Rotten Tomatoes and BoxOfficeMojo websites, the aim was to render insights that might inform the key early decisions that studio executives, producers and directors must make to have the greatest positive impact at the box office.
+</div>   
 
 * * *

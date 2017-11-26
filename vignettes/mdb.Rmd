@@ -1,5 +1,5 @@
 ---
-title: "Movie Rating Model and Predictor"
+title: "What Makes a Movie Popular?"
 author: "John James jjames@datasciencesalon.org"
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 output:
@@ -67,8 +67,29 @@ source("../R/visualization.R")
 rerun <- FALSE
 ```
 
+```{r model, child = '1.intro.rmd'}
+```
+
+```{r model, child = '2.data.rmd'}
+```
+
+```{r model, child = '3.research.rmd'}
+```
+
+```{r model, child = '4.eda.rmd'}
+```
+
+```{r model, child = '5.model.rmd'}
+```
+
+```{r model, child = '6.prediction.rmd'}
+```
 
 ```{r model, child = '7.conclusion.rmd'}
 ```
+
+```{r model, child = '8.appendix.rmd'}
+```
+
 
 # References

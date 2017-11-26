@@ -1,5 +1,9 @@
 # Part 5: Modeling
-The aim at this stage was to develop two prediction models:  Model One, a multiregression model that predicts the log of IMDB votes, and Model Two, a simple linear regression model that predicts log box office revenue based upon the log of IMDB votes. The former was the best performing of four multiregression models, developed using both forward selection and backward elimination method selection methods.  These four models and their model selection methods were:  
+```{r load_model_data}
+load('../data/train.Rdata')
+load('../data/test.Rdata')
+```
+The aim at this stage was to develop two prediction models:  Model One, a multiregression model that predicts the log of IMDb votes, and Model Two, a simple linear regression model that predicts log box office revenue based upon the log of IMDb votes. The former was the best performing of four multiregression models, developed using both forward selection and backward elimination method selection methods.  These four models and their model selection methods were:  
 
 `r kfigr::figr(label = "models", prefix = TRUE, link = TRUE, type="Table")`: Multiregression prediction models
 ```{r models}
@@ -71,7 +75,7 @@ if (rerun == TRUE) {
   
   # Conduct regression analysis
   modelA <- regressionAnalysis(mod = m, mName = "Model Alpha", yVar  = 'imdb_num_votes_log',
-                                 yLab = "Log IMDB Votes")
+                                 yLab = "Log IMDb Votes")
   save(modelA, file = "../data/modelA.Rdata")
 } else {
   load("../data/modelA.Rdata")
@@ -99,7 +103,7 @@ modelA$plots$regression
 
 #### Model Diagnostics
 ##### Linearity
-The linearity of each predictor with the log number of IMDB votes is illustrated in `r kfigr::figr(label = "modelA_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
+The linearity of each predictor with the log number of IMDb votes is illustrated in `r kfigr::figr(label = "modelA_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
 
 ```{r modelA_linearity, fig.height=10}
 library(gridExtra)
@@ -154,7 +158,7 @@ gridExtra::grid.arrange(modelA$plots$res_leverage, modelA$plots$cooks, ncol = 2)
 `r modelA$comments$outliers` The discern the effect of these outliers on the model, a new model (Model B) was created without the outliers removed.
 
 ### Model Beta
-This was also a forward selecion model; however, it was based upon the full model with **outliers from Model Alpha removed**. The variables were added as described in  `r kfigr::figr(label = "model_b_build", prefix = TRUE, link = TRUE, type="Table")`
+This was also a forward selection model; however, it was based upon the full model with **outliers from Model Alpha removed**. The variables were added as described in  `r kfigr::figr(label = "model_b_build", prefix = TRUE, link = TRUE, type="Table")`
 
 `r kfigr::figr(label = "model_b_build", prefix = TRUE, link = TRUE, type="Table")`: Model Beta forward selection process
 ```{r model_b_build, results = "html"}
@@ -167,7 +171,7 @@ if (rerun == TRUE) {
   
   # Conduct regression analysis
   modelB <- regressionAnalysis(m, mName = "Model Beta", yVar  = 'imdb_num_votes_log',
-                                 yLab = "Log IMDB Votes")
+                                 yLab = "Log IMDb Votes")
   save(modelB, file = "../data/modelB.Rdata")
 } else {
   load(file = "../data/modelB.Rdata")
@@ -192,7 +196,7 @@ modelB$plots$regression
 
 #### Model Diagnostics
 ##### Linearity
-The linearity of each predictor with the log number of IMDB votes is illustrated in `r kfigr::figr(label = "modelB_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
+The linearity of each predictor with the log number of IMDb votes is illustrated in `r kfigr::figr(label = "modelB_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
 
 ```{r modelB_linearity, fig.height=10}
 n <- length(modelB$plots$linearity)
@@ -248,7 +252,7 @@ gridExtra::grid.arrange(modelB$plots$res_leverage, modelB$plots$cooks, ncol = 2)
 `r modelB$comments$outliers` A case-wise review of the influential points did not reveal any data quality issues; therefore, the influential points would not be removed from the model.
 
 ### Model Gamma
-For this model, a backward elimination procedure was undertaken based upon the full model  The variables were removed as described in  `r kfigr::figr(label = "model_c_build", prefix = TRUE, link = TRUE, type="Table")`
+For this model, a backward elimination procedure was undertaken based upon the full model  There were no variables removed from the model.
 
 `r kfigr::figr(label = "model_c_build", prefix = TRUE, link = TRUE, type="Table")`: Model Gamma
 ```{r model_c_build, results = "html"}
@@ -261,7 +265,7 @@ if (rerun == TRUE) {
   
   # Conduct regression analysis
   modelC <- regressionAnalysis(m, mName = "Model Gamma", yVar  = 'imdb_num_votes_log',
-                                 yLab = "Log IMDB Votes")
+                                 yLab = "Log IMDb Votes")
   save(modelC, file = "../data/modelC.Rdata")
 } else {
   load(file = "../data/modelC.Rdata")
@@ -296,7 +300,7 @@ modelC$plots$regression
 
 #### Model Diagnostics
 ##### Linearity
-The linearity of each predictor with the log number of IMDB votes is illustrated in `r kfigr::figr(label = "modelC_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
+The linearity of each predictor with the log number of IMDb votes is illustrated in `r kfigr::figr(label = "modelC_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
 
 ```{r modelC_linearity, fig.height=10}
 n <- length(modelC$plots$linearity)
@@ -351,9 +355,8 @@ gridExtra::grid.arrange(modelC$plots$res_leverage, modelC$plots$cooks, ncol = 2)
 
 
 ### Model Delta
-This was also a backward elimination model; however, it was based upon the full model with **outliers from Model Gamma removed**.   The variables were removed as described in  `r kfigr::figr(label = "model_d_build", prefix = TRUE, link = TRUE, type="Table")`
+This was also a backward elimination model; however, it was based upon the full model with **outliers from Model Gamma removed**.   There were no variables removed from the model.
 
-`r kfigr::figr(label = "model_d_build", prefix = TRUE, link = TRUE, type="Table")`: Model Delta
 ```{r model_d_build, results = "html"}
 
 if (rerun == TRUE) {
@@ -365,7 +368,7 @@ if (rerun == TRUE) {
   
   # Conduct regression analysis
   modelD <- regressionAnalysis(m, mName = "Model Delta", yVar  = 'imdb_num_votes_log',
-                                 yLab = "Log IMDB Votes")
+                                 yLab = "Log IMDb Votes")
   save(modelD, file = "../data/modelD.Rdata")
 } else {
   load(file = "../data/modelD.Rdata")
@@ -403,7 +406,7 @@ modelD$plots$regression
 
 #### Model Diagnostics
 ##### Linearity
-The linearity of each predictor with the log number of IMDB votes is illustrated in `r kfigr::figr(label = "modelD_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
+The linearity of each predictor with the log number of IMDb votes is illustrated in `r kfigr::figr(label = "modelD_linearity", prefix = TRUE, link = TRUE, type="Figure")`.  
 
 ```{r modelD_linearity, fig.height=10}
 n <- length(modelD$plots$linearity)
@@ -469,7 +472,8 @@ knitr::kable(abcd, digits = 3) %>%
 ```
 
 #### Forward Selection vs. Backward Elimination
-The differences in root mean square error for the models was not significant  `r round((abcd$RMSE[3] - abcd$RMSE[1]) / abcd$RMSE[3] * 100, 2)`% and `r round((abcd$RMSE[2] - abcd$RMSE[4]) / abcd$RMSE[4] * 100, 2)`%.  Similarly, the differences in adjusted R-squared were `r round((abcd[1,9] - abcd[3,9]) / abcd[3,9] * 100, 2)`% and `r round((abcd[4,9] - abcd[2,9]) / abcd[2,9] * 100, 2)`%, not a significant difference. Lastly the differences in the percent variance explained by the models also lacking in significance (`r round((abcd[3,11] - abcd[1,11]) / abcd[1,11] * 100, 2)`% and `r round((abcd[4,11] - abcd[2,11]) / abcd[2,11] * 100, 2)`%).
+
+The differences in root mean square error for the models was not significant  `r round((abcd$RMSE[3] - abcd$RMSE[1]) / abcd$RMSE[3] * 100, 2)`% and `r round((abcd$RMSE[2] - abcd$RMSE[4]) / abcd$RMSE[4] * 100, 2)`%.  Similarly, the differences in adjusted R-squared were `r round((abcd[1,9] - abcd[3,9]) / abcd[3,9] * 100, 2)`% and `r round((abcd[4,9] - abcd[2,9]) / abcd[2,9] * 100, 2)`%, not a significant difference. However, the differences in the percent variance explained by the models was not insignificant (`r round((abcd[3,11] - abcd[1,11]) / abcd[1,11] * 100, 2)`% and `r round((abcd[4,11] - abcd[2,11]) / abcd[2,11] * 100, 2)`%). The backward selection models tended to perform slightly better in this regard.  
 
 #### Influential Points: Drop or Not
 The Beta and Delta models were trained on data sans the influential points from Alpha and Gamma.  The differences in RMSE (`r round((abcd$RMSE[1] - abcd$RMSE[2]) / abcd$RMSE[2] * 100, 2)`% and `r round((abcd$RMSE[3] - abcd$RMSE[4]) / abcd$RMSE[4] * 100, 2)`%) were insignificant, as were the differences in adjusted R-squared (`r round((abcd[2,9] - abcd[1,9]) / abcd[1,9] * 100, 2)`% and `r round((abcd[4,9] - abcd[3,9]) / abcd[3,9] * 100, 2)`%), and the percent of variance explained (`r round((abcd[2,11] - abcd[1,11]) / abcd[1,11] * 100, 2)`% and `r round((abcd[4,11] - abcd[3,11]) / abcd[3,11] * 100, 2)`%). However, a case-wise review of the influential points did not reveal any data quality issues; therefore, the points would not be removed.
@@ -482,7 +486,7 @@ The evaluate the effects of model selection method and the treatment of outliers
 3. MSE - Mean Squared Error
 4. RMSE - Root Mean Squared Error
 
-In addition, a percent accuracy measure was computed as the percentage of the observations in the test set in which the actual log number of IMDB votes fell within the prediction interval.
+In addition, a percent accuracy measure was computed as the percentage of the observations in the test set in which the actual log number of IMDb votes fell within the prediction interval.
 
 `r kfigr::figr(label = "prediction_comparison", prefix = TRUE, link = TRUE, type="Table")` Model Predictive Accuracy Summary
 ```{r prediction_comparison}
@@ -557,12 +561,12 @@ knitr::kable(modelA$coefficients, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
 
-The intercept estimate, `r round(modelA$coefficients$estimate[1], 3)` , is the regression estimate for the mean log number of IMDB votes for a G-rated action and adventure film, with zeros for all of the other variables.  The other coefficient estimates adjust the estimate accordingly. Therefore a prediction for the log number of IMDB votes was equal to:  
+The intercept estimate, `r round(modelA$coefficients$estimate[1], 3)` , is the regression estimate for the mean log number of IMDb votes for a G-rated action and adventure film, with zeros for all of the other variables.  The other coefficient estimates adjust the estimate accordingly. Therefore a prediction for the log number of IMDb votes was equal to:  
 
 * the intercept value, `r round(modelA$coefficients$estimate[1], 3)`,    
 * plus a value associated with the genre of the film,   
-* plus `r round(subset(modelA$coefficients, term == "cast_scores", select = estimate), 3)` percent change in IMDB votes for each percent change in the point scores for the cast members.
-* plus `r round(subset(modelA$coefficients, term == "runtime_log", select = estimate), 3)` percent change in IMDB votes for each percent change in runtime,      
+* plus `r round(subset(modelA$coefficients, term == "cast_scores", select = estimate), 3)` percent change in IMDb votes for each percent change in the point scores for the cast members.
+* plus `r round(subset(modelA$coefficients, term == "runtime_log", select = estimate), 3)` percent change in IMDb votes for each percent change in runtime,      
 * plus a percent change associated with the MPAA rating for the film.      
 
 ## Model Two: Simple Linear Regression
@@ -595,7 +599,7 @@ if (rerun == TRUE) {
 ```
 
 ### Model Overview
-A simple linear regression was calculated to predict the log of box office revenue based upon the log of the number of IMDB votes. A significant regression equation was found (F(`r modelTwo$glance$df`,`r modelTwo$glance[1,4]`) = `r round(modelTwo$glance[1,5], 3)`, p < .001), with an $R^2$ of `r round(modelTwo$glance[1,8], 3)`. The prediction equation is as follows:   
+A simple linear regression was calculated to predict the log of box office revenue based upon the log of the number of IMDb votes. A significant regression equation was found (F(`r modelTwo$glance$df`,`r modelTwo$glance[1,4]`) = `r round(modelTwo$glance[1,5], 3)`, p < .001), with an $R^2$ of `r round(modelTwo$glance[1,8], 3)`. The prediction equation is as follows:   
 
 $y_i$ = `r round(modelTwo$coefficients$estimate[1], 2)` 
 + `r round(modelTwo$coefficients$estimate[2], 2)`$x_1$
@@ -650,9 +654,9 @@ gridExtra::grid.arrange(modelTwo$plots$res_leverage, modelTwo$plots$cooks, ncol 
 `r modelTwo$comments$outliers` A case-wise review of the influential points did not reveal any data quality issues; therefore, the influential points were not removed from the model. 
 
 ## Model Summary
-The purpose of this section was to develop models that would predict "box office success". Therefore, two regression models were fit in this section: Model One (F(`r modelA$glance[1,3]`, `r modelA$glance[1,4]`) = `r round(modelA$glance[1,5], 2)`, p < .001), predicted the log number of IMDB votes, the proxy for box office success.   Model Two, a simple linear regression model (F(`r modelTwo$glance[1,3]`, `r modelTwo$glance[1,4]`) = `r round(modelTwo$glance[1,5],2)`, p < .001) predicted log box office revenue based upon the log IMDB votes.
+The purpose of this section was to develop models that would predict "box office success". Therefore, two regression models were fit in this section: Model One (F(`r modelA$glance[1,3]`, `r modelA$glance[1,4]`) = `r round(modelA$glance[1,5], 2)`, p < .001), predicted the log number of IMDb votes, the proxy for box office success.   Model Two, a simple linear regression model (F(`r modelTwo$glance[1,3]`, `r modelTwo$glance[1,4]`) = `r round(modelTwo$glance[1,5],2)`, p < .001) predicted log box office revenue based upon the log IMDb votes.
 
-Next, the models will be used to predict the number of log IMDB votes and the log box office for a randomly selected film.
+Next, the models will be used to predict the number of log IMDb votes and the log box office for a randomly selected film.
 
 
 * * *

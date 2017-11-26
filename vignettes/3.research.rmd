@@ -1,14 +1,15 @@
 # Part 3: Research Questions
-What factors make a movie popular? As mentioned, this analysis defines popularity by box office success and explores this question from the perspective of a studio executive at the nascient stages of a film's production. The purpose, therefore, is to render insight that might inform the key early decisions that most impact success at the box office.
+The purpose of this analysis was to determine the factors that make a movie popular, and to generate insights that would inform the key decisions studio executives and producers must make at the *nascent* stages of a project. Defining movie popularity strictly as box office success, came with its challenges. Since box office revenue was not among the available features, a proxy variable was designated for prediction. This raised the following research question:    
 
-As such, three research questions were engaged. The first task was to identify a response variable that would proxy for box office success. The first research question, therefore, is:  
-> Which of the available variables most highly correlates with box office revenue?  
+> Given the available data, which factor(s) is/are most associated with box office revenue?  
 
-The variable most highly correlated with box office revenue would be the dependent variable to predict via multiple regression modeling. Therefore, the second research question is:  
-> What are the variables and regression parameters which most accurately predict the dependent variable?   
+Once this proxy variable was identified, it was designated as the dependent variable for multiple regression modeling, begging the second research question:   
 
-The final research question extends the analysis to examine the impact of the variables identified in research question #2 to box office revenue.
-> What are the marginal relationships of the variables and regression parameters from above on box office revenue? 
+> Given the available data, which combination of factors provide the best predictions of the designated proxy dependent variable?    
+
+Having identified a model to predict the proxy variable, the next challenge was to relate the predictions to box office revenue, leading to the third research question:   
+
+> Given the variables and parameters identified above, what are the implications for box office success?    
 
 
 * * *

@@ -37,15 +37,15 @@ load("../data/train.Rdata")
 load("../data/test.Rdata")
 load("../data/case.Rdata")
 load("../data/mdb2.Rdata")
-all <- rbind(train, test)
+mdb <- rbind(train, test)
 ```
 
 
 # Part 2: Data
-The data were comprised of audience and critics opinions, actor, director, and studio information, as well as notable academy award nominations and winnings, for a random sample of 651 movies obtained from the IMDB.com, Rottentomatoes.com, and BoxOfficeMojo.com websites. To relate the available features to box office success, box office revenue was obtained for a random sample of `r length(complete.cases(all))` films from The Numbers website.
+The data were comprised of audience and critics opinions, actor, director, and studio information, as well as notable academy award nominations and winnings, for a random sample of 651 movies obtained from the IMDb [@Needham1990], Rotten Tomatoes [@Flixter], and BoxOfficeMojo websites [@Fritz2008]. To relate the available features to box office success, box office revenue was obtained for a random sample of `r nrow(mdb[complete.cases(mdb),])` films from The Numbers website [@Services2014]. Information for ten movies from 2016 were obtained from these four sites. These cases served as the test set for the prediction models.
 
 ## Data Sources
-Launched in October 1990 by Col Needham, the Internet Movie Database (abbreviated IMDb) is an online database of film information, audience and critics ratings, plot summaries and reviews.  As of November 2017, the site contained over 4.6 million titles, 8.2 million personalities, and hosts 80 million registered users [@Wikipedia].  Rottentomatoes.com, so named from the practice of audiences throwing rotten tomatoes when disapproving of a poor stage performance, was launched officially in April 2000 by Berkeley student, Senh Duong. It provides audience and critics ratings  for some 26 million users worldwide [@Flixter]. Box Office Mojo was founded in 1999 tracks box office information and publishes it on its site [@Fritz2008]. The Numbers website, provided by Nash Information Services, compiles statistics for the movie industry [@Services2014].
+Launched in October 1990 by Col Needham, the Internet Movie Database (abbreviated IMDb) is an online database of film information, audience and critics ratings, plot summaries and reviews.  As of November 2017, the site contained over 4.6 million titles, 8.2 million personalities, and hosts 80 million registered users [@Needham1990].  Rotten Tomatoes.com, so named from the practice of audiences throwing rotten tomatoes when disapproving of a poor stage performance, was launched officially in April 2000 by Berkeley student, Senh Duong. It provides audience and critics ratings  for some 26 million users worldwide [@Flixter]. BoxOfficeMojo was founded in 1999 tracks box office information and publishes it on its site [@Fritz2008]. The Numbers website, provided by Nash Information Services, compiles and publishes statistics for the movie industry [@Services2014].
 
 ## Generalizability & Causality
 The data were **randomly sampled** from available IMDb and Rotten Tomatoes website apis, and so the inference *should* be generalizable to the population. However, a priori minimum sample size calculation was conducted,  assuming 80% power and a significance level of .05, over the proportions of films by genre. Frequency counts by genre were obtained for 6 million movies from the IMDb website [@IMDbstats2015].
@@ -58,41 +58,39 @@ ss <- sampleSize(movies, genres)
 knitr::kable(ss$genres, digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center")
 ```
-As indicated in `r kfigr::figr(label = "sampleSize", prefix = TRUE, link = TRUE, type="Table")`, the minimum required sample sizes were not met for most of the genres, according to the proportions obtained from IMDb. This could reduce generalizability of models that include genre as a predictor. Since this was an observational study, random assignment was not performed, as such **causality is not indicated by this analysis**.
+As indicated in `r kfigr::figr(label = "sampleSize", prefix = TRUE, link = TRUE, type="Table")`, the minimum required sample sizes were not met for most of the genres, according to the proportions obtained from IMDb. This could reduce generalizability of models that include genre as a predictor. 
+
+Since this was an observational study, random assignment was not performed, as such **causality is not indicated by this analysis**.
 
 
 ## Data Preprocessing
-As a first step, observations for TV movies were removed as they were out of the scope of this analysis. Lacking the minimum observations for this categorical level, NC-17 films were also removed from the data.  for lack Lacking a minimum of 5 observations for this categorical level, NC-17 films were removed. Log transformations were applied to the imdb_num_votes, runtime, and box_office variables. 
+As a first step, observations for TV movies were removed as they were out of the scope of this analysis. Lacking the minimum observations for this categorical level, NC-17 films were also removed. 
 
-**Cast Scores Variable**
-A new variable was created to characterize the popularity of the cast for a film. Cast score was computed as follows:  
-$$cs_i = [\displaystyle\sum_{a=1}^5 \displaystyle\sum_{f_a=1}^n s_{f_a} * p_a] - s_i $$
-where:  
-$cs_i$ is the cast score for film $i$  
-$a$ is the variable containing the five credited actors   
-$f_a$ is the film in which actor was credited  
-$n$ is the number of films in which the actor was credited  
-$s_{f_a}$ is the total score for film $f_a$, computed as (10 * imdb_rating) + audience score  
-$p_a$ is the proportion of $s_{f_a}$ allocated to actor $a$ and is defined as:   
-Actor 1: .40 * $s_{f_a}$  
-Actor 1: .30 * $s_{f_a}$  
-Actor 1: .15 * $s_{f_a}$  
-Actor 1: .10 * $s_{f_a}$  
-Actor 1: .05 * $s_{f_a}$  
-$s_i$ is the total score for film $i$
-
-Essentially, actors are allocated a proportion of the total score for each film according to the proportions above. The cast score for film $i$ is the sum of the apportioned scores for each actor minus the total score for the current film.
 
 **Variables Removed**  
-Qualitative variables with fewer than 5 observations per level were removed. This included:  
-* film title 
-* the url addresses  
-* studio, actor and director variables  
+Qualitative variables with fewer than 5 observations per level were removed. This included:    
+* film title   
+* the url addresses    
+* studio, actor and director variables    
 
-Variables containing redundant or unrelated information were removed, such as :  
-* dvd release dates, theatre release year and day   
-* critics rating, redundant with critics score   
-* audience rating, redndant with audience score  
+Variables containing redundant or unrelated information were removed, such as :     
+* DVD release dates, theatre release year and day     
+* critics rating, redundant with critics score     
+* audience rating, redundant with audience score   
+
+**Variables Added**  
+The following variables were obtained or derived from the existing variables:  
+* Box office revenue was obtained for a random sampling of `r nrow(mdb[complete.cases(mdb),])` movies, and added to the data set  
+* A total score variable captured a films total score and was calculated as 10 * the IMDb rating + plus the audience score from Rotten Tomatoes 
+* A director experience variable captured the number of other films a director had directed.   
+* A director votes variable counted the number of votes for other films in which the director had a role.   
+* A director scores variable captured the sum of total scores for other films in which the director had a role.   
+* A cast experience variable was the sum over the top 5 cast members, of the number of other movies in which the actor had played.    
+* A cast scores variables characterized the cast popularity by summing over the actor popularity scores for each of the top 5 actors.  See appendix B for the  derivation.  
+* A cast votes variable was computed analogously to ast scores.  
+    
+**Cross Validation**  
+The data were split into a training set (80%) and a validation set (20%). The following exploratory data analysis and modeling was performed on the training set. Several regression models were evaluated using the validation set and the final prediction would be performed on the ten movies from 2016. 
 
 The full resultant codebook for the data set is listed in `r kfigr::figr(label = "codebook", prefix = TRUE, link = TRUE, type="Table")`.
 
@@ -104,6 +102,6 @@ knitr::kable(codebook, align = 'l') %>%
   kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"), full_width = T, position = "center") 
 ```
 
-Lastly, the data were split into a training set (80%) and a test set (20%). The following exploratory data analysis and modeling was performed on the training set.
+
 
 * * *

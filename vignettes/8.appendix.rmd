@@ -3,13 +3,40 @@
 This appendix includes the primary functions used to perform forward selection, backward elimination, and prediction. The rest of the source code is available on github at https://github.com/DataScienceSalon/mdb.
 
 ### Forward Selection
+This function performs the forward selection process.
 ```{r a-forward, code=readLines('../R/forward.R')[24:100], echo=TRUE, eval=FALSE}
 ```
 
 ### Backward Elimination
+This function performs backward elimination.
 ```{r a-backward, code=readLines('../R/back.R')[18:82], echo=TRUE, eval=FALSE}
 ```
 
-### Prediction
+### Regression Analysis
+The regression analysis function performs the tests, and renders the plots requuired to validate the regression assumptions.
+```{r a-prediction, code=readLines('../R/regressionAnalysis.R')[19:285], echo=TRUE, eval=FALSE}
+```
+
+### Prediction    
+This function performs the prediction of the ten test films   
 ```{r a-prediction, code=readLines('../R/prediction.R')[20:57], echo=TRUE, eval=FALSE}
 ```
+
+## Appendix B: Formulas
+The cast scores and cast votes variables characterized the overall popularity of the cast. Total scores, defined as 10 * IMDb rating plus the audience score, was apportioned according to proportional allocation and this value was summed over the individual cast members.  The cast score variable was derived as follows:   
+$$cs_i = [\displaystyle\sum_{a=1}^5 \displaystyle\sum_{f_a=1}^n s_{f_a} * p_a] - s_i $$
+where:  
+$cs_i$ is the cast score for film $i$  
+$a$ is the variable containing the five credited actors   
+$f_a$ is the film in which actor was credited  
+$n$ is the number of films in which the actor was credited  
+$s_{f_a}$ is the total score for film $f_a$, computed as (10 * imdb_rating) + audience score  
+$p_a$ is the proportion of $s_{f_a}$ allocated to actor $a$ and is defined as:   
+Actor 1: .40 * $s_{f_a}$  
+Actor 1: .30 * $s_{f_a}$  
+Actor 1: .15 * $s_{f_a}$  
+Actor 1: .10 * $s_{f_a}$  
+Actor 1: .05 * $s_{f_a}$  
+$s_i$ is the total score for film $i$
+
+The cast votes variable was computed analogously.

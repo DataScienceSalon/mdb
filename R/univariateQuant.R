@@ -63,7 +63,10 @@ univariateQuant <- function(data, yLab, units = NULL) {
   out <- paste0("The 25%, 75%, and IQR were ", stats$Q1, ", ", stats$Q3,", and ",
                 stats$IQR, ", respectively. This yielded a 1.5xIQR 'acceptable' ",
                 "range [", lower,", ", upper, "]. Indeed, this confirmed the ",
-                "existence of ", numOutliers, " outliers. ")
+                "existence of ", numOutliers, " outliers. A case-wise review ",
+                "of the influential points revealed no data quality errors. As ",
+                "such, the influential points would be retained for further ",
+                "analysis.  ")
 
 
   analysis <- list(
