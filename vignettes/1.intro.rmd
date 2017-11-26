@@ -17,5 +17,12 @@ knitr::kable(introData$top5, format.args = list(big.mark = ","), 'html') %>%
 <div class = "col2-left">
 What is it about these films that make them so successful? The analysis explores this question from the perspective of a studio executive at the nascent stages of a film's production. Applying linear regression techniques to data obtained the IMDb, Rotten Tomatoes and BoxOfficeMojo websites, the aim was to render insights that might inform the key early decisions that studio executives, producers and directors must make to have the greatest positive impact at the box office.
 </div>   
-
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 * * *

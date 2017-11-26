@@ -2,6 +2,11 @@
 ## Appendix A: Source Code
 This appendix includes the primary functions used to perform forward selection, backward elimination, and prediction. The rest of the source code is available on github at https://github.com/DataScienceSalon/mdb.
 
+### Data Preprocessing
+This function performs the preprocessing of the data in advance of the analysis
+```{r a-forward, code=readLines('../R/preprocess.R')[15:339], echo=TRUE, eval=FALSE}
+```
+
 ### Forward Selection
 This function performs the forward selection process.
 ```{r a-forward, code=readLines('../R/forward.R')[24:100], echo=TRUE, eval=FALSE}
@@ -40,3 +45,8 @@ Actor 1: .05 * $s_{f_a}$
 $s_i$ is the total score for film $i$
 
 The cast votes variable was computed analogously.
+
+## Appendix C: Session Information
+```{r session_info}
+sessionInfo()
+```  
